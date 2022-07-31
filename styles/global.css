@@ -1,0 +1,4 @@
+/* ไฟล์ css global เขียนไฟล์เดียวมีผลทุก component */
+*{
+    font-family: 'Kanit', sans-serif;
+}
