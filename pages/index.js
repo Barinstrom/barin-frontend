@@ -21,14 +21,13 @@ export default function Register() {
 
       let url = "https://barin-backend-staging.herokuapp.com/login";
       const body = {
-			  userId: email.current.value,
-			  password: password.current.value,
+			  "userId": email.current.value,
+			  "password": password.current.value,
       };
       console.log(body);
       const res = await axios.post(url, body);
 			console.log(res);
-
-		}
+    }
   };
   
   return (
