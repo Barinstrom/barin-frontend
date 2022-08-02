@@ -26,8 +26,8 @@ export default function Login() {
       /*axios เรียก api จากหลังบ้าน สำหรับ login*/
       let url = "https://barin-backend-staging.herokuapp.com/login";
       const body = {
-			  userId: email.current.value,
-			  password: password.current.value,
+			  "userId": email.current.value,
+			  "password": password.current.value,
       };
       console.log(body);
       const res = await axios.post(url, body);
