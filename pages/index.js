@@ -3,21 +3,33 @@ import styles from '../styles/index.module.css'
 import Link from 'next/link';
 import { useRef } from 'react';
 
+import axios from "axios";
+
 export default function Register() {
   /* อ้างอิงค่า tag ด้วย useRef */
   const email = useRef()
   const password = useRef()
   
   /* function ในการเช็คว่าใส่ข้อมูลครบไหม */
-  const clickLogin = (ev) => {
-    if (email.current.value === "" && password.current.value === ""){
-      alert("โปรดกรอกข้อมูลให้ครบถ้วน")
-      return
-    }else{
-      console.log(email.current.value)  
-      console.log(password.current.value)     
-    }
-  }
+  const clickLogin = async (ev) => {
+		if (email.current.value === "" && password.current.value === "") {
+			alert("โปรดกรอกข้อมูลให้ครบถ้วน");
+			return;
+		} else {
+			//console.log(email.current.value);
+			//console.log(password.current.value);
+
+      let url = "https://barin-backend-staging.herokuapp.com/login";
+      const body = {
+			  userId: email.current.value,
+			  password: password.current.value,
+      };
+      console.log(body);
+      const res = await axios.post(url, body);
+			console.log(res);
+
+		}
+  };
   
   return (
     <main className={styles.register}>
