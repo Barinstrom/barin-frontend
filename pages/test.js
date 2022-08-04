@@ -3,6 +3,7 @@ import styles from "../styles/index.module.css";
 import { get_userdata } from "../utils/auth";
 import * as cookie from "cookie";
 
+
 export default function Home({ data }) {
 	return (
 		<main className={styles.register}>
@@ -22,13 +23,11 @@ export default function Home({ data }) {
 	);
 }
 
-// เอาข้อมูล cookie จากในเว็ป
 export async function getServerSideProps(context) {
-	const parsedCookies = await cookie.parse(context.req.headers.cookie);
-	console.log(parsedCookies);
+    const parsedCookies = await cookie.parse(context.req.headers.cookie);
+    console.log(parsedCookies);
 
-	//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
-	const data = await get_userdata(parsedCookies.token);
-	console.log("data =", data);
-	return { props: { data } };
+    const data = await get_userdata(parsedCookies.token);
+    console.log("data =",data);
+	return { props: {data} };
 }

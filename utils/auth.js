@@ -3,58 +3,28 @@ import Router from "next/router";
 import nextCookie from "next-cookies";
 import cookie from "js-cookie";
 
+
+// login & set token
 export const login = ({ token }) => {
 	cookie.set("token", token, { expires: 1 });
 	Router.push("/done");
 };
 
-export const auth = (ctx) => {
-	const { token } = nextCookie(ctx);
+// ดึงข้อมูลคนมา
+export async function get_userdata(token) {
+	console.log("test token = ", token);
+	const apiUrl = "https://barin-backend-staging.herokuapp.com/auth/profile";
+    
+	const response = await fetch(apiUrl, {
+		headers: { Authorization: `Bearer ${token}` },
+	});
 
-	// If there's no token, it means the user is not logged in.
-	if (!token) {
-		if (typeof window === "undefined") {
-			ctx.res.writeHead(302, { Location: "/login" });
-			ctx.res.end();
-		} else {
-			Router.push("/login");
-		}
+	if (response.ok) {
+		const js = await response.json();
+		console.log("js", js);
+		return js;
+	} else {
+		console.log("error", response);
+		return { status: "error" };
 	}
-
-	return token;
-};
-
-
-export const withAuthSync = (WrappedComponent) => {
-	const Wrapper = (props) => {
-		const syncLogout = (event) => {
-			if (event.key === "logout") {
-				console.log("logged out from storage!");
-				Router.push("/login");
-			}
-		};
-
-		useEffect(() => {
-			window.addEventListener("storage", syncLogout);
-
-			return () => {
-				window.removeEventListener("storage", syncLogout);
-				window.localStorage.removeItem("logout");
-			};
-		}, []);
-
-		return <WrappedComponent {...props} />;
-	};
-
-	Wrapper.getInitialProps = async (ctx) => {
-		const token = auth(ctx);
-
-		const componentProps =
-			WrappedComponent.getInitialProps &&
-			(await WrappedComponent.getInitialProps(ctx));
-
-		return { ...componentProps, token };
-	};
-
-	return Wrapper;
 };
