@@ -7,7 +7,7 @@ import cookie from "js-cookie";
 // login & set token
 export const login = ({ token }) => {
 	cookie.set("token", token, { expires: 1 });
-	Router.push("/done");
+	Router.push("/doneV2");
 };
 
 // ดึงข้อมูลคนมา
@@ -18,7 +18,7 @@ export async function get_userdata(token) {
 	const response = await fetch(apiUrl, {
 		headers: { Authorization: `Bearer ${token}` },
 	});
-
+	console.log("response =", response);
 	if (response.ok) {
 		const js = await response.json();
 		console.log("js", js);
