@@ -1,9 +1,12 @@
-import React from 'react'
+import React,{ useRef } from 'react'
 import Link from 'next/link'
 import styles from '../styles/admin.module.css'
-import { useRef } from 'react'
 
-export default function admin() {
+
+export default function Admin() {
+    /* template ร่างไว้คร่าวๆนะ เดียวมาอธิบายแล้วสอนพร้อมกันอีกที อันนี้ทำไม่ค่อยสวยมาก แต่
+    responsive ละ เดียวตอนทำจริงตอนไปสร้างเป็น layout อีกที */
+
     const nav = useRef()
     const clickHamberger = () => {
         nav.current.classList.toggle("active")
@@ -23,9 +26,11 @@ export default function admin() {
                 </div>
                 
                 <div className={styles.logo_title}>
-                    <a href="#" className={styles.logo}>
-                        <img src={'./dora.jpg'} />
-                    </a>
+                    <Link href="/">
+                        <a className={styles.logo}>
+                            <img src={'./dora.jpg'} />
+                        </a>
+                    </Link>
                     <span>สุคชาธัม เซียวศิริถาวร</span>
                 </div>
             </div>
@@ -70,34 +75,44 @@ export default function admin() {
         <div className={styles.box_menu}>
             <ul>
                 <li>
-                    <a href="#">
-                        <i className="fa-solid fa-house"></i>
-                        <span className={styles.item}>Home</span>
-                    </a>
+                    <Link href="/">
+                        <a>
+                            <i className="fa-solid fa-house"></i>
+                            <span className={styles.item}>Home</span>
+                        </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#">
-                        <i className="fa-solid fa-user"></i>
-                        <span className={styles.item}>Profile</span>
-                    </a>
+                    <Link href="/">
+                        <a>
+                            <i className="fa-solid fa-user"></i>
+                            <span className={styles.item}>Profile</span>
+                        </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#">
-                        <i className="fa-regular fa-address-card"></i>
-                        <span className={styles.item}>Member</span>
-                    </a>
+                    <Link href="/">
+                        <a>
+                            <i className="fa-regular fa-address-card"></i>
+                            <span className={styles.item}>Member</span>
+                        </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#">
-                        <i className="fa-solid fa-list-check"></i>
-                        <span className={styles.item}>Task</span>
-                    </a>
+                    <Link href="/">
+                        <a>
+                            <i className="fa-solid fa-list-check"></i>
+                            <span className={styles.item}>Task</span>
+                        </a>
+                    </Link>
                 </li>
                 <li>
-                    <a href="#">
-                        <i className="fa-solid fa-gear"></i>
-                        <span className={styles.item}>Setting</span>
-                    </a>
+                    <Link href="/">
+                        <a>
+                            <i className="fa-solid fa-gear"></i>
+                            <span className={styles.item}>Setting</span>
+                        </a>
+                    </Link>
                 </li>
             </ul>
         </div>
