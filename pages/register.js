@@ -32,14 +32,10 @@ export default function Register() {
 			}
 		}
 		/* ข้อมูล json ที่จะส่งไป */
-		const information = {
-			"email":email,
-			"fname":fname,
-			"sname":sname,
-			"school_name":school_name,
-			"tel":tel,
-			"school_document":nameFile
-		}
+		const f = new FormData(form.current)
+		const body = Object.fromEntries(f.entries())
+		console.log(body);
+		
 		
 	}	
 		/* ส่วนในการ post ส่งค่าไป backend */
@@ -57,40 +53,36 @@ export default function Register() {
 			{/* หัวข้อ */}
 			<h2 className="text-center mt-5">แบบฟอร์มลงทะเบียน</h2>
 			{/* ฟอร์ม */}
-			<form
-				className="row g-3"
-				onSubmit={(ev) => submitForm(ev)}
-				ref={form}
-			>
+			<form className="row g-3" onSubmit={(ev) => submitForm(ev)} ref={form} encType="multipart/form-data">
 				{/* อีเมลล์  */}
 				<div className="col-lg-12">
 					<label className="form-label">อีเมลล์</label>
-					<input type="email" className="form-control" />
+					<input type="email" className="form-control" name="email"/>
 				</div>
 				{/* ชื่อ  */}
 				<div className="col-lg-6">
 					<label className="form-label">ชื่อ</label>
-					<input type="text" className="form-control" />
+					<input type="text" className="form-control" name="fname"/>
 				</div>
 				{/* นามสกุล */}
 				<div className="col-lg-6">
 					<label className="form-label">นามสกุล</label>
-					<input type="text" className="form-control" />
+					<input type="text" className="form-control" name="sname"/>
 				</div>
 				{/* ชื่อโรงเรียน  */}
 				<div className="col-lg-12">
 					<label className="form-label">ชื่อโรงเรียน</label>
-					<input type="text" className="form-control" />
+					<input type="text" className="form-control" name="school_name"/>
 				</div>
 				{/* โทรศัพท์มือถือ */}
 				<div className="col-lg-12">
 					<label className="form-label">โทรศัพท์มือถือ</label>
-					<input type="tel" className="form-control" />
+					<input type="tel" className="form-control" name="school_tel"/>
 				</div>
 				{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 				<div className="col-lg-12">
 					<label className="form-label">เอกสารยืนยันโรงเรียน</label>
-					<input type="file" className="form-control" multiple />
+					<input type="file" className="form-control" multiple name="file_data"/>
 				</div>
 				{/* ปุ่มยืนยัน */}
 				<div className="col-lg-12">

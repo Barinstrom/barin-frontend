@@ -62,7 +62,7 @@ export default function Login() {
         
         {/* รหัสผ่าน */}
         <div className='form-floating'>
-          <input type="text" className="form-control" placeholder="รหัสผ่าน" id={styles.password} ref={password}/>
+          <input type="password" className="form-control" placeholder="รหัสผ่าน" id={styles.password} ref={password}/>
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
