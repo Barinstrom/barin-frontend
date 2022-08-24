@@ -24,11 +24,15 @@ export default function Home({ data }) {
 
 // เอาข้อมูล cookie จากในเว็ป
 export async function getServerSideProps(context) {
-	const parsedCookies = await cookie.parse(context.req.headers.cookie);
-	console.log(parsedCookies);
+	try {
+		const parsedCookies = await cookie.parse(context.req.headers.cookie);
+		console.log(parsedCookies);
 
-	//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
-	const data = await get_userdata(parsedCookies.token);
-	console.log("data =", data);
-	return { props: { data } };
+		//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
+		const data = await get_userdata(parsedCookies.token);
+		console.log("data =", data);
+		return { props: { data } };
+	} catch {
+    return { notFound: true };
+  }
 }

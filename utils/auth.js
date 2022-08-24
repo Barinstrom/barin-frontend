@@ -7,7 +7,7 @@ import cookie from "js-cookie";
 // login & set token
 export const login = ({ token }) => {
 	cookie.set("token", token, { expires: 1 });
-	Router.push("/doneV2");
+	Router.push("/doneV1");
 };
 
 // ดึงข้อมูลคนมา
