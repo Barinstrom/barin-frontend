@@ -154,7 +154,7 @@ export default function Admin({data}) {
 							</ul>
 						</div>
 						<div className="col-12 mt-4">
-							<div class="table-responsive">
+							<div className="table-responsive">
 								<table className="table table-bordered text-center">
 									<thead className="table-dark">
 										<tr>
