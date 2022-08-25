@@ -2,17 +2,12 @@ import React from 'react';
 import styles from '../styles/index.module.css'
 import Link from 'next/link';
 import { useRef } from 'react';
-import { useRouter } from "next/router";
 import { login } from "../utils/auth";
-
-import axios from "axios";
 
 export default function Login() {
   /* อ้างอิงค่า tag ด้วย useRef */
   const email = useRef()
   const password = useRef()
-
-  const router = useRouter();
   
   /* function ในการเช็คว่าใส่ข้อมูลครบไหม */
   const clickLogin = async (ev) => {
@@ -24,20 +19,16 @@ export default function Login() {
 			//console.log(password.current.value);
 
       /*axios เรียก api จากหลังบ้าน สำหรับ login*/
-      let url = "https://barin-backend-staging.herokuapp.com/login";
       const body = {
-			  "userId": email.current.value,
-			  "password": password.current.value,
+			  userId: email.current.value,
+			  password: password.current.value,
       };
       console.log(body);
-      const res = await axios.post(url, body);
-      console.log(res);
-      
-      if (res.status == 200) {
-        const token = res.data.token;
-        await login({ token });
+      let is_can = await login(body);
+      //console.log(is_can)
+      if (is_can==false) {
+        alert("ข้อมูลไม่ถูกต้อง");
       }
-
 		}
   };
   

@@ -31,6 +31,9 @@ export async function getServerSideProps(context) {
 		//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
 		const data = await get_userdata(parsedCookies.token);
 		console.log("data =", data);
+		if (data == false) {
+			return { notFound: true };
+		}
 		return { props: { data } };
 	} catch {
     return { notFound: true };
