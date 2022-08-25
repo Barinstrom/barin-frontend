@@ -5,27 +5,23 @@ import { useRef } from 'react';
 import { login } from "../utils/auth";
 
 export default function Login() {
-  /* อ้างอิงค่า tag ด้วย useRef */
-  const email = useRef()
-  const password = useRef()
-  
+
   /* function ในการเช็คว่าใส่ข้อมูลครบไหม */
   const clickLogin = async (ev) => {
-		if (email.current.value === "" && password.current.value === "") {
+    const email = document.querySelector("#email").value;
+	  const password = document.querySelector("#password").value;
+		if (email === "" && password === "") {
 			alert("โปรดกรอกข้อมูลให้ครบถ้วน");
 			return;
 		} else {
-			//console.log(email.current.value);
-			//console.log(password.current.value);
-
       /*axios เรียก api จากหลังบ้าน สำหรับ login*/
       const body = {
-			  userId: email.current.value,
-			  password: password.current.value,
+			  "userId": email,
+			  "password": password,
       };
-      console.log(body);
+      // console.log(body);
       let is_can = await login(body);
-      //console.log(is_can)
+      // console.log(is_can)
       if (is_can==false) {
         alert("ข้อมูลไม่ถูกต้อง");
       }
@@ -47,13 +43,13 @@ export default function Login() {
         
         {/* อีเมลล์ */}
         <div className='form-floating'>
-          <input type="text" className="form-control" placeholder="อีเมลล์" id={styles.email} ref={email}/>
+          <input type="text" className={`${styles.email} form-control`} placeholder="อีเมลล์" id="email" />
           <label className='form-label'>อีเมลล์</label>
         </div>
         
         {/* รหัสผ่าน */}
         <div className='form-floating'>
-          <input type="password" className="form-control" placeholder="รหัสผ่าน" id={styles.password} ref={password}/>
+          <input type="password" className={`${styles.password} form-control`} placeholder="รหัสผ่าน" id="password" />
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 

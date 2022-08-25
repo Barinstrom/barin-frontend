@@ -1,9 +1,9 @@
 import React from "react";
 import { useRef } from "react";
 import { register } from "../utils/auth"
+import Router from "next/router";
 
 export default function Register() {
-	const form = useRef();
 	async function submitForm(ev) {
 		/* ป้องกันกันส่งข้อมูลไป server โดยเราจะทำการ fetch post ข้อมูลไปทาง api แทน */
 		ev.preventDefault();
@@ -48,28 +48,20 @@ export default function Register() {
 				alert("register ผิดพลาด กรุณาลองใหม่อีกครั้ง");
 			} else {
 				alert("register เสร็จสิ้น");
+				Router.push("/");
 			}
 		}
 		
 		
 		
 	}	
-		/* ส่วนในการ post ส่งค่าไป backend */
-		/* const response = await fetch(url,{
-			method:"post",
-			headers:{"Content-Type":"application/json"},
-			body:JSON.stringify(information)
-		  })
-		  const data = await response.json()
-		  console.log(data)
-		} */
 
 	return (
 		<div className="container p-3">
 			{/* หัวข้อ */}
 			<h2 className="text-center mt-5">แบบฟอร์มลงทะเบียน</h2>
 			{/* ฟอร์ม */}
-			<form className="row g-3" onSubmit={(ev) => submitForm(ev)} ref={form} encType="multipart/form-data">
+			<form className="row g-3" onSubmit={(ev) => submitForm(ev)} encType="multipart/form-data">
 				{/* ชื่อโรงเรียน  */}
 				<div className="col-lg-12">
 					<label className="form-label">ชื่อโรงเรียน</label>

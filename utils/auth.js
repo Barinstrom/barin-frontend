@@ -1,24 +1,31 @@
 import { useEffect } from "react";
 import Router from "next/router";
-import nextCookie from "next-cookies";
 import cookie from "js-cookie";
-import axios from "axios";
 
 const Url = "https://barinapi.tawanchai.com";
+const headers_setting = {
+	Accept: "application/json",
+	"Content-Type": "application/json;charset=UTF-8",
+}
+		
 // register
 export async function register(data) {
 	const apiUrl = Url + "/register";
+	const options = {
+		method: "POST",
+		headers: headers_setting,
+		body: JSON.stringify(data),
+	};
 	try {
-		const res = await axios.post(apiUrl, data);
-		//console.log(res);
-		console.log(res.status);
-		if (res.status == 200) {
+		const response = await fetch(apiUrl, options);
+		console.log("status code: ", response.status); // 👉️ 200
+
+		if (response.ok) {
 			return true;
 		} else {
 			return false;
 		}
-	} catch {
-		console.log("error")
+	} catch (err) {
 		return false;
 	}
 };
@@ -27,42 +34,42 @@ export async function register(data) {
 export async function login(data){
 	let apiUrl = Url + "/login";
 
+	const options = {
+		method: "POST",
+		headers: headers_setting,
+		body: JSON.stringify(data),
+	};
 	try {
-		const res = await axios.post(apiUrl, data);
-		//console.log(res);
-		console.log(res.status);
+		const response = await fetch(apiUrl,options);
+		console.log("status code: ", response.status); // 👉️ 200
 
-		if (res.status == 200) {
-			const token = res.data.token;
+		if (response.ok) {
+			const result = await response.json();
+			const token = result.token;
 			cookie.set("token", token, { expires: 1 });
 			Router.push("/doneV1");
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
-	} catch {
+	} catch (err) {
 		return false;
 	}
-
-	
 };
 
 // ดึงข้อมูลคนมา
 export async function get_userdata(token) {
-	//console.log("test token = ", token);
 	const apiUrl = Url + "/auth/profile";
-  
 	try {
 		const response = await fetch(apiUrl, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
-		//console.log("response =", response);
+		console.log(response);
 		if (response.ok) {
 			const js = await response.json();
-			//console.log("js", js);
 			return js;
 		} else {
-			//console.log("error", response);
 			return false;
 		}
 	} catch {
