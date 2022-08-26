@@ -24,20 +24,30 @@ export default function CreditCard() {
 		OmiseCard.attach();
 	};
 
+	const Url = "http://localhost:3000/api/omise";
+	/* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
+	const headers_setting = {
+		"Content-Type": "application/json;charset=UTF-8",
+	};
+
 	const omiseCardHandler = () => {
 		OmiseCard.open({
 			amount: "10000",
 			onCreateTokenSuccess: (token) => {
-				console.log(token)
-				// Axios.post(`api url`, {
-				// 	email: "borntodev@gmail.com",
-				// 	name: "Borntodev",
-				// 	amount: "10000",
-				// 	token: token,
-				// 	headers: {
-				// 		"Content-Type": "application/json",
-				// 	},
-				// });
+				console.log("token =", token);
+				const data = {
+					email: "borntodev@gmail.com",
+					name: "Borntodev",
+					amount: "10000",
+					token: token,
+				};
+				fetch(Url, {
+					method: "POST",
+					headers: headers_setting,
+					body: JSON.stringify(data),
+				})
+					.then((response) => response.json())
+					.then((data) => console.log(data));
 			},
 			onFormClosed: () => {},
 		});
