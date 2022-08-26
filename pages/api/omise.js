@@ -5,11 +5,9 @@ export default async function handler(req, res) {
 		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
 	});
 
-  //console.log("Hi");
-  
-  const { method } = req;
+  //console.log(req);
 
-  if (method == "POST") {
+  try {
     const { email, name, amount, token } = req.body;
     res.send({
       email,
@@ -17,7 +15,19 @@ export default async function handler(req, res) {
       amount,
       token,
     });
+  } catch (error) {
+    res.send({error});
   }
+
+  /*if (method == "POST") {
+    const { email, name, amount, token } = req.body;
+    res.send({
+      email,
+      name,
+      amount,
+      token,
+    });
+  }*/
 	//console.log(email, name, amount, token);
 
 	// console.log(omise);
