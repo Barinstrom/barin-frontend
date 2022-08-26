@@ -24,12 +24,6 @@ export default function CreditCard() {
 		OmiseCard.attach();
 	};
 
-	const Url = "https://barin-frontend.vercel.app/api/omise";
-	/* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
-	const headers_setting = {
-		"Content-Type": "application/json;charset=UTF-8",
-	};
-
 	const omiseCardHandler = () => {
 		OmiseCard.open({
 			amount: "10000",
@@ -41,13 +35,23 @@ export default function CreditCard() {
 					amount: "10000",
 					token: token,
 				};
-				fetch(Url, {
+				fetch("/api/payment", {
 					method: "POST",
-					headers: headers_setting,
+					headers: {
+						"Content-Type": "application/json;charset=UTF-8",
+					},
 					body: JSON.stringify(data),
 				})
 					.then((response) => response.json())
-					.then((data) => console.log(data));
+					.then((data) => {
+						if (data.status == "successful") {
+							alert("successful");
+						}
+						else {
+							alert("error");
+						}
+						//console.log(data);
+					});
 			},
 			onFormClosed: () => {},
 		});
