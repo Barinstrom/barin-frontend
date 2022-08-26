@@ -39,7 +39,6 @@ export default function CreditCard() {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json;charset=UTF-8",
-						data
 					},
 					//body: JSON.stringify(data),
 				})

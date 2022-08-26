@@ -1,11 +1,5 @@
 
 export default async function handler(req, res) {
-	var omise = require("omise")({
-		publicKey: "pkey_test_5sxm3dmpgp2amagk9bh",
-		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
-	});
-
-  
 
   try {
     
