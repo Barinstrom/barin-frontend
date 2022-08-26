@@ -7,5 +7,13 @@ export default async function handler(req, res) {
 		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
   });
 
-	res.status(200).json({ name: "Payment Doe" });
+  try{
+    const { email, name, amount, token } = req.body; 
+    res.status(200).json({ email, name, amount, token });
+
+  }catch (error) {
+    res.status(400).json({ error: "error" });
+  }
+
+	
 }
