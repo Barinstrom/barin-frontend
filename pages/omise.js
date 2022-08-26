@@ -29,7 +29,7 @@ const CheckoutWithCreditCard = ({ carts }) => {
 	const omiseCardHandler = () => {
 		OmiseCard.open({
 			frameDescription: "Invoice #3847",
-			amount: 1500,
+			amount: 150000,
       onCreateTokenSuccess: (token) => {
         console.log("PAID");
         console.log(token);
