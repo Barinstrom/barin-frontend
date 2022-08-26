@@ -35,7 +35,7 @@ export default function CreditCard() {
 					amount: "10000",
 					token: token,
 				};
-				fetch("/api/omise", {
+				fetch("/api/payment", {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json;charset=UTF-8",
