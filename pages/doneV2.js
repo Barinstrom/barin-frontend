@@ -1,54 +1,53 @@
 import React from "react";
-import styles from "../styles/index.module.css";
 import { get_userdata } from "../utils/auth";
 import { useState, useEffect } from "react";
-import * as cookie from "cookie";
+/* มีการใช้ package universal-cookie */
 import Cookies from "universal-cookie";
 
-export default function Home({ }) {
-
-	const [data, setData] = useState(null);
-	const [isLoading, setLoading] = useState(false);
-
-	const get_userdata_func = async (token) => {
-		const datax = await get_userdata(token);
-		setData(datax);
-	};
-
+export default function Home2() {
+	/* ตัวแปร data จะนำไปใช้เก็บข้อมูลที่ fetch มาจาก backend */
+	const [data, setData] = useState("");
+	
+	/* จะทำ useeffect ก็ต่อเมื่อ render แค่ครั้งแรกเท่านั้น  */
 	useEffect(() => {
-		
+		/* ทำการดึงคุกกี้จากบราวเซอร์มาเก็บใน token */
 		const cookies = new Cookies();
 		const token = cookies.get("token");
-		console.log("token =", token);
-		get_userdata_func(token);
-
-	})
-
-	if (!data) return <p>No profile data</p>;
-
-	return (
-		<main className={styles.register}>
-			{/* กำหนด style แบบ nextjs jsx */}
-			<style jsx>{``}</style>
-
-			<main className={styles.block}>
-				{/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
-				<div>
-					<p className={styles.logo}>Barin Storm</p>
-					<p className={styles.logo}>{data.data.userId}</p>
-					<p className={styles.logo}>{data.data.role}</p>
-					<p className={styles.logo}>{data.data.email}</p>
+		//console.log("token =", token);
+		
+		/* มีการสร้างฟังชันก์เพื่อเรียก get_userdata  โดยต้องใช้ async await เพราะว่าต้องมีการรอให้ได้ข้อมูลก่อน เสร็จก่อนถึงจะไปทำอย่างอื่นได้*/
+		async function waitGet_userdata(){
+			const dataTemp = await get_userdata(token);
+			setData(dataTemp)
+			//console.log(dataTemp)
+		}
+		
+		/* เรียกฟังชันก์ พร้อมส่งค่า token ไป */
+		waitGet_userdata(token)
+	},[])
+	
+	/* ถ้าหากไม่มีข้อมูลให้แสดงส่วนนี้ */
+	if (!data){
+		return (
+			<main className="vh-100 border">
+				<div className="d-flex justify-content-center h-100 align-items-center">
+					<div className="fs-4">loading ...</div>
+					<div className="spinner-border ms-3"></div>
 				</div>
 			</main>
+		);
+	}
+
+	return (
+		<main className="vh-100 border border-4 border-dark">
+			<div className="container p-5 mt-5 bg-warning bg-opacity-50 rounded rounded-5">
+				<p className="fs-1">Barin Storm doneV2</p>
+				<p className="fs-3">{data.data.userId}</p>
+				<p className="fs-3">{data.data.role}</p>
+				<p className="fs-3">{data.data.email}</p>
+			</div>
 		</main>
-	);
+	)
 }
 
-/*export async function getServerSideProps(context) {
-    const parsedCookies = await cookie.parse(context.req.headers.cookie);
-    console.log(parsedCookies);
 
-    const data = await get_userdata(parsedCookies.token);
-    console.log("data =",data);
-	return { props: {data} };
-}*/

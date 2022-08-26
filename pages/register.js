@@ -1,5 +1,4 @@
 import React from "react";
-import { useRef } from "react";
 import { register } from "../utils/auth"
 import Router from "next/router";
 
@@ -23,17 +22,14 @@ export default function Register() {
 			alert("โปรดใส่เอกสารยืนยันโรงเรียน");
 		} else {
 			console.log("ข้อมูลครบ");
-			// /* เช็คไฟล์ */
+			/* เช็คไฟล์ */
 			console.log(school_document.files);
 			for (let i = 0; i < school_document.files.length; i++) {
 				//console.log(school_document.files[i].name)
 				nameFile.push(school_document.files[i].name);
 			}
 			console.log(nameFile);
-			// /* ข้อมูล json ที่จะส่งไป */
-			// const f = new FormData(form.current);
-			// const body = Object.fromEntries(f.entries());
-			// console.log(body);
+			
 			const body = {
 				userId:email,
 				password: "12345",
@@ -42,13 +38,16 @@ export default function Register() {
 				role:"admin"
 			}
 
-			let is_can = await register(body);
-			//console.log(is_can)
-			if (is_can == false) {
-				alert("register ผิดพลาด กรุณาลองใหม่อีกครั้ง");
-			} else {
-				alert("register เสร็จสิ้น");
-				Router.push("/");
+			/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
+			let status_register = await register(body);
+      
+			/* ถ้าหากว่า status_register == false  */
+			if (!status_register) {
+			  alert("ข้อมูลไม่ถูกต้อง")
+			  return
+			/* ถ้าหากว่า status_register == true  */
+			}else{
+			  Router.push("/")
 			}
 		}
 		

@@ -1,41 +1,38 @@
 import React from "react";
-import styles from "../styles/index.module.css";
 import { get_userdata } from "../utils/auth";
-import * as cookie from "cookie";
 
-export default function Home({ data }) {
+export default function Home1({data}){
 	return (
-		<main className={styles.register}>
-			{/* กำหนด style แบบ nextjs jsx */}
-			<style jsx>{``}</style>
-
-			<main className={styles.block}>
-				{/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
-				<div>
-					<p className={styles.logo}>Barin Storm</p>
-					<p className={styles.logo}>{data.data.userId}</p>
-					<p className={styles.logo}>{data.data.role}</p>
-					<p className={styles.logo}>{data.data.email}</p>
-				</div>
-			</main>
+		<main className="vh-100 border border-4 border-dark">
+			<div className="container p-5 mt-5 bg-info bg-opacity-50 rounded rounded-5">
+				<p className="fs-1">Barin Storm doneV1</p>
+				<p className="fs-3">{data.data.userId}</p>
+				<p className="fs-3">{data.data.role}</p>
+				<p className="fs-3">{data.data.email}</p>
+			</div>
 		</main>
-	);
+	)
 }
 
-// เอาข้อมูล cookie จากในเว็ป
+// ส่วนนี้จะทำใน server แต่คุกกี้ที่เก็บในบราวเซอร์ เราต้องทำการดึงคุกกี้ที่เก็บในบราวเซอร์มาให้ได้
 export async function getServerSideProps(context) {
 	try {
-		const parsedCookies = await cookie.parse(context.req.headers.cookie);
-		console.log(parsedCookies);
-
-		//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
-		const data = await get_userdata(parsedCookies.token);
-		console.log("data =", data);
-		if (data == false) {
+		/* ได้ token มาแบบ token=xxxxxxx ทำการ split ด้วย "=" แล้วเอาเฉพาะส่วนที่เป็น token จริงๆ */
+		const cookieTmp = String(context.req.headers.cookie).split("=")[1]
+		
+		//ดึงข้อมูลคน โดยส่ง token ไปใน get_userdata แล้วส่งต่อไปยังคอมโพเนนต์เพื่อแสดงผล
+		const data = await get_userdata(cookieTmp);
+		//console.log(data)
+		
+		/* ถ้าสิ่งที่ return มาเป็น false */
+		if (!data) {
 			return { notFound: true };
 		}
+		
 		return { props: { data } };
-	} catch {
-    return { notFound: true };
+	}catch(err) {
+    	/* ถ้ามี err console ออกมาดู */
+		console.log(err.message)
+		return { notFound: true };
   }
 }

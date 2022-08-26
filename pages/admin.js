@@ -2,7 +2,7 @@ import React,{ useRef } from 'react'
 import Link from 'next/link'
 import styles from '../styles/admin.module.css'
 import { get_userdata } from "../utils/auth";
-import * as cookie from "cookie";
+
 
 export default function Admin({data}) {
     /* template ร่างไว้คร่าวๆนะ เดียวมาอธิบายแล้วสอนพร้อมกันอีกที อันนี้ทำไม่ค่อยสวยมาก แต่
@@ -270,20 +270,26 @@ export default function Admin({data}) {
 	);
 }
 
-// เอาข้อมูล cookie จากในเว็ป
+// ส่วนนี้จะทำใน server แต่คุกกี้ที่เก็บในบราวเซอร์ เราต้องทำการดึงคุกกี้ที่เก็บในบราวเซอร์มาให้ได้
 export async function getServerSideProps(context) {
 	try {
-		const parsedCookies = await cookie.parse(context.req.headers.cookie);
-		console.log(parsedCookies);
-
-		//ส่งให้ get_userdata ดึงข้อมูลคนมาใส่ใน props
-		const data = await get_userdata(parsedCookies.token);
-		console.log("data =", data);
-		if (data == false || data.data.role != 'admin') {
+		/* ได้ token มาแบบ token=xxxxxxx ทำการ split ด้วย "=" แล้วเอาเฉพาะส่วนที่เป็น token จริงๆ */
+		const cookieTmp = String(context.req.headers.cookie).split("=")[1]
+		
+		//ดึงข้อมูลคน โดยส่ง token ไปใน get_userdata แล้วส่งต่อไปยังคอมโพเนนต์เพื่อแสดงผล
+		const data = await get_userdata(cookieTmp);
+		//console.log(data)
+		
+		/* ถ้าสิ่งที่ return มาเป็น false */
+		if (!data) {
 			return { notFound: true };
 		}
+		/* ถ้าสิ่งที่ return มาเป็น true ก็ส่งเป็นข้อมูลใน props ไป */
 		return { props: { data } };
-	} catch {
-    return { notFound: true };
+	}catch(err) {
+    	/* ถ้ามี err console ออกมาดู */
+		console.log(err.message)
+		return { notFound: true };
   }
 }
+

@@ -1,32 +1,53 @@
 import React from 'react';
 import styles from '../styles/index.module.css'
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useRef } from 'react';
-import { login } from "../utils/auth";
+import { checkLogin } from "../utils/auth";
+
 
 export default function Login() {
-
+  /* กำหนดตัวแปร route ขึ้นมาเพื่อไปโยงไปอีกลิงค์*/
+  const router = useRouter()
+  
+  /* ใช้ useRef ผูกค่าไว้กับ tag html ตัวนั้น */
+  const email = useRef()
+  const password = useRef()
+  
   /* function ในการเช็คว่าใส่ข้อมูลครบไหม */
-  const clickLogin = async (ev) => {
-    const email = document.querySelector("#email").value;
-	  const password = document.querySelector("#password").value;
-		if (email === "" && password === "") {
-			alert("โปรดกรอกข้อมูลให้ครบถ้วน");
-			return;
-		} else {
-      /*axios เรียก api จากหลังบ้าน สำหรับ login*/
+  async function clickLogin(ev){
+    /* ป้องกันกันส่งข้อมูลไป server */
+    ev.preventDefault();
+    
+    /* นำค่าที่ได้มาเก็บในตัวแปร สองตัวดังนี้ */
+    const email_check = email.current.value;
+	  const password_check = password.current.value;
+		
+    /* เช็คข้อมูลปกติ */
+    if (email_check === "" && password_check === "") {
+		  alert("โปรดกรอกข้อมูลให้ครบถ้วน");
+			return
+		
+    } else {
+      /*ถ้าหากใส่ข้อมูลครบถ้วน ให้นำค่ามากำหนดเป็น object */
       const body = {
-			  "userId": email,
-			  "password": password,
-      };
-      // console.log(body);
-      let is_can = await login(body);
-      // console.log(is_can)
-      if (is_can==false) {
-        alert("ข้อมูลไม่ถูกต้อง");
+			  "userId": email_check ,
+			  "password": password_check ,
+      }
+      
+      /* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
+      let status_login = await checkLogin(body);
+      
+      /* ถ้าหากว่า status_login == false  */
+      if (!status_login) {
+        alert("ข้อมูลไม่ถูกต้อง")
+        return
+      /* ถ้าหากว่า status_login == true  */
+      }else{
+        router.push("/doneV2")
       }
 		}
-  };
+  }
   
   return (
     <main className={styles.register}>
@@ -43,13 +64,13 @@ export default function Login() {
         
         {/* อีเมลล์ */}
         <div className='form-floating'>
-          <input type="text" className={`${styles.email} form-control`} placeholder="อีเมลล์" id="email" />
+          <input type="text" className={`${styles.email} form-control`} placeholder="อีเมลล์" id="email" ref={email}/>
           <label className='form-label'>อีเมลล์</label>
         </div>
         
         {/* รหัสผ่าน */}
         <div className='form-floating'>
-          <input type="password" className={`${styles.password} form-control`} placeholder="รหัสผ่าน" id="password" />
+          <input type="password" className={`${styles.password} form-control`} placeholder="รหัสผ่าน" id="password" ref={password} />
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
@@ -59,7 +80,6 @@ export default function Login() {
           {/* ไปหน้า register */}
           <Link href="/register"><button className='btn btn-danger ms-2'>ลงทะเบียน</button></Link>
         </div>
-      
       </main> 
     </main>
   )
