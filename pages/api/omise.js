@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
 	});
 
-  console.log("Hi");
+  //console.log("Hi");
   
   const { method } = req;
 
