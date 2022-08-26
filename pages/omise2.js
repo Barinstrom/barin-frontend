@@ -43,7 +43,15 @@ export default function CreditCard() {
 					body: JSON.stringify(data),
 				})
 					.then((response) => response.json())
-					.then((data) => console.log(data));
+					.then((data) => {
+						if (data.status == "successful") {
+							alert("successful");
+						}
+						else {
+							alert("error");
+						}
+						//console.log(data);
+					});
 			},
 			onFormClosed: () => {},
 		});
