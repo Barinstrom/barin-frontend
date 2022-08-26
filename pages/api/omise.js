@@ -8,28 +8,35 @@ export default async function handler(req, res) {
   console.log("Hi");
 
   const { email, name, amount, token } = req.body 
-  console.log(email, name, amount, token);
+  //console.log(email, name, amount, token);
 
-  console.log(omise);
-  try {
-      const customer = await omise.customers.create({
-        email,
-        description: name,
-        card: token
-      });
+  // console.log(omise);
+  // try {
+  //     const customer = await omise.customers.create({
+  //       email,
+  //       description: name,
+  //       card: token
+  //     });
 
-      const charge = await omise.charges.create({
-        amount: amount,
-        currency: "thb",
-        customer: customer.id,
-      });
+  //     const charge = await omise.charges.create({
+  //       amount: amount,
+  //       currency: "thb",
+  //       customer: customer.id,
+  //     });
 
-      res.send({
-        amount: charge.amount,
-        status: charge.status
-      })
-  } catch (error) {
-      console.log(error)
-  }
+  //     res.send({
+  //       amount: charge.amount,
+  //       status: charge.status
+  //     })
+  // } catch (error) {
+  //     console.log(error)
+  // }
+
+  res.send({
+		email,
+		name,
+		amount,
+		token,
+  });
 
 }

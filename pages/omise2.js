@@ -24,7 +24,7 @@ export default function CreditCard() {
 		OmiseCard.attach();
 	};
 
-	const Url = "https://barin-frontend.vercel.app/api/omise";
+	const Url = "http://localhost:3000/api/omise";
 	/* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
 	const headers_setting = {
 		"Content-Type": "application/json;charset=UTF-8",
