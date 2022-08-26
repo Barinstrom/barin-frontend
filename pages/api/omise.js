@@ -5,16 +5,21 @@ export default async function handler(req, res) {
 		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
 	});
 
-  //console.log(req);
+  
 
   try {
-    const { email, name, amount, token } = req.body;
-    res.send({
-      email,
-      name,
-      amount,
-      token,
-    });
+    
+    // console.log(req.rawHeaders[7]);
+    // const { email, name, amount, token } = req.rawHeaders[7].json();
+    res.send({ "test":"test" });
+    // const { email, name, amount, token } = req.body;
+    // res.send({
+    //   email,
+    //   name,
+    //   amount,
+    //   token,
+    // });
+
   } catch (error) {
     res.send({error});
   }

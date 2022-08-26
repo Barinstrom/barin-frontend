@@ -36,11 +36,12 @@ export default function CreditCard() {
 					token: token,
 				};
 				fetch("/api/omise", {
-					method: "POST",
+					method: "GET",
 					headers: {
 						"Content-Type": "application/json;charset=UTF-8",
+						data
 					},
-					body: JSON.stringify(data),
+					//body: JSON.stringify(data),
 				})
 					.then((response) => response.json())
 					.then((data) => console.log(data));
