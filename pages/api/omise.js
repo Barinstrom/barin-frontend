@@ -1,11 +1,16 @@
 
 export default async function handler(req, res) {
+	
+  var omise = require("omise")({
+		publicKey: "pkey_test_5sxm3dmpgp2amagk9bh",
+		secretKey: "skey_test_5sxlti3pxutrdqmhye3",
+	});
 
   try {
     
     // console.log(req.rawHeaders[7]);
     // const { email, name, amount, token } = req.rawHeaders[7].json();
-    res.send({ "test":"test" });
+    res.status(200).json({ name: "John Doe" });
     // const { email, name, amount, token } = req.body;
     // res.send({
     //   email,
@@ -15,7 +20,7 @@ export default async function handler(req, res) {
     // });
 
   } catch (error) {
-    res.send({error});
+    res.status(200).json({ error });
   }
 
   /*if (method == "POST") {
