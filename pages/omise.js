@@ -6,21 +6,21 @@ import {useRouter} from "next/router";
 let OmiseCard;
 
 export default function CreditCard(req, res) {
-	const [data,setData] = useState({})
-	const router = useRouter()
+	const [data, setData] = useState({});
+	const router = useRouter();
 	/* กรณี user กดปุ่มไฟล์เพื่อจะเช็ค */
-	function checkFile(file,ev){
+	function checkFile(file, ev) {
 		/* console.log(file)
 		window.open(file, "_blank"); */
-		window.open().document.write(`<img src="${file}"></img>`)
+		window.open().document.write(`<img src="${file}"></img>`);
 	}
-	
+
 	useEffect(() => {
 		/* ทำการดึงข้อมูลจาก localStorage */
-		setData(JSON.parse(window.localStorage.getItem("infomation")))
-	},[])
+		setData(JSON.parse(window.localStorage.getItem("infomation")));
+	}, []);
 
-	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */
+	/* configure Omise ในส่วน publicKey สกุลเงิน และตัวอักษรแสดงชื่อต่างๆ บน modal ของ omise */
 	const handleLoadScript = () => {
 		OmiseCard = window.OmiseCard;
 		OmiseCard.configure({
@@ -31,8 +31,8 @@ export default function CreditCard(req, res) {
 			buttonLabel: "Pay with Omise",
 		});
 	};
-	
-	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */
+
+	/* กำหนด PaymentMethod ของ omise (มันมีหลายอัน) */
 	const creditCardConfigure = () => {
 		OmiseCard.configure({
 			defaultPaymentMethod: "credit_card",
@@ -42,7 +42,7 @@ export default function CreditCard(req, res) {
 		OmiseCard.attach();
 	};
 
-	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */ 
+	/* กำหนดจำนวนเงิน เช่น 10000 = 100.00 และเตรียม omise_data ส่งให้กับทาง api */
 	const omiseCardHandler = () => {
 		OmiseCard.open({
 			amount: "10000",
@@ -54,20 +54,23 @@ export default function CreditCard(req, res) {
 					amount: "10000",
 					token: token,
 				};
-				
+
+				/* เรียกใช้ api สำหรับส่งข้อมุลไปบันทุกผลการชำระเงินของ omise */
 				const res = await fetch("/api/payment", {
 					method: "POST",
-					headers: {"Content-Type": "application/json;charset=UTF-8",},
+					headers: {
+						"Content-Type": "application/json;charset=UTF-8",
+					},
 					body: JSON.stringify(omise_data),
-				})
-				
-				const result = await res.json()
+				});
+
+				const result = await res.json();
 				//console.log(result)
-				
+
 				/* ถ้าชำระเงินสำเร็จ  */
 				if (result.status == "successful") {
 					alert("successful");
-					
+
 					/* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
 					const body = {
 						userId: data.email,
@@ -75,40 +78,41 @@ export default function CreditCard(req, res) {
 						confirmPassword: "12345",
 						email: data.email,
 						role: "admin",
-						certificate_doc:data.school_document
+						certificate_doc: data.school_document,
 					};
 					/* รอข้อมูลว่า true / false */
-					const status_register = await register(body)
-					
+					const status_register = await register(body);
+
 					/* ถ้าหากว่า status_register == false  */
 					if (!status_register) {
-						alert("เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx")
-						return
-						
+						alert(
+							"เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx"
+						);
+						return;
+
 						/* ถ้าหากว่า status_register == true  */
 					} else {
 						alert("สมัครเสร็จสิ้น");
 						/* ทำการลบข้อมูลจาก localStorage */
-						window.localStorage.removeItem("infomation")
+						window.localStorage.removeItem("infomation");
 						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
-						router.push("/register")
+						router.push("/register");
 					}
-				/* ถ้าชำระเงินไม่สำเร็จ  */
-				}else {
+					/* ถ้าชำระเงินไม่สำเร็จ  */
+				} else {
 					alert("error");
 				}
 				//console.log(data);
-					
 			},
 			onFormClosed: () => {},
 		});
 	};
-	
-	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */ 
+
+	/* ส่วนฟังก์ชันที่จะใช้งานตอนกดปุ่ม ยืนยัน ในหน้า omise */
 	const handleClick = (e) => {
-		e.preventDefault();
-		creditCardConfigure();
-		omiseCardHandler();
+		e.preventDefault(); /* ไม่ให้ form refresh */
+		creditCardConfigure(); /* ฟังก์ชัน config ตัว omise modal ที่จะเด้งขึ้นมา */
+		omiseCardHandler(); /* ฟังก์ชัน จ่ายเงิน และส่งข้อมูลให้ api ที่เตรียมไว้เพื่อสร้าง user กับ transcetion ในเว้ป omise และรีเทิร์นค่ากลับเพื่อใช้สร้าง userId ต่อไป */
 	};
 
 	return (
@@ -142,9 +146,7 @@ export default function CreditCard(req, res) {
 					>
 						{/* ชื่อโรงเรียน  */}
 						<div className="col-lg-12">
-							<label className="form-label">
-								ชื่อโรงเรียน : 
-							</label>
+							<label className="form-label">ชื่อโรงเรียน :</label>
 						</div>
 						{/* ชื่อตัวแทน  */}
 						<div className="col-lg-12">
@@ -165,14 +167,21 @@ export default function CreditCard(req, res) {
 								{data.school_tel}
 							</label>
 						</div>
-						{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
+						{/* เอกสารยืนยันโรงเรียน และปุ่มกดคลิกเพื่อดู รูปที่เราอัพลงไป*/}
 						<div className="col-lg-12">
 							<label className="form-label">
-								เอกสารยืนยันโรงเรียน : 
-								<p onClick={(ev) => checkFile(data.school_document,ev)} className="bg-info text-center rounded rounded-3">check picture</p>
+								เอกสารยืนยันโรงเรียน :
+								<p
+									onClick={(ev) =>
+										checkFile(data.school_document, ev)
+									}
+									className="bg-info text-center rounded rounded-3"
+								>
+									check picture
+								</p>
 							</label>
 						</div>
-						{/* ปุ่มยืนยัน */}
+						{/* ปุ่มยืนยัน เพื่อเด้ง omise modal */}
 						<div className="col-lg-12">
 							<div
 								className="btn btn-primary"
