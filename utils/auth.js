@@ -6,7 +6,7 @@ const Url = "https://barinapi.tawanchai.com";
 const headers_setting = {
 	"Content-Type": "application/json;charset=UTF-8",
 }
-		
+
 // register
 export async function register(data) {
 	const apiUrl = Url + "/register";
