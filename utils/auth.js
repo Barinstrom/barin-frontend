@@ -1,5 +1,8 @@
 import cookie from "js-cookie";
+/* url ของจริง */
 //https://barinapi.tawanchai.com
+/* url เทส */
+//https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
 const Url = "https://barin-backend-staging.herokuapp.com";
 
@@ -20,11 +23,11 @@ export async function register(data) {
 	
 	try {
 		const response = await fetch(apiUrl, options);
+		const result = await response.json()
 		//console.log("status code: ", response.status); // 👉️ 200
-		const res = await response.json()
-		console.log(res)
+		//console.log(result)
 		if (response.ok) {
-			console.log("aaa")
+			
 			return true
 		} else {
 			return false
@@ -46,11 +49,13 @@ export async function checkLogin(data){
 	
 	try{
 		const response = await fetch(apiUrl,options);
-		//console.log("status code: ", response); // 👉️ 200
-
+		/* ดู response ที่ได้มา */
+		//console.log(response)
 		
 		if (response.ok) {
 			const result = await response.json();
+			/* เช็คข้อมูลดูค่า token */
+			//console.log(result)
 			const token = result.token;
 			cookie.set("token", token, { expires: 1 });
 			return true
@@ -62,9 +67,6 @@ export async function checkLogin(data){
 		console.log(err.message)
 		return false
 	}
-	
-		
-	
 }
 
 // ดึงข้อมูลคนมา
@@ -74,11 +76,13 @@ export async function get_userdata(token) {
 		const response = await fetch(apiUrl, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
-		//console.log(response);
+		
+		/* ข้อมูลของ user ที่ return กลับมา */
+		const user_info = await response.json();
+		//console.log(user_info)
 		
 		if (response.ok) {
-			const js = await response.json();
-			return js;
+			return user_info;
 		} else {
 			return false;
 		}

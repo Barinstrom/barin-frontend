@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Script from "react-load-script";
 import { register } from "../utils/auth"
 import {useRouter} from "next/router";
-import Link from "next/link"
 
 let OmiseCard;
 
 export default function CreditCard(req, res) {
-
-	const router = useRouter();
-	const data = router.query;
-	console.log("data =", data);
-
-
-	const fetchTmp = async (body) => {
-		const res = await register(body)
-		return res
+	const [data,setData] = useState({})
+	const router = useRouter()
+	/* กรณี user กดปุ่มไฟล์เพื่อจะเช็ค */
+	function checkFile(file,ev){
+		/* console.log(file)
+		window.open(file, "_blank"); */
+		window.open().document.write(`<img src="${file}"></img>`)
 	}
+	
+	useEffect(() => {
+		/* ทำการดึงข้อมูลจาก localStorage */
+		setData(JSON.parse(window.localStorage.getItem("infomation")))
+	},[])
 
+	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */
 	const handleLoadScript = () => {
 		OmiseCard = window.OmiseCard;
 		OmiseCard.configure({
@@ -28,7 +31,8 @@ export default function CreditCard(req, res) {
 			buttonLabel: "Pay with Omise",
 		});
 	};
-
+	
+	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */
 	const creditCardConfigure = () => {
 		OmiseCard.configure({
 			defaultPaymentMethod: "credit_card",
@@ -38,7 +42,8 @@ export default function CreditCard(req, res) {
 		OmiseCard.attach();
 	};
 
-	 const omiseCardHandler = () => {
+	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */ 
+	const omiseCardHandler = () => {
 		OmiseCard.open({
 			amount: "10000",
 			onCreateTokenSuccess: async (token) => {
@@ -52,19 +57,18 @@ export default function CreditCard(req, res) {
 				
 				const res = await fetch("/api/payment", {
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json;charset=UTF-8",
-					},
+					headers: {"Content-Type": "application/json;charset=UTF-8",},
 					body: JSON.stringify(omise_data),
 				})
 				
 				const result = await res.json()
+				//console.log(result)
 				
-				
+				/* ถ้าชำระเงินสำเร็จ  */
 				if (result.status == "successful") {
 					alert("successful");
 					
-					/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
+					/* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
 					const body = {
 						userId: data.email,
 						password: "12345",
@@ -73,25 +77,24 @@ export default function CreditCard(req, res) {
 						role: "admin",
 						certificate_doc:data.school_document
 					};
-					
-					console.log(body)
-					/* let status_register = register(body);
-					status_register.then(res => console.log(res)) */
-					
-					const status_register = await fetchTmp(body)
+					/* รอข้อมูลว่า true / false */
+					const status_register = await register(body)
 					
 					/* ถ้าหากว่า status_register == false  */
 					if (!status_register) {
-						alert(
-							"เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx"
-						);
-						return;
+						alert("เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx")
+						return
+						
 						/* ถ้าหากว่า status_register == true  */
 					} else {
 						alert("สมัครเสร็จสิ้น");
-						/* Router.push("/"); */
+						/* ทำการลบข้อมูลจาก localStorage */
+						window.localStorage.removeItem("infomation")
+						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
+						router.push("/register")
 					}
-				} else {
+				/* ถ้าชำระเงินไม่สำเร็จ  */
+				}else {
 					alert("error");
 				}
 				//console.log(data);
@@ -100,7 +103,8 @@ export default function CreditCard(req, res) {
 			onFormClosed: () => {},
 		});
 	};
-
+	
+	/* ส่วนนี้รอแตมป์เขียนนะ คะน้าน่าจะต้องอ่านก่อน */ 
 	const handleClick = (e) => {
 		e.preventDefault();
 		creditCardConfigure();
@@ -139,7 +143,7 @@ export default function CreditCard(req, res) {
 						{/* ชื่อโรงเรียน  */}
 						<div className="col-lg-12">
 							<label className="form-label">
-								ชื่อโรงเรียน : {data.school_name}
+								ชื่อโรงเรียน : 
 							</label>
 						</div>
 						{/* ชื่อตัวแทน  */}
@@ -157,7 +161,7 @@ export default function CreditCard(req, res) {
 						{/* โทรศัพท์มือถือ */}
 						<div className="col-lg-12">
 							<label className="form-label">
-								เบอร์โทรศัพท์ที่สามารถติดต่อได้ :{" "}
+								เบอร์โทรศัพท์ที่สามารถติดต่อได้ :{""}
 								{data.school_tel}
 							</label>
 						</div>
@@ -165,9 +169,7 @@ export default function CreditCard(req, res) {
 						<div className="col-lg-12">
 							<label className="form-label">
 								เอกสารยืนยันโรงเรียน : 
-								
-								<a className="btn btn-success" href={data.school_document}>check picture</a>
-								
+								<p onClick={(ev) => checkFile(data.school_document,ev)} className="bg-info text-center rounded rounded-3">check picture</p>
 							</label>
 						</div>
 						{/* ปุ่มยืนยัน */}
