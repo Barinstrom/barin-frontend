@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Script from "react-load-script";
-import { useRouter } from "next/router";
 import { register } from "../utils/auth"
-import Router from "next/router";
+import {useRouter} from "next/router";
+import Link from "next/link"
 
 let OmiseCard;
 
@@ -11,6 +11,12 @@ export default function CreditCard(req, res) {
 	const router = useRouter();
 	const data = router.query;
 	console.log("data =", data);
+
+
+	const fetchTmp = async (body) => {
+		const res = await register(body)
+		return res
+	}
 
 	const handleLoadScript = () => {
 		OmiseCard = window.OmiseCard;
@@ -32,10 +38,10 @@ export default function CreditCard(req, res) {
 		OmiseCard.attach();
 	};
 
-	const omiseCardHandler = () => {
+	 const omiseCardHandler = () => {
 		OmiseCard.open({
 			amount: "10000",
-			onCreateTokenSuccess: (token) => {
+			onCreateTokenSuccess: async (token) => {
 				console.log("token =", token);
 				const omise_data = {
 					email: data.email,
@@ -43,43 +49,53 @@ export default function CreditCard(req, res) {
 					amount: "10000",
 					token: token,
 				};
-				fetch("/api/payment", {
+				
+				const res = await fetch("/api/payment", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json;charset=UTF-8",
 					},
 					body: JSON.stringify(omise_data),
 				})
-					.then((response) => response.json())
-					.then((res) => {
-						if (res.status == "successful") {
-							alert("successful");
-							/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
-							const body = {
-								userId: data.email,
-								password: "12345",
-								confirmPassword: "12345",
-								email: data.email,
-								role: "admin",
-							};
-							let status_register = register(body);
-
-							/* ถ้าหากว่า status_register == false  */
-							if (!status_register) {
-								alert(
-									"เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx"
-								);
-								return;
-								/* ถ้าหากว่า status_register == true  */
-							} else {
-								alert("สมัครเสร็จสิ้น");
-								Router.push("/");
-							}
-						} else {
-							alert("error");
-						}
-						//console.log(data);
-					});
+				
+				const result = await res.json()
+				
+				
+				if (result.status == "successful") {
+					alert("successful");
+					
+					/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
+					const body = {
+						userId: data.email,
+						password: "12345",
+						confirmPassword: "12345",
+						email: data.email,
+						role: "admin",
+						certificate_doc:data.school_document
+					};
+					
+					console.log(body)
+					/* let status_register = register(body);
+					status_register.then(res => console.log(res)) */
+					
+					const status_register = await fetchTmp(body)
+					
+					/* ถ้าหากว่า status_register == false  */
+					if (!status_register) {
+						alert(
+							"เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx"
+						);
+						return;
+						/* ถ้าหากว่า status_register == true  */
+					} else {
+						alert("สมัครเสร็จสิ้น");
+						/* Router.push("/"); */
+					}
+				} else {
+					alert("error");
+				}
+				//console.log(data);
+					
 			},
 			onFormClosed: () => {},
 		});
@@ -148,7 +164,10 @@ export default function CreditCard(req, res) {
 						{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 						<div className="col-lg-12">
 							<label className="form-label">
-								เอกสารยืนยันโรงเรียน : {data.nameFile}
+								เอกสารยืนยันโรงเรียน : 
+								
+								<a className="btn btn-success" href={data.school_document}>check picture</a>
+								
 							</label>
 						</div>
 						{/* ปุ่มยืนยัน */}

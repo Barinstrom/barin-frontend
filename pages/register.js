@@ -1,8 +1,27 @@
 import React from "react";
 import { register } from "../utils/auth"
+
+import FileBase64 from 'react-file-base64';
+import { useState } from "react";
+import { useRef } from "react";
 import Router from "next/router";
 
 export default function Register() {
+	const [picture,setPicture] = useState()
+	const [nameFile,setNameFile] = useState()
+	const email = useRef()
+	const school_admin = useRef()
+	
+	function getFiles(ev){
+		const tmp = ev.base64
+		const tmp2 = ev.name
+		console.log(tmp);
+		setPicture(tmp);
+		setNameFile(tmp2);
+	}
+	
+
+	
 	async function submitForm(ev) {
 		/* ป้องกันกันส่งข้อมูลไป server โดยเราจะทำการ fetch post ข้อมูลไปทาง api แทน */
 		ev.preventDefault();
@@ -10,42 +29,47 @@ export default function Register() {
 		const school_name = document.querySelector("#school_name").value;
 		const admin_name = document.querySelector("#admin_name").value;
 		const school_tel = document.querySelector("#school_tel").value;
-		const school_document = document.querySelector("#school_document");
+		//const school_document = document.querySelector("#school_document");
+		
 		// ไว้เก็บชื่อไฟล์
-		const nameFile = []
+		//const nameFile = []
 		
 		/* เช็คว่าใส่ข้อมูลไหม */
 		if (!email || !school_name || !admin_name || !school_tel) {
 			alert("โปรดกรอกข้อมูลให้ครบถ้วน");
 			return;
-		} else if (school_document.files.length == 0) {
+		} else if (!picture) {
 			alert("โปรดใส่เอกสารยืนยันโรงเรียน");
 		} else {
 			console.log("ข้อมูลครบ");
+			
 			/* เช็คไฟล์ */
-			console.log(school_document.files);
-			for (let i = 0; i < school_document.files.length; i++) {
+			//console.log(picture.current.files[0]);
+
+			/* for (let i = 0; i < picture.current.files.length; i++) {
 				//console.log(school_document.files[i].name)
-				nameFile.push(school_document.files[i].name);
-			}
-			console.log(nameFile);
+				nameFile.push(picture.current.files[i].name);
+			} */
+			
+			//console.log(nameFile);
 			
 			const body = {
 				school_name: school_name,
 				admin_name: admin_name,
 				school_tel: school_tel,
 				nameFile: nameFile,
-				school_document: school_document,
+				school_document: String(picture),
 				userId:email,
 				password: "12345",
 				confirmPassword: "12345",
 				email: email,
 				role:"admin"
 			}
-
+			console.log(body)
 			/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
-			let status_register = true;//await register(body);
-      
+			let status_register = true /* await register(body */;
+			/* console.log(status_register) */
+			
 			/* ถ้าหากว่า status_register == false  */
 			if (!status_register) {
 			  alert("ข้อมูลไม่ถูกต้อง")
@@ -135,18 +159,13 @@ export default function Register() {
 								id="school_tel"
 							/>
 						</div>
+						
 						{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 						<div className="col-lg-12">
 							<label className="form-label">
 								เอกสารยืนยันโรงเรียน
 							</label>
-							<input
-								type="file"
-								className="form-control"
-								multiple
-								name="school_document"
-								id="school_document"
-							/>
+							<FileBase64 className="form-control" onDone={(ev)=> getFiles(ev)}/>
 						</div>
 						{/* ปุ่มยืนยัน */}
 						<div className="col-lg-12">
