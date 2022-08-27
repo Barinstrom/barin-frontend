@@ -31,6 +31,11 @@ export default function Register() {
 			console.log(nameFile);
 			
 			const body = {
+				school_name: school_name,
+				admin_name: admin_name,
+				school_tel: school_tel,
+				nameFile: nameFile,
+				school_document: school_document,
 				userId:email,
 				password: "12345",
 				confirmPassword: "12345",
@@ -39,7 +44,7 @@ export default function Register() {
 			}
 
 			/* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
-			let status_register = await register(body);
+			let status_register = true;//await register(body);
       
 			/* ถ้าหากว่า status_register == false  */
 			if (!status_register) {
@@ -47,7 +52,10 @@ export default function Register() {
 			  return
 			/* ถ้าหากว่า status_register == true  */
 			}else{
-			  Router.push("/")
+				Router.push({
+					pathname: "/omise",
+					query: body,
+				})
 			}
 		}
 		
