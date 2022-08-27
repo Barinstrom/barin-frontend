@@ -11,10 +11,6 @@ export default function CreditCard(req, res) {
 	const router = useRouter();
 	const data = router.query;
 	console.log("data =", data);
-	let nameFile = ''
-	data.nameFile.forEach(element => {
-		nameFile += element + " ";
-	});
 
 	const handleLoadScript = () => {
 		OmiseCard = window.OmiseCard;
@@ -152,7 +148,7 @@ export default function CreditCard(req, res) {
 						{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 						<div className="col-lg-12">
 							<label className="form-label">
-								เอกสารยืนยันโรงเรียน : {nameFile}
+								เอกสารยืนยันโรงเรียน : {data.nameFile}
 							</label>
 						</div>
 						{/* ปุ่มยืนยัน */}
