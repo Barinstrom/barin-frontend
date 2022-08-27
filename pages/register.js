@@ -90,7 +90,7 @@ export default function Register() {
 					{/* หัวข้อ */}
 					<h2 className="text-center">แบบฟอร์มลงทะเบียน</h2>
 					{/* ฟอร์ม */}
-					<form className="row g-3" onSubmit={(ev) => submitForm(ev)} encType="multipart/form-data" >
+					<form className="row g-3" onSubmit={(ev) => submitForm(ev)} encType="multipart/form-data">
 						{/* ชื่อโรงเรียน  */}
 						<div className="col-lg-12">
 							<label className="form-label">ชื่อโรงเรียน</label>

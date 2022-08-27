@@ -96,7 +96,7 @@ export default function CreditCard(req, res) {
 						/* ทำการลบข้อมูลจาก localStorage */
 						window.localStorage.removeItem("infomation");
 						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
-						router.push("/register");
+						router.replace("/register");
 					}
 					/* ถ้าชำระเงินไม่สำเร็จ  */
 				} else {
