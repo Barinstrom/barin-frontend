@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Script from "react-load-script";
-import { register } from "../utils/auth"
-import {useRouter} from "next/router";
-import Swal from 'sweetalert2';
+import { register } from "../utils/auth";
+import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
 let OmiseCard;
 
@@ -63,28 +63,34 @@ export default function CreditCard(req, res) {
 						"Content-Type": "application/json;charset=UTF-8",
 					},
 					body: JSON.stringify(omise_data),
-				})
-				
-				const result = await res.json()
-				console.log(result)
-				
+				});
+
+				const result = await res.json();
+				console.log(result);
+
 				/* ถ้าชำระเงินสำเร็จ  */
 				if (result.status == "successful") {
 					const Toast = Swal.mixin({
-  					toast: true,
-					position: 'top-end',
-					showConfirmButton: false,
-					timer: 3000,
-					timerProgressBar: true,
-					didOpen: (toast) => {
-						toast.addEventListener('mouseenter', Swal.stopTimer)
-						toast.addEventListener('mouseleave', Swal.resumeTimer)
-					}
-					})
+						toast: true,
+						position: "top-end",
+						showConfirmButton: false,
+						timer: 3000,
+						timerProgressBar: true,
+						didOpen: (toast) => {
+							toast.addEventListener(
+								"mouseenter",
+								Swal.stopTimer
+							);
+							toast.addEventListener(
+								"mouseleave",
+								Swal.resumeTimer
+							);
+						},
+					});
 					Toast.fire({
-					icon: 'success',
-					title: 'Payment Successful'
-					})
+						icon: "success",
+						title: "Payment Successful",
+					});
 					/* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
 					const body = {
 						userId: data.email,
@@ -101,32 +107,31 @@ export default function CreditCard(req, res) {
 					if (!status_register) {
 						// alert("เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx")
 						Swal.fire({
-							icon: 'error',
-							title: 'Error...',
-							text: 'Please contract support Tel.xxx-xxx-xxx',
-							})
-						return
-						
+							icon: "error",
+							title: "Error...",
+							text: "Please contract support Tel.xxx-xxx-xxx",
+						});
+						return;
+
 						/* ถ้าหากว่า status_register == true  */
 					} else {
 						// alert("สมัครเสร็จสิ้น");
 						Swal.fire({
-							icon: 'success',
-							title: 'Registeration Successful'
-							})
+							icon: "success",
+							title: "Registeration Successful",
+						});
 						/* ทำการลบข้อมูลจาก localStorage */
 						window.localStorage.removeItem("infomation");
 						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
 						/* test */
 						router.replace("/");
 					}
-				/* ถ้าชำระเงินไม่สำเร็จ  */
-				}else {
+					/* ถ้าชำระเงินไม่สำเร็จ  */
+				} else {
 					Swal.fire({
-						icon: 'error',
-						title: 'Payment Failed' + '\n' + result.status
-					
-						})
+						icon: "error",
+						title: "Payment Failed" + "\n" + result.status,
+					});
 				}
 				//console.log(data);
 			},
@@ -172,7 +177,9 @@ export default function CreditCard(req, res) {
 					>
 						{/* ชื่อโรงเรียน  */}
 						<div className="col-lg-12">
-							<label className="form-label">ชื่อโรงเรียน : {data.school_name}</label>
+							<label className="form-label">
+								ชื่อโรงเรียน : {data.school_name}
+							</label>
 						</div>
 						{/* ชื่อตัวแทน  */}
 						<div className="col-lg-12">
