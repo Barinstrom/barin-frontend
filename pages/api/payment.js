@@ -26,10 +26,13 @@ export default async function handler(req, res) {
 			customer: customer.id,
 		});
 
+		//console.log(charge)
+
 		/* ส่งราคาเงินที่จ่าย กับ status ของการสร้างว่าสำเร็จไหม กลับไป */
 		res.send({
 			amount: charge.amount,
 			status: charge.status,
+			failure_code: charge.failure_code,
 		});
 
   } catch (error) {

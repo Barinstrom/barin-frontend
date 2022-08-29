@@ -130,7 +130,11 @@ export default function CreditCard(req, res) {
 				} else {
 					Swal.fire({
 						icon: "error",
-						title: "Payment Failed" + "\n" + result.status,
+						title:
+							"Payment Failed" +
+							"\n" +
+							"Error : " +
+							result.failure_code,
 					});
 				}
 				//console.log(data);
