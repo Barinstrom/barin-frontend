@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import { checkLogin } from "../utils/auth";
+import Swal from 'sweetalert2';
 
 
 export default function Login() {
@@ -26,6 +27,15 @@ export default function Login() {
     /* เช็คข้อมูลปกติ */
     if (email_check === "" && password_check === "") {
 		  alert("โปรดกรอกข้อมูลให้ครบถ้วน");
+      /* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
+      const body = {
+        userId: data.email,
+        password: "12345",
+        confirmPassword: "12345",
+        email: data.email,
+        role: "admin",
+        certificate_doc:data.school_document
+      };
 			return
 		
     } else {

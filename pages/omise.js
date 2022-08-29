@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Script from "react-load-script";
 import { register } from "../utils/auth"
 import {useRouter} from "next/router";
+import Swal from 'sweetalert2';
 
 let OmiseCard;
 
@@ -62,12 +63,25 @@ export default function CreditCard(req, res) {
 				})
 				
 				const result = await res.json()
-				//console.log(result)
+				console.log(result)
 				
 				/* ถ้าชำระเงินสำเร็จ  */
 				if (result.status == "successful") {
-					alert("successful");
-					
+					const Toast = Swal.mixin({
+  					toast: true,
+					position: 'top-end',
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer)
+						toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+					})
+					Toast.fire({
+					icon: 'success',
+					title: 'Payment Successful'
+					})
 					/* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
 					const body = {
 						userId: data.email,
@@ -82,12 +96,21 @@ export default function CreditCard(req, res) {
 					
 					/* ถ้าหากว่า status_register == false  */
 					if (!status_register) {
-						alert("เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx")
+						// alert("เกิดข้อผิดพลาดระหว่างการสมัคร โปรดติดต่อ supporter เพื่อทำการสมัครให้เสร็จสมบูรณ์ โทร xxx-xxx-xxx")
+						Swal.fire({
+							icon: 'error',
+							title: 'Error...',
+							text: 'Please contract support Tel.xxx-xxx-xxx',
+							})
 						return
 						
 						/* ถ้าหากว่า status_register == true  */
 					} else {
-						alert("สมัครเสร็จสิ้น");
+						// alert("สมัครเสร็จสิ้น");
+						Swal.fire({
+							icon: 'success',
+							title: 'Registeration Successful'
+							})
 						/* ทำการลบข้อมูลจาก localStorage */
 						window.localStorage.removeItem("infomation")
 						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
@@ -95,7 +118,11 @@ export default function CreditCard(req, res) {
 					}
 				/* ถ้าชำระเงินไม่สำเร็จ  */
 				}else {
-					alert("error");
+					Swal.fire({
+						icon: 'error',
+						title: 'Payment Failed' + '\n' + result.status
+					
+						})
 				}
 				//console.log(data);
 					
