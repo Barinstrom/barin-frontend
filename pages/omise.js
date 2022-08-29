@@ -117,7 +117,8 @@ export default function CreditCard(req, res) {
 						/* ทำการลบข้อมูลจาก localStorage */
 						window.localStorage.removeItem("infomation");
 						/* เด้งไปหน้านี้ก่อน หน้ารอยังไม่ได้ทำเพิ่ม */
-						router.replace("/register");
+						/* test */
+						router.replace("/");
 					}
 				/* ถ้าชำระเงินไม่สำเร็จ  */
 				}else {
@@ -171,7 +172,7 @@ export default function CreditCard(req, res) {
 					>
 						{/* ชื่อโรงเรียน  */}
 						<div className="col-lg-12">
-							<label className="form-label">ชื่อโรงเรียน :</label>
+							<label className="form-label">ชื่อโรงเรียน : {data.school_name}</label>
 						</div>
 						{/* ชื่อตัวแทน  */}
 						<div className="col-lg-12">
