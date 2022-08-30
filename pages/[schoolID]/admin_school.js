@@ -29,7 +29,7 @@ export default function Admin({ data }) {
 	});
     
 	function changeComponent(num, ev) {
-		if (local == 0) {
+		if (num == 0) {
 			setComponent(<SchoolData/>)
 		} else if (num == 1) {
 			setComponent(<TimeConfig />)
