@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../styles/admin.module.css";
 import { get_userdata } from "../utils/auth";
-import Approved from "../components/system_admin/Approved";
+import Approved from "../components/system_admin/approved";
 import NotApproved from "../components/system_admin/notApproved";
-import Pending from "../components/system_admin/Pending";
+import Pending from "../components/system_admin/pending";
 
 export default function Admin({ data }) {
 	console.log(data);
@@ -12,18 +12,17 @@ export default function Admin({ data }) {
 	const time = useRef();
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
-	
+
 	const [component, setComponent] = useState(<Pending />);
-	
+
 	useEffect(() => {
 		controllTime("start");
-		
+
 		return () => {
 			controllTime("cancell");
 		};
 	});
 
-	
 	function changeComponent(num, ev) {
 		if (num == 0) {
 			setComponent(<Pending />);
