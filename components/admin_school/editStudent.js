@@ -11,31 +11,34 @@ export default function EditStudent(){
     ]
     
     return (
-        <main>
-            <table className="table table-hover table-bordered table-striped text-center">
-                <thead className="table-dark">
-                    <tr>
-                        <th>ชื่อนักเรียน</th>
-                        <th>ชั้น</th>
-                        <th>โรงเรียน</th>
-                        <th>ข้อมูลต่างๆ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                        {data.map((e,i) => {
-                            return (
-                                <tr key={i}>
-                                    <td>{e.student_name}</td>
-                                    <td>{e.role}</td>
-                                    <td>{e.school_name}</td>
-                                    <td><button className="btn btn-info">รายละเอียด</button></td>
-                                </tr>
-                            )
-                        })}
-                    
-                </tbody>
-            </table>
-        </main>
-    )
+		<main>
+			<div className="text-center fs-1">EditStudent</div>
+			<table className="table table-hover table-bordered table-striped text-center">
+				<thead className="table-dark">
+					<tr>
+						<th>ชื่อนักเรียน</th>
+						<th>ชั้น</th>
+						<th>โรงเรียน</th>
+						<th>ข้อมูลต่างๆ</th>
+					</tr>
+				</thead>
+				<tbody>
+					{data.map((e, i) => {
+						return (
+							<tr key={i}>
+								<td>{e.student_name}</td>
+								<td>{e.role}</td>
+								<td>{e.school_name}</td>
+								<td>
+									<button className="btn btn-info">
+										รายละเอียด
+									</button>
+								</td>
+							</tr>
+						);
+					})}
+				</tbody>
+			</table>
+		</main>
+	);
 }

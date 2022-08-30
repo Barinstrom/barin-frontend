@@ -1,19 +1,18 @@
-import React from "react"
+import React from "react";
 
-export default function EditTeacher(){
-    const data = [
-        {teacher_name:"toto",role:"expert",school_name:"horwang"},
-        {teacher_name:"tata",role:"expert",school_name:"kaset"},
-        {teacher_name:"tete",role:"expert",school_name:"jula"},
-        {teacher_name:"bundit",role:"expert",school_name:"tepsirin"},
-        {teacher_name:"jitat",role:"expert",school_name:"prachanivet"},
-        {teacher_name:"kana",role:"expert",school_name:"sangsom"},
-        
-    ]
-    
-    return (
+export default function Searchclub() {
+	const data = [
+		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
+		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
+		{ teacher_name: "tete", role: "expert", school_name: "jula" },
+		{ teacher_name: "bundit", role: "expert", school_name: "tepsirin" },
+		{ teacher_name: "jitat", role: "expert", school_name: "prachanivet" },
+		{ teacher_name: "kana", role: "expert", school_name: "sangsom" },
+	];
+
+	return (
 		<main>
-			<div className="text-center fs-1">EditTeacher</div>
+			<div className="text-center fs-1">Searchclub</div>
 			<table className="table table-hover table-bordered table-striped text-center">
 				<thead className="table-dark">
 					<tr>
@@ -31,7 +30,7 @@ export default function EditTeacher(){
 								<td>{e.role}</td>
 								<td>{e.school_name}</td>
 								<td>
-									<button className="btn btn-success">
+									<button className="btn btn-danger">
 										รายละเอียด
 									</button>
 								</td>

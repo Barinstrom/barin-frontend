@@ -2,11 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../styles/admin.module.css";
 import { get_userdata } from "../utils/auth";
-import Insertdata from "../components/admin_school/insertData";
-import EditStudent from "../components/admin_school/editStudent";
-import EditTeacher from "../components/admin_school/editTeacher";
-import Editcongregation from "../components/admin_school/editcongregation";
-import Clock from "react-live-clock";
+import Approved from "../components/system_admin/Approved";
+import NotApproved from "../components/system_admin/notApproved";
+import Pending from "../components/system_admin/Pending";
 
 export default function Admin({ data }) {
 	console.log(data);
@@ -14,25 +12,25 @@ export default function Admin({ data }) {
 	const time = useRef();
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
-	const [component, setComponent] = useState(<Insertdata />);
-
+	
+	const [component, setComponent] = useState(<Pending />);
+	
 	useEffect(() => {
 		controllTime("start");
-
+		
 		return () => {
 			controllTime("cancell");
 		};
 	});
 
+	
 	function changeComponent(num, ev) {
 		if (num == 0) {
-			setComponent(<Insertdata />);
+			setComponent(<Pending />);
 		} else if (num == 1) {
-			setComponent(<EditTeacher />);
-		} else if (num == 2) {
-			setComponent(<EditStudent />);
+			setComponent(<Approved />);
 		} else {
-			setComponent(<Editcongregation />);
+			setComponent(<NotApproved />);
 		}
 	}
 
@@ -69,7 +67,6 @@ export default function Admin({ data }) {
 						</button>
 						<span>Dashboard</span>
 					</div>
-
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}>
@@ -83,11 +80,11 @@ export default function Admin({ data }) {
 								<i className="fa-solid fa-bell"></i>
 							</span>
 							<span className={`${styles.user_name} ms-1`}>
-								{data.data.userId}
+								{/* {data.data.userId} */}
 							</span>
 							<Link href="/">
 								<a className={`${styles.logo} ms-2`}>
-									<img src={"./dora.jpg"} />
+									<img src={"../../dora.jpg"} />
 								</a>
 							</Link>
 						</div>
@@ -141,9 +138,7 @@ export default function Admin({ data }) {
 								onClick={(ev) => changeComponent(0, ev)}
 							>
 								<i className="fa-solid fa-house me-2"></i>
-								<span className={styles.item}>
-									พิจารณาโรงเรียน
-								</span>
+								<span>Pending</span>
 							</button>
 						</li>
 						<li>
@@ -152,31 +147,16 @@ export default function Admin({ data }) {
 								onClick={(ev) => changeComponent(1, ev)}
 							>
 								<i className="fa-solid fa-user me-2"></i>
-								<span className={styles.item}>
-									แก้ไขข้อมูล admin
-								</span>
+								<span className={styles.item}>Approved</span>
 							</button>
 						</li>
 						<li>
 							<button
-								className="btn btn-success  w-100"
+								className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(2, ev)}
 							>
-								<i className="fa-solid fa-address-card me-2"></i>
-								<span className={styles.item}>
-									แก้ไขข้อมูลโรงเรียน
-								</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(3, ev)}
-							>
-								<i className="fa-solid fa-list-check me-2"></i>
-								<span className={styles.item}>
-									จำลองเป็น admin
-								</span>
+								<i className="fa-solid fa-house me-2"></i>
+								<span>Not Approved</span>
 							</button>
 						</li>
 					</ul>
@@ -202,25 +182,17 @@ export default function Admin({ data }) {
 	);
 }
 
-// ส่วนนี้จะทำใน server แต่คุกกี้ที่เก็บในบราวเซอร์ เราต้องทำการดึงคุกกี้ที่เก็บในบราวเซอร์มาให้ได้
-export async function getServerSideProps(context) {
-	try {
-		/* ได้ token มาแบบ token=xxxxxxx ทำการ split ด้วย "=" แล้วเอาเฉพาะส่วนที่เป็น token จริงๆ */
-		const cookieTmp = String(context.req.headers.cookie).split("=")[1];
-
-		//ดึงข้อมูลคน โดยส่ง token ไปใน get_userdata แล้วส่งต่อไปยังคอมโพเนนต์เพื่อแสดงผล
-		const data = await get_userdata(cookieTmp);
-		//console.log(data)
-
-		/* ถ้าสิ่งที่ return มาเป็น false */
-		if (!data) {
-			return { notFound: true };
-		}
-		/* ถ้าสิ่งที่ return มาเป็น true ก็ส่งเป็นข้อมูลใน props ไป */
-		return { props: { data } };
-	} catch (err) {
-		/* ถ้ามี err console ออกมาดู */
-		console.log(err.message);
-		return { notFound: true };
-	}
+export async function getStaticProps(context) {
+	//console.log(context);
+	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
+    const data = await response.json() */
+	//console.log("context", context);
+	return {
+		props: {
+			data: {
+				userId: "12345",
+			},
+		},
+		revalidate: 5,
+	};
 }

@@ -2,15 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/admin.module.css";
 import { get_userdata } from "../../utils/auth";
-import EditStudent from "../../components/admin_school/editStudent";
-import EditTeacher from "../../components/admin_school/editTeacher";
-import EditClub from "../../components/admin_school/editClub";
-import EditOwnData from "../../components/admin_school/editOwnData";
-import InsertClub from "../../components/admin_school/insertClub";
-import InsertStudent from "../../components/admin_school/insertStudent";
-import InsertTeacher from "../../components/admin_school/insertTeacher";
-import SchoolData from "../../components/admin_school/schoolData";
-import TimeConfig from "../../components/admin_school/timeConfig";
+import OwnClub from "../../components/teacher/ownClub";
 
 export default function Admin({ data }) {
 	console.log(data);
@@ -18,38 +10,20 @@ export default function Admin({ data }) {
 	const time = useRef();
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
-	const [component, setComponent] = useState(<SchoolData />);
+	const [component, setComponent] = useState(<OwnClub />);
 
 	useEffect(() => {
 		controllTime("start");
-
+		
 		return () => {
 			controllTime("cancell");
 		};
 	});
-    
-	function changeComponent(num, ev) {
-		if (local == 0) {
-			setComponent(<SchoolData/>)
-		} else if (num == 1) {
-			setComponent(<TimeConfig />)
-		} else if (num == 2) {
-			setComponent(<InsertTeacher />)
-		} else if (num == 3) {
-			setComponent(<InsertStudent />)
-		} else if (num == 4) {
-			setComponent(<InsertClub />)
-		} else if (num == 5) {
-			setComponent(<EditStudent />)
-		} else if (num == 6) {
-			setComponent(<EditTeacher />)
-		} else if (num == 7) {
-			setComponent(<EditClub />)
-		}else{
-            setComponent(<EditOwnData />)
-        }
-	}
 
+	function changeComponent(ev) {
+		setComponent(<OwnClub />);
+	
+}
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
 		if (check == "start") {
@@ -151,86 +125,10 @@ export default function Admin({ data }) {
 						<li>
 							<button
 								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(0, ev)}
+								onClick={(ev) => changeComponent(ev)}
 							>
 								<i className="fa-solid fa-house me-2"></i>
-								<span>ข้อมูลโรงเรียน</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(1, ev)}
-							>
-								<i className="fa-solid fa-user me-2"></i>
-								<span className={styles.item}>
-									ตั้งเวลาลงทะเบียน
-								</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(2, ev)}
-							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>เพิ่มข้อมูลครู</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(3, ev)}
-							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>เพิ่มข้อมูลนักเรียน</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(4, ev)}
-							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>เพิ่มข้อมูลชุมนุม</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(5, ev)}
-							>
-								<i className="fa-solid fa-address-card me-2"></i>
-								<span>
-									แก้ไขข้อมูลนักเรียน
-								</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(6, ev)}
-							>
-								<i className="fa-solid fa-address-card me-2"></i>
-								<span>แก้ไขข้อมูลครู</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(7, ev)}
-							>
-								<i className="fa-solid fa-list-check me-2"></i>
-								<span>แก้ไขข้อมูลชุมนม</span>
-							</button>
-						</li>
-                        <li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(8, ev)}
-							>
-								<i className="fa-solid fa-list-check me-2"></i>
-								<span>แก้ไขข้อมูลตัวเอง</span>
+								<span>ชุมนุมที่ดูแล</span>
 							</button>
 						</li>
 					</ul>
@@ -286,10 +184,9 @@ export async function getStaticProps(context) {
 	//console.log("context", context);
 	return {
 		props: {
-      data: {
-        userId: "12345",
-        
-      }
+			data: {
+				userId: "12345",
+			},
 		},
 		revalidate: 5,
 	};

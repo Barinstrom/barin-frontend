@@ -54,7 +54,7 @@ export default function Login() {
         return
       /* ถ้าหากว่า status_login == true  */
       }else{
-        router.push("/doneV2")
+        router.push("/getData")
       }
 		}
   }
