@@ -1,93 +1,95 @@
-import React,{ useEffect, useRef , useState } from 'react'
-import Link from 'next/link'
-import styles from '../styles/admin.module.css'
-import { get_userdata } from "../utils/auth"
-import Insertdata from '../components/admin_school/insertData'
-import EditStudent from '../components/admin_school/editStudent'
-import EditTeacher from '../components/admin_school/editTeacher'
-import Editcongregation from '../components/admin_school/editcongregation'
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import styles from "../styles/admin.module.css";
+import { get_userdata } from "../utils/auth";
+import Insertdata from "../components/admin_school/insertData";
+import EditStudent from "../components/admin_school/editStudent";
+import EditTeacher from "../components/admin_school/editTeacher";
+import Editcongregation from "../components/admin_school/editcongregation";
+import Clock from "react-live-clock";
 
-
-export default function Admin({data}) {
-    
-	const nav = useRef()
-	const time = useRef()
+export default function Admin({ data }) {
+	console.log(data);
+	const nav = useRef();
+	const time = useRef();
 	/* ตัวแปรเก็บค่า timer */
-	let timer
-	const [component,setComponent] = useState(<Insertdata/>)
-	
-	
+	let timer;
+	const [component, setComponent] = useState(<Insertdata />);
+
 	useEffect(() => {
-		controllTime("start")
+		controllTime("start");
 
 		return () => {
-			controllTime("cancell")
-		}
-	})
+			controllTime("cancell");
+		};
+	});
 
-	function changeComponent(num,ev){
-		if (num == 0){
-			
-			setComponent(<Insertdata/>)
-		}else if (num == 1){
-			setComponent(<EditTeacher/>)
-		}
-		else if (num == 2){
-			setComponent(<EditStudent/>)
-		}else{
-			setComponent(<Editcongregation/>)
+	function changeComponent(num, ev) {
+		if (num == 0) {
+			setComponent(<Insertdata />);
+		} else if (num == 1) {
+			setComponent(<EditTeacher />);
+		} else if (num == 2) {
+			setComponent(<EditStudent />);
+		} else {
+			setComponent(<Editcongregation />);
 		}
 	}
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
-	function controllTime(check){
-		if (check == "start"){
+	function controllTime(check) {
+		if (check == "start") {
 			timer = setInterval(() => {
-				const h = parseInt(new Date().getHours()) > 9 ? new Date().getHours() : "0" + new Date().getHours()
-				const m = parseInt(new Date().getMinutes()) > 9 ? new Date().getMinutes() : "0" + new Date().getMinutes()
-				const s = parseInt(new Date().getSeconds()) > 9 ? new Date().getSeconds() : "0" + new Date().getSeconds()
-				time.current.innerText = `${h}:${m}:${s}`
-			},1000)
-		}else{
-			clearInterval(timer)
+				const h = String(new Date().getHours()).padStart(2, "0");
+				const m = String(new Date().getMinutes()).padStart(2, "0");
+				const s = String(new Date().getSeconds()).padStart(2, "0");
+				time.current.innerText = `${h}:${m}:${s}`;
+			}, 1000);
+		} else {
+			clearInterval(timer);
 		}
 	}
 
 	const clickHamberger = () => {
-        nav.current.classList.toggle("active")
-    }
-    
-    return (
+		nav.current.classList.toggle("active");
+	};
+
+	return (
 		<>
 			<header className={`${styles.head} navbar navbar-dark bg-dark`}>
-				<div className={`${styles.header_main} text-white d-flex justify-content-between`}>
-					<div className={styles.header_item1}>
-						<button className={styles.button_hamberger} onClick={clickHamberger}>
+				<div
+					className={`${styles.header_main} text-white d-flex justify-content-between`}
+				>
+					<div className={styles.header_item}>
+						<button
+							className={styles.button_hamberger}
+							onClick={clickHamberger}
+						>
 							<i className="fa-solid fa-bars"></i>
 						</button>
 						<span>Dashboard</span>
 					</div>
-					<div className={`${styles.header_item2}`}>
+
+					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}>
-								{parseInt(new Date().getHours()) > 9 ?new Date().getHours() : "0" + new Date().getHours()} 
+								{/* {parseInt(new Date().getHours()) > 9 ?new Date().getHours() : "0" + new Date().getHours()} 
 								: {parseInt(new Date().getMinutes()) > 9 ? new Date().getMinutes() : "0" + new Date().getMinutes()} 
-								: {parseInt(new Date().getSeconds()) > 9 ? new Date().getSeconds() : "0" + new Date().getSeconds()} 
-							</span>
-							<span className='ms-2'>
-								<i className="fa-solid fa-bell"></i>
+								: {parseInt(new Date().getSeconds()) > 9 ? new Date().getSeconds() : "0" + new Date().getSeconds()}  */}
 							</span>
 						</div>
-
 						<div className={`${styles.logo_title} me-3`}>
+							<span className="ms-2">
+								<i className="fa-solid fa-bell"></i>
+							</span>
+							<span className={`${styles.user_name} ms-1`}>
+								{data.data.userId}
+							</span>
 							<Link href="/">
 								<a className={`${styles.logo} ms-2`}>
 									<img src={"./dora.jpg"} />
 								</a>
 							</Link>
-							<span className={`${styles.user_name} ms-1`}>
-								{data.data.email}
-							</span>
 						</div>
 					</div>
 				</div>
@@ -99,7 +101,7 @@ export default function Admin({data}) {
 					min-height: 100vh;
 					position: fixed;
 					padding: 3px;
-					transform: translate(-5%,80px);
+					transform: translate(-5%, 80px);
 					transition: transform 0.3s ease;
 					z-index: 100;
 				}
@@ -113,18 +115,19 @@ export default function Admin({data}) {
 					}
 				}
 
-				.h2_alert,.h2_alert{
-					font-size:36px
+				.h2_alert,
+				.h2_alert {
+					font-size: 36px;
 				}
 
 				@media screen and (max-width: 1000px) {
-					.h2_alert{
-						font-size:28px
+					.h2_alert {
+						font-size: 28px;
 					}
 				}
 				@media screen and (max-width: 800px) {
-					.h2_alert{
-						font-size:20px
+					.h2_alert {
+						font-size: 20px;
 					}
 				}
 			`}</style>
@@ -133,31 +136,48 @@ export default function Admin({data}) {
 				<div className={styles.box_menu}>
 					<ul>
 						<li>
-							<button className='btn btn-success w-100' onClick={(ev) => changeComponent(0,ev)}>
+							<button
+								className="btn btn-success w-100"
+								onClick={(ev) => changeComponent(0, ev)}
+							>
 								<i className="fa-solid fa-house me-2"></i>
-								<span className={styles.item}>เพิ่มข้อมูล</span>
+								<span className={styles.item}>
+									พิจารณาโรงเรียน
+								</span>
 							</button>
-							
 						</li>
 						<li>
-							<button className='btn btn-success  w-100' onClick={(ev) => changeComponent(1,ev)}>
+							<button
+								className="btn btn-success  w-100"
+								onClick={(ev) => changeComponent(1, ev)}
+							>
 								<i className="fa-solid fa-user me-2"></i>
-								<span className={styles.item}>แก้ไขข้อมูลครู</span>
+								<span className={styles.item}>
+									แก้ไขข้อมูล admin
+								</span>
 							</button>
 						</li>
 						<li>
-							<button className='btn btn-success  w-100' onClick={(ev) => changeComponent(2,ev)}>
+							<button
+								className="btn btn-success  w-100"
+								onClick={(ev) => changeComponent(2, ev)}
+							>
 								<i className="fa-solid fa-address-card me-2"></i>
-								<span className={styles.item}>แก้ไขข้อมูลนักเรียน</span>
+								<span className={styles.item}>
+									แก้ไขข้อมูลโรงเรียน
+								</span>
 							</button>
-							
 						</li>
 						<li>
-							<button className='btn btn-success  w-100' onClick={(ev) => changeComponent(3,ev)}>
+							<button
+								className="btn btn-success  w-100"
+								onClick={(ev) => changeComponent(3, ev)}
+							>
 								<i className="fa-solid fa-list-check me-2"></i>
-								<span className={styles.item}>แก้ไขข้อมูลชุมนม</span>
+								<span className={styles.item}>
+									จำลองเป็น admin
+								</span>
 							</button>
-							
 						</li>
 					</ul>
 				</div>
@@ -165,10 +185,8 @@ export default function Admin({data}) {
 
 			<main className={styles.content}>
 				<div className="container">
-					
 					{component}
-					
-					
+
 					{/* <div className="alert alert-success alert-dismissible fade show">
 						<div className='d-flex justify-content-center align-items-center'>
 							<h2 className="alert-heading text-center h2_alert">
@@ -178,7 +196,6 @@ export default function Admin({data}) {
 						</div>
 						<button className="btn-close" data-bs-dismiss="alert" />
 					</div> */}
-				
 				</div>
 			</main>
 		</>
@@ -189,22 +206,21 @@ export default function Admin({data}) {
 export async function getServerSideProps(context) {
 	try {
 		/* ได้ token มาแบบ token=xxxxxxx ทำการ split ด้วย "=" แล้วเอาเฉพาะส่วนที่เป็น token จริงๆ */
-		const cookieTmp = String(context.req.headers.cookie).split("=")[1]
-		
+		const cookieTmp = String(context.req.headers.cookie).split("=")[1];
+
 		//ดึงข้อมูลคน โดยส่ง token ไปใน get_userdata แล้วส่งต่อไปยังคอมโพเนนต์เพื่อแสดงผล
 		const data = await get_userdata(cookieTmp);
 		//console.log(data)
-		
+
 		/* ถ้าสิ่งที่ return มาเป็น false */
 		if (!data) {
 			return { notFound: true };
 		}
 		/* ถ้าสิ่งที่ return มาเป็น true ก็ส่งเป็นข้อมูลใน props ไป */
 		return { props: { data } };
-	}catch(err) {
-    	/* ถ้ามี err console ออกมาดู */
-		console.log(err.message)
+	} catch (err) {
+		/* ถ้ามี err console ออกมาดู */
+		console.log(err.message);
 		return { notFound: true };
-  }
+	}
 }
-

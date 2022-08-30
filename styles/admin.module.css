@@ -12,7 +12,7 @@
     margin-right: 1rem;
 }
 
-.header_item1{
+.header_item{
     /* border: 1px solid white; */
     display: flex;
     justify-content: center;
@@ -20,13 +20,7 @@
     font-size: 18px;    
 }
 
-.header_item2{
-    /* border: 1px solid white; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px; 
-}
+
 
 .logo{
     /* border: 1px solid black; */

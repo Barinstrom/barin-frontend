@@ -115,6 +115,7 @@ export default function Register() {
 						{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 						<div className="col-lg-12">
 							<label className="form-label">  เอกสารยืนยันโรงเรียน </label>
+							<br/>
 							<FileBase64 className="form-control" onDone={(ev)=> getFiles(ev)}/>
 						</div>
 						

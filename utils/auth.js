@@ -4,7 +4,7 @@ import cookie from "js-cookie";
 /* url เทส */
 //https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barin-backend-staging.herokuapp.com";
+const Url = "https://barinapi.tawanchai.com";
 
 /* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
 const headers_setting = {
@@ -55,9 +55,10 @@ export async function checkLogin(data){
 		if (response.ok) {
 			const result = await response.json();
 			/* เช็คข้อมูลดูค่า token */
-			//console.log(result)
+			console.log(result)
 			const token = result.token;
 			cookie.set("token", token, { expires: 1 });
+			console.log("result");
 			return true
 		}
 		else {
