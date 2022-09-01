@@ -4,8 +4,6 @@ import { useRef } from "react";
 import axios from 'axios'
 
 function form_data() {
-
-  const tagForm = useRef([]);
   
 	async function submitForm(ev) {
 		ev.preventDefault();
