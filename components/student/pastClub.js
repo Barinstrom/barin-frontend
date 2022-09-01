@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Pastclub() {
+export default function Approved() {
 	const data = [
 		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
 		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
@@ -12,33 +12,37 @@ export default function Pastclub() {
 
 	return (
 		<main>
-			<div className="text-center fs-1">Pastclub</div>
-			<table className="table table-hover table-bordered table-striped text-center">
-				<thead className="table-dark">
-					<tr>
-						<th>ชื่อครู</th>
-						<th>ตำแหน่ง</th>
-						<th>โรงเรียน</th>
-						<th>ข้อมูลต่างๆ</th>
-					</tr>
-				</thead>
-				<tbody>
-					{data.map((e, i) => {
-						return (
-							<tr key={i}>
-								<td>{e.teacher_name}</td>
-								<td>{e.role}</td>
-								<td>{e.school_name}</td>
-								<td>
-									<button className="btn btn-secondary">
-										รายละเอียด
-									</button>
-								</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
+			<style jsx>{`
+				.btn-responsive {
+					width: 15%;
+				}
+				@media screen and (max-width: 1000px) {
+					.btn-responsive {
+						width: 40%;
+					}
+				}
+				@media screen and (max-width: 576px) {
+					.btn-responsive {
+						width: 100%;
+					}
+				}
+			`}</style>
+			<div className="text-center fs-1">Past Club</div>
+			<ul className="list-group">
+				{data.map((e, i) => {
+					return (
+						<li className="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-center">
+							<div className="d-flex flex-column w-100">
+								<h5 className="mb-1">{e.teacher_name}</h5>
+								<small>{e.role}</small>
+							</div>
+							<button className="btn btn-primary mt-3 mb-3 btn-responsive">
+								รายละเอียด
+							</button>
+						</li>
+					);
+				})}
+			</ul>
 		</main>
 	);
 }

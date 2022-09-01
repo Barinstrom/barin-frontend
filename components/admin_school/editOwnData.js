@@ -13,6 +13,7 @@ export default function EditOwnData() {
 	return (
 		<main>
 			<div className="text-center fs-1">EditOwnData</div>
+			
 			<table className="table table-hover table-bordered table-striped text-center">
 				<thead className="table-dark">
 					<tr>

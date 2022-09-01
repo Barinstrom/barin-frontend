@@ -10,9 +10,21 @@ export default function EditClub(){
         {congre_name:"ว่ายน้ำ",count_student:"35",congre_school:"jula"},
     ]
     
+	function clickSearch(ev) {
+		ev.preventDefault();
+		/* ค้นหาชุมนุม */
+	}
     return (
 		<main>
 			<div className="text-center fs-1">EditClub</div>
+			<form onClick={(ev) => clickSearch(ev)} className="mb-4 mt-2">
+				<div className="input-group">
+					<span className="input-group-text">ค้นหาชุมนุม</span>
+					<input className="form-control" name="search" />
+					<button className="btn btn-danger">กด</button>
+				</div>
+			</form>
+
 			<table className="table table-hover table-bordered table-striped text-center">
 				<thead className="table-dark">
 					<tr>

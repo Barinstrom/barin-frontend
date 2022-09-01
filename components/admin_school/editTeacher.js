@@ -11,9 +11,21 @@ export default function EditTeacher(){
         
     ]
     
+	function clickSearch(ev) {
+		ev.preventDefault();
+		/* ค้นหาชุมนุม */
+	}
     return (
 		<main>
 			<div className="text-center fs-1">EditTeacher</div>
+			<form onClick={(ev) => clickSearch(ev)} className="mb-4 mt-2">
+				<div className="input-group">
+					<span className="input-group-text">ค้นหาครู</span>
+					<input className="form-control" name="search" />
+					<button className="btn btn-danger">กด</button>
+				</div>
+			</form>
+
 			<table className="table table-hover table-bordered table-striped text-center">
 				<thead className="table-dark">
 					<tr>
