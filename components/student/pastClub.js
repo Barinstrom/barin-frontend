@@ -31,7 +31,7 @@ export default function Approved() {
 			<ul className="list-group">
 				{data.map((e, i) => {
 					return (
-						<li className="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-center">
+						<li key={i} className="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-center">
 							<div className="d-flex flex-column w-100">
 								<h5 className="mb-1">{e.teacher_name}</h5>
 								<small>{e.role}</small>
