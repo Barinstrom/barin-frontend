@@ -1,45 +1,16 @@
 import React from "react";
 
 export default function EditOwnData() {
-	const data = [
-		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
-		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
-		{ teacher_name: "tete", role: "expert", school_name: "jula" },
-		{ teacher_name: "bundit", role: "expert", school_name: "tepsirin" },
-		{ teacher_name: "jitat", role: "expert", school_name: "prachanivet" },
-		{ teacher_name: "kana", role: "expert", school_name: "sangsom" },
-	];
-
-	return (
+		return (
 		<main>
-			<div className="text-center fs-1">EditOwnData</div>
-			
-			<table className="table table-hover table-bordered table-striped text-center">
-				<thead className="table-dark">
-					<tr>
-						<th>ชื่อครู</th>
-						<th>ตำแหน่ง</th>
-						<th>โรงเรียน</th>
-						<th>ข้อมูลต่างๆ</th>
-					</tr>
-				</thead>
-				<tbody>
-					{data.map((e, i) => {
-						return (
-							<tr key={i}>
-								<td>{e.teacher_name}</td>
-								<td>{e.role}</td>
-								<td>{e.school_name}</td>
-								<td>
-									<button className="btn btn-secondary">
-										รายละเอียด
-									</button>
-								</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
+			<div className="text-center fs-1">Own data</div>
+			<div className="container">
+				<div className="alert alert-info mt-2">
+					<p className="alert-heading fs-3">Own หอวัง</p>
+					<p> โรงเรียนหอวัง เป็นโรงเรียนชั้นนำของประเทศ</p>
+					<p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut rem magnam id aperiam eaque adipisci error. Temporibus perspiciatis explicabo totam quidem, provident, voluptatibus magnam error nulla laudantium inventore odio non?</p>
+				</div>
+			</div>
 		</main>
 	);
 }

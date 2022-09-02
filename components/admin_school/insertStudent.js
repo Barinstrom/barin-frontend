@@ -1,44 +1,32 @@
 import React from "react";
 
 export default function InsertStudent() {
-	const data = [
-		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
-		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
-		{ teacher_name: "tete", role: "expert", school_name: "jula" },
-		{ teacher_name: "bundit", role: "expert", school_name: "tepsirin" },
-		{ teacher_name: "jitat", role: "expert", school_name: "prachanivet" },
-		{ teacher_name: "kana", role: "expert", school_name: "sangsom" },
-	];
-
 	return (
 		<main>
 			<div className="text-center fs-1">InsertStudent</div>
-			<table className="table table-hover table-bordered table-striped text-center">
-				<thead className="table-dark">
-					<tr>
-						<th>ชื่อครู</th>
-						<th>ตำแหน่ง</th>
-						<th>โรงเรียน</th>
-						<th>ข้อมูลต่างๆ</th>
-					</tr>
-				</thead>
-				<tbody>
-					{data.map((e, i) => {
-						return (
-							<tr key={i}>
-								<td>{e.teacher_name}</td>
-								<td>{e.role}</td>
-								<td>{e.school_name}</td>
-								<td>
-									<button className="btn btn-warning">
-										รายละเอียด
-									</button>
-								</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
+			<div class="card mt-5">
+				<div class="card-body">
+					<h5 class="card-title">เพิ่มแบบรวดเดียว</h5>
+					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... CSV</p>
+				</div>
+				<div className="card-footer">
+					<div className="d-flex justify-content-end">
+						<button  className="btn btn-primary">ใส่ข้อมูล</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mt-5">
+				<div class="card-body">
+					<h5 class="card-title">เพิ่มทีละคน</h5>
+					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... </p>
+				</div>
+				<div className="card-footer">
+					<div className="d-flex justify-content-end">
+						<button  className="btn btn-success">ใส่ข้อมูล</button>
+					</div>
+				</div>
+			</div>
 		</main>
 	);
 }

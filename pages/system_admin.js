@@ -181,7 +181,7 @@ export default function Admin({ data }) {
 	);
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps(context){
 	//console.log(context);
 	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
     const data = await response.json() */
