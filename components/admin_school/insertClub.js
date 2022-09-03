@@ -4,10 +4,10 @@ export default function InsertClub() {
 	return (
 		<main>
 			<div className="text-center fs-1">InsertClub</div>
-			<div class="card mt-5">
-				<div class="card-body">
-					<h5 class="card-title">เพิ่มแบบรวดเดียว</h5>
-					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... CSV</p>
+			<div className="card mt-5">
+				<div className="card-body">
+					<h5 className="card-title">เพิ่มแบบรวดเดียว</h5>
+					<p className="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... CSV</p>
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">
@@ -16,10 +16,10 @@ export default function InsertClub() {
 				</div>
 			</div>
 
-			<div class="card mt-5">
-				<div class="card-body">
-					<h5 class="card-title">เพิ่มทีละคลับ</h5>
-					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... </p>
+			<div className="card mt-5">
+				<div className="card-body">
+					<h5 className="card-title">เพิ่มทีละคลับ</h5>
+					<p className="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... </p>
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">

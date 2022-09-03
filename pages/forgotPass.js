@@ -1,14 +1,15 @@
-import React from "react";
-import { useRef } from "react";
+import React from "react"
+import { useRef } from "react"
+import { useRouter } from "next/router"
 import styles from '../styles/index.module.css'
 import axios from "axios"
-import {useRouter} from "next/router"
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"
+
 
 // Path = 
 // http://localhost:54321/forgot_password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5lZ29tb3I2NzFAeGl0dWR5LmNvbSIsImlhdCI6MTY2MjEzMjQwMSwiZXhwIjoxNjYyMTMzMzAxfQ.yHBUBpMvOax-_NPPKwUHw3HyWwYtunR7RhxnUNtAbLk
 
-function forgot_pass() {
+export default function ForgotPass(){
   const pwd = useRef([])
   const router = useRouter()
   console.log(router.query)
@@ -55,12 +56,12 @@ function forgot_pass() {
         </div>
         <form onSubmit={(ev)=> editPwd(ev)}>
           <div className='form-floating'>
-            <input type="text" name="confirmNewPassword" className={`${styles.email} form-control`} placeholder="รหัสผ่านเดิม" ref={(el) => pwd.current[0] = el}/>
+            <input type="text" name="confirmNewPassword" className={`form-control`} placeholder="รหัสผ่านเดิม" ref={(el) => pwd.current[0] = el}/>
             <label className='form-label'>รหัสผ่านใหม่</label>
           </div>
           
           <div className='form-floating mt-2'>
-            <input type="text" name="newPassword" className={`${styles.password} form-control`} placeholder="รหัสผ่านใหม่" ref={(el) => pwd.current[1] = el}/>
+            <input type="text" name="newPassword" className={`form-control`} placeholder="รหัสผ่านใหม่" ref={(el) => pwd.current[1] = el}/>
             <label className='form-label'>ยืนยันรหัสผ่าน</label>
           </div>
           
@@ -74,11 +75,10 @@ function forgot_pass() {
 }
 
 
-export async function getServerSide(){
+export async function getServerSideProps(){
   return {
     props:{}
   }
 }
 
 
-export default forgot_pass;

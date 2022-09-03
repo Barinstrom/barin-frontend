@@ -4,10 +4,10 @@ export default function InsertTeacher() {
    	return (
 		<main>
 			<div className="text-center fs-1">InsertTeacher</div>
-			<div class="card mt-5">
-				<div class="card-body">
-					<h5 class="card-title">เพิ่มแบบรวดเดียว</h5>
-					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... CSV</p>
+			<div className="card mt-5">
+				<div className="card-body">
+					<h5 className="card-title">เพิ่มแบบรวดเดียว</h5>
+					<p className="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... CSV</p>
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">
@@ -16,10 +16,10 @@ export default function InsertTeacher() {
 				</div>
 			</div>
 
-			<div class="card mt-5">
-				<div class="card-body">
-					<h5 class="card-title">เพิ่มทีละคน</h5>
-					<p class="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... </p>
+			<div className="card mt-5">
+				<div className="card-body">
+					<h5 className="card-title">เพิ่มทีละคน</h5>
+					<p className="card-text">คำอธิบาย เกี่ยวกับวิธีนี้ ..... </p>
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">

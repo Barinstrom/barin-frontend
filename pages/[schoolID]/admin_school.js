@@ -12,8 +12,7 @@ import InsertTeacher from "../../components/admin_school/insertTeacher";
 import SchoolData from "../../components/admin_school/schoolData";
 import TimeConfig from "../../components/admin_school/timeConfig";
 
-export default function Admin({ data }) {
-	console.log(data);
+export default function Admin() {
 	const nav = useRef();
 	const time = useRef();
 	/* ตัวแปรเก็บค่า timer */
@@ -285,12 +284,7 @@ export async function getStaticProps(context) {
     const data = await response.json() */
 	//console.log("context", context);
 	return {
-		props: {
-      data: {
-        userId: "12345",
-        
-      }
-		},
+		props: {},
 		revalidate: 5,
-	};
+	}
 }
