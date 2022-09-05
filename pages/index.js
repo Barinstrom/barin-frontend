@@ -61,12 +61,7 @@ export default function Login() {
   
   return (
     <main className={styles.register}>
-      {/* กำหนด style แบบ nextjs jsx */}
-      <style jsx>{`
-        
-      `}</style>
-      
-      <main className={styles.block} >
+      <section className={styles.block} >
         {/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
         <div>
           <p className={styles.logo}>Barin Storm</p>
@@ -74,13 +69,13 @@ export default function Login() {
         
         {/* อีเมลล์ */}
         <div className='form-floating'>
-          <input type="text" className={`${styles.email} form-control`} placeholder="อีเมลล์" id="email" ref={email}/>
+          <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.email}`} ref={email}/>
           <label className='form-label'>อีเมลล์</label>
         </div>
         
         {/* รหัสผ่าน */}
         <div className='form-floating'>
-          <input type="password" className={`${styles.password} form-control`} placeholder="รหัสผ่าน" id="password" ref={password} />
+          <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.password}`} ref={password} />
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
@@ -90,7 +85,7 @@ export default function Login() {
           {/* ไปหน้า register */}
           <Link href="/register"><button className='btn btn-danger ms-2'>ลงทะเบียน</button></Link>
         </div>
-      </main> 
+      </section> 
     </main>
   )
 }
