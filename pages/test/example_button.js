@@ -15,7 +15,9 @@ export default function Approved() {
 		const data = JSON.parse(ev.target.getAttribute("data-bs-info"))
 		//console.log(data)
 		
+		console.log(fname)
 		fname.current.defaultValue = data.fname
+		console.log(fname)
 		sname.current.defaultValue = data.sname
 	}
 
