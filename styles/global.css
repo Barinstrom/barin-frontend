@@ -1,5 +1,5 @@
 /* ไฟล์ css global เขียนไฟล์เดียวมีผลทุก component */
-*{
-    font-family: 'Kanit', sans-serif;
-    /* font-family: 'Pridi', serif; */
+* {
+	font-family: "Kanit", sans-serif;
+	/* font-family: 'Pridi', serif; */
 }

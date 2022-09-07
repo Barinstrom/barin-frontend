@@ -50,14 +50,16 @@ export default function CreditCard(req, res) {
 			onCreateTokenSuccess: async (token) => {
 				console.log("token =", token);
 				const omise_data = {
+					schoolID: "fuck",
 					email: data.email,
 					name: data.admin_name,
 					amount: "10000",
 					token: token,
 				};
 
+				console.log("omise_data =", omise_data);
 				/* เรียกใช้ api สำหรับส่งข้อมุลไปบันทุกผลการชำระเงินของ omise */
-				const res = await fetch("/api/payment", {
+				const res = await fetch("https://barin-backend-staging.herokuapp.com/payment", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json;charset=UTF-8",

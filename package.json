@@ -25,7 +25,12 @@
     "react-live-clock": "^6.0.6",
     "react-load-script": "^0.0.6",
     "sweetalert2": "^11.4.29",
-    "universal-cookie": "^4.0.4"
+    "universal-cookie": "^4.0.4",
+    "@stripe/react-stripe-js": "^1.0.0",
+    "@stripe/stripe-js": "^1.0.0",
+    "micro": "latest",
+    "micro-cors": "latest",
+    "stripe": "^8.202.0"
   },
   "devDependencies": {
     "eslint": "8.20.0",
