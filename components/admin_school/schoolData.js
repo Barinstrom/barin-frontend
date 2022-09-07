@@ -9,6 +9,20 @@ const stripePromise = loadStripe(
 );
 
 export default function SchoolData({ school_data }) {
+
+	const [clientSecret, setClientSecret] = React.useState("");
+
+	React.useEffect(() => {
+		console.log("set Stripe");
+		// Create PaymentIntent as soon as the page loads
+		fetch("/api/create-payment-intent", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
+		})
+			.then((res) => res.json())
+			.then((data) => setClientSecret(data.clientSecret));
+	}, []);
 	
 	if (school_data.paymentStatus) {
 		return (
@@ -67,20 +81,6 @@ export default function SchoolData({ school_data }) {
 			</main>
 		);
 	} else if (!school_data.paymentStatus) {
-
-		const [clientSecret, setClientSecret] = React.useState("");
-
-		React.useEffect(() => {
-			console.log("set Stripe");
-			// Create PaymentIntent as soon as the page loads
-			fetch("/api/create-payment-intent", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
-			})
-				.then((res) => res.json())
-				.then((data) => setClientSecret(data.clientSecret));
-		}, []);
 
 		const appearance = {
 			theme: "stripe",
