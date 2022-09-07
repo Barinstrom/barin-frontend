@@ -50,7 +50,6 @@ export default function SchoolData({ school_data }) {
 								</h5>
 								<div className="">
 									<label
-										for="formFile"
 										className="form-label mt-2"
 									>
 										เปลี่ยนรูปภาพ
