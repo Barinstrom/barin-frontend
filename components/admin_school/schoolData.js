@@ -1,4 +1,5 @@
 import React from "react";
+import { useState,useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
@@ -10,9 +11,9 @@ const stripePromise = loadStripe(
 
 export default function SchoolData({ school_data }) {
 
-	const [clientSecret, setClientSecret] = React.useState("");
+	const [clientSecret, setClientSecret] = useState("");
 
-	React.useEffect(() => {
+	useEffect(() => {
 		console.log("set Stripe");
 		// Create PaymentIntent as soon as the page loads
 		fetch("/api/create-payment-intent", {
@@ -40,43 +41,42 @@ export default function SchoolData({ school_data }) {
 				`}</style>
 
 				<div className="container">
-					<div className="card-group vgr-cards ">
-						<div className="card d-flex flex-column flex-md-row align-items-center">
-							<div className="card-img-body ">
-								<img
-									className="img-size p-2"
-									src={school_data.urlLogo}
-									alt="Card image cap"
+					<div className="card d-flex flex-column flex-md-row justiy-centent-center align-items-center border">
+						<div className="">
+							<img
+								className="img-size p-2"
+								src={school_data.urlLogo}
+								alt="Card image cap"
+							/>
+						</div>
+						<div className="card-body ms-2 me-2 ms-md-4 ms-xl-7 me-md-5">
+							<h2 className="card-title mt-3">
+								{school_data.schoolName}
+							</h2>
+							<h5 className="card-text mt-2">
+								School Status : {school_data.Status}
+							</h5>
+							<h5 className="card-text mt-2">
+								Payment Status :{" "}
+								{school_data.paymentStatus
+									? "Paid"
+									: "Unpaid"}
+							</h5>
+							<div className="">
+								<label
+									className="form-label mt-2"
+								>
+									เปลี่ยนรูปภาพ
+								</label>
+								<input
+									className="form-control"
+									type="file"
+									id="formFile"
 								/>
-							</div>
-							<div className="card-body ms-2 me-2 ms-md-4 ms-xl-7 me-md-5">
-								<h2 className="card-title mt-3">
-									{school_data.schoolName}
-								</h2>
-								<h5 className="card-text mt-2">
-									School Status : {school_data.Status}
-								</h5>
-								<h5 className="card-text mt-2">
-									Payment Status :{" "}
-									{school_data.paymentStatus
-										? "Paid"
-										: "Unpaid"}
-								</h5>
-								<div className="">
-									<label
-										className="form-label mt-2"
-									>
-										เปลี่ยนรูปภาพ
-									</label>
-									<input
-										className="form-control"
-										type="file"
-										id="formFile"
-									/>
-								</div>
 							</div>
 						</div>
 					</div>
+					
 				</div>
 			</main>
 		);

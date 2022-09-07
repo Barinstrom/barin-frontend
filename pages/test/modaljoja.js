@@ -31,7 +31,7 @@ export default function ModalJoJa({ res }) {
     clubinfo: "very good",
     //ปป/ดด/วัน (4 June, 2000)ก็ได้
     scheduler: "2022/05/03",
-    picture: "https://dummyimage.com/300x300",
+    picture: "https://dummyimage.com/200x200",
     limit: "50",
   };
   //คลิกแล้วset ค่าข้อมูล

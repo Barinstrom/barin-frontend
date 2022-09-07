@@ -53,7 +53,6 @@ export default function CheckoutForm({schoolID}) {
     }
 
     setIsLoading(true);
-
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {

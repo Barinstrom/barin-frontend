@@ -30,6 +30,7 @@ export default function Admin({ data }) {
 		}else{
 			setComponent(<Pastclub />);
 		}
+		nav.current.classList.toggle("active");
 	}
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */

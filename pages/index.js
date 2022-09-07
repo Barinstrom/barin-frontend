@@ -79,11 +79,12 @@ export default function Login() {
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
-        <div className='mt-5 d-flex justify-content-center'>
+        <div className='mt-5 d-flex flex-column justify-content-center align-items-center'>
           {/* เมื่อกดปุ่มจะเกิด event */}
-          <button className='btn btn-success' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
+          <button className='btn btn-success w-25' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
           {/* ไปหน้า register */}
-          <Link href="/register"><button className='btn btn-danger ms-2'>ลงทะเบียน</button></Link>
+          <Link href="/register"><button className='btn btn-info mt-2 w-25'>ลงทะเบียน</button></Link>
+          <Link href="/"><button className='btn btn-warning mt-2 w-25'>ลืมรหัสผ่าน</button></Link>
         </div>
       </section> 
     </main>

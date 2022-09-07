@@ -22,6 +22,7 @@ export default function Admin({ data }) {
 
 	function changeComponent(ev) {
 		setComponent(<OwnClub />);
+		nav.current.classList.toggle("active");
 	
 }
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
