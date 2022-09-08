@@ -41,21 +41,21 @@ export default function Admin({ school_data }) {
 		if (num == 0) {
 			setComponent(<SchoolData school_data={school_data} />);
 		} else if (num == 1) {
-			setComponent(<TimeConfig />);
+			setComponent(<TimeConfig school_data={school_data}  />);
 		} else if (num == 2) {
-			setComponent(<InsertTeacher />);
+			setComponent(<InsertTeacher school_data={school_data}  />);
 		} else if (num == 3) {
-			setComponent(<InsertStudent />);
+			setComponent(<InsertStudent school_data={school_data}  />);
 		} else if (num == 4) {
-			setComponent(<InsertClub />);
+			setComponent(<InsertClub school_data={school_data}  />);
 		} else if (num == 5) {
-			setComponent(<EditStudent />);
+			setComponent(<EditStudent school_data={school_data}  />);
 		} else if (num == 6) {
-			setComponent(<EditTeacher />);
+			setComponent(<EditTeacher school_data={school_data}  />);
 		} else if (num == 7) {
-			setComponent(<EditClub />);
+			setComponent(<EditClub school_data={school_data}  />);
 		} else {
-			setComponent(<EditOwnData />);
+			setComponent(<EditOwnData school_data={school_data} />);
 		}
 		nav.current.classList.remove("active");
 	}
@@ -120,7 +120,7 @@ export default function Admin({ school_data }) {
 					z-index: 100;
 				}
 				
-				@media screen and (max-width: 1200px) {
+				@media screen and (max-width: 1300px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
 					}

@@ -3,8 +3,14 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
+import ErrorPage from "next/error";
 
-export default function Paginate() {
+export default function Paginate({ school_data }) {
+
+    if (!school_data.paymentStatus) {
+		return <ErrorPage statusCode={404} />;
+	}
+
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
     const search = useRef()

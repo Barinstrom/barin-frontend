@@ -1,72 +1,79 @@
 import React from "react";
-import FileBase64 from 'react-file-base64';
 import { useState } from "react";
 import { useRef } from "react";
 import Router from "next/router";
 
 export default function Register() {
 	/* state เก็บข้อมูลไฟล์ string base64 และชื่อไฟล์ */
-	const [file,setfile] = useState()
-	const [nameFile,setNameFile] = useState()
+	const [file, setfile] = useState();
 	/* ตัวแปรผูกข้อมูลเพื่อเอาค่า value */
-	const tagForm = useRef([])
-	
-	/* ฟังชันก์ในการ set ข้อมูลต่างๆของไฟล์ที่จะส่ง */
-	function getFiles(ev){
-		//console.log(ev)
-		const base64file = ev.base64
-		const namefile = ev.name
-		/* set ค่า state */
-		setfile(base64file);
-		setNameFile(namefile);
+	const tagForm = useRef([]);
+	const click_check = useRef();
+
+	function checkFile(file, ev) {
+		/* console.log(file)
+		window.open(file, "_blank"); */
+		window.open().document.write(`<img src="${file}"></img>`);
 	}
-	
+
+	/* img to base64 */
+	function encodeImageFileAsURL(ev) {
+		//console.log(ev);
+		var file = ev.target.files[0];
+		var reader = new FileReader();
+		reader.onloadend = function () {
+			// console.log("RESULT", reader.result);
+			setfile(reader.result);
+		};
+		reader.readAsDataURL(file);
+
+		click_check.current.classList.remove("d-none");
+
+	}
 
 	/* ฟังชันก์เมื่อกดปุ่มยืนยัน */
 	async function submitForm(ev) {
 		/* ป้องกันกันส่งข้อมูลไป server โดยเราจะทำการ fetch post ข้อมูลไปทาง api แทน */
 		ev.preventDefault();
-		
+
 		/* อ้างอิงถึงแต่ละ tag html แล้วนำค่ามา */
 		const school_name = tagForm.current[0].value;
-		const email = tagForm.current[2].value;
-		const admin_name = tagForm.current[1].value;
-		const school_tel = tagForm.current[3].value;
-		
+		const email = tagForm.current[1].value;
+		const schoolID = tagForm.current[2].value;
+		const password = tagForm.current[3].value;
+		const confirmPassword = tagForm.current[4].value;
+		const tel = tagForm.current[5].value;
+
 		/* เช็คว่าใส่ข้อมูลครบไหม */
-		if (!email || !school_name || !admin_name || !school_tel) {
-			alert("โปรดกรอกข้อมูลให้ครบถ้วน");
-			return
+		if (!email || !schoolID || !password || !confirmPassword || !school_name || !tel || ( password!=confirmPassword )) {
+			alert("โปรดกรอกข้อมูลให้ถูกต้องและครบถ้วน");
+			return;
 		} else if (!file) {
 			alert("โปรดใส่เอกสารยืนยันโรงเรียน");
 		} else {
 			//console.log("ข้อมูลครบ");
-			
-			const body = {
+
+			const will_data = {
 				school_name: school_name,
-				admin_name: admin_name,
 				email: email,
-				school_tel: school_tel,
-				nameFile: nameFile,
+				school_tel: tel,
 				school_document: String(file),
-				userId:email,
-				password: "12345",
-				confirmPassword: "12345",
-				role:"admin"
-			}
-			console.log(body)
-			window.localStorage.setItem("infomation",JSON.stringify(body))
+				password: password,
+				confirmPassword: confirmPassword,
+				role: "admin",
+			};
+			console.log(will_data);
+			// window.localStorage.setItem("infomation", JSON.stringify(body));
+
+			/* will call register api */
 			
-			/* ถ้าส่งข้อมูลครบแล้วเด้งไปหน้า omise */
+
+			/* จะใช้สำหรับสมัครแล้ว ไม่ใช้ omise แล้ว */
 			Router.push({
-				pathname: "/omise",
-			})
-			
+				pathname: "/",
+			});
 		}
-		
-		
-		
-	}	
+	}
 
 	return (
 		<>
@@ -74,16 +81,24 @@ export default function Register() {
 				<div className="row">
 					<div className="col-lg-6 mt-0 p-3">
 						<div>
-							<h2 className="text-center">ข้อตกลงในการสมัครสมาชิก</h2>
+							<h2 className="text-center">
+								ข้อตกลงในการสมัครสมาชิก
+							</h2>
 							<ul className="list-group list-group-flush">
 								<li className="list-group-item mt-3">
 									<span>1. โปรดกรอกข้อมูลให้ครบถ้วน</span>
 								</li>
 								<li className="list-group-item">
-									<span>2. ในการกรอกข้อมูลแต่ละครั้งควรเช็คความถูกต้องให้เรียบร้อย</span>
+									<span>
+										2.
+										ในการกรอกข้อมูลแต่ละครั้งควรเช็คความถูกต้องให้เรียบร้อย
+									</span>
 								</li>
 								<li className="list-group-item">
-									<span>3. ตรวจสอบไฟล์ที่ต้องส่งว่าครบถ้วนและถูกต้องตามข้อกำหนดหรือไม่</span>
+									<span>
+										3.
+										ตรวจสอบไฟล์ที่ต้องส่งว่าครบถ้วนและถูกต้องตามข้อกำหนดหรือไม่
+									</span>
 								</li>
 							</ul>
 						</div>
@@ -91,38 +106,121 @@ export default function Register() {
 					<div className="col-lg-6 mt-4 mt-lg-0 p-3">
 						<h2 className="text-center">สมัครสมาชิก</h2>
 						{/* ฟอร์ม */}
-						<form className="row g-2" onSubmit={(ev) => submitForm(ev)} encType="multipart/form-data">
+						<form
+							className="row g-2"
+							onSubmit={(ev) => submitForm(ev)}
+							encType="multipart/form-data"
+						>
 							{/* ชื่อโรงเรียน  */}
 							<div className="">
-								<label className="form-label">ชื่อโรงเรียน</label>
-								<input type="text" className="form-control" name="school_name" id="school_name" ref={el => tagForm.current[0] = el} /> 
-							</div>
-							{/* ชื่อตัวแทน  */}
-							<div className="col-12">
-								<label className="form-label">ชื่อ-สกุล ตัวแทนโรงเรียน</label>
-								<input type="text" className="form-control" name="admin_name" id="admin_name" ref={el => tagForm.current[1] = el} />
+								<label className="form-label">
+									ชื่อโรงเรียน
+								</label>
+								<input
+									type="text"
+									className="form-control"
+									name="school_name"
+									id="school_name"
+									ref={(el) => (tagForm.current[0] = el)}
+								/>
 							</div>
 							{/* อีเมลล์  */}
 							<div className="col-12">
-								<label className="form-label"> อีเมลล์ (สำหรับส่ง id password) </label>
-								<input type="email" className="form-control" name="email" id="email" ref={el => tagForm.current[2] = el} />
+								<label className="form-label">
+									{" "}
+									อีเมลล์ (สำหรับ login และยืนยัน){" "}
+								</label>
+								<input
+									type="email"
+									className="form-control"
+									name="email"
+									id="email"
+									ref={(el) => (tagForm.current[1] = el)}
+								/>
+							</div>
+							{/* path  */}
+							<div className="col-12">
+								<label className="form-label">
+									School ID (สำหรับกำหนด path ของเว็ปโรงเรียน)
+								</label>
+								<input
+									type="text"
+									className="form-control"
+									name="admin_name"
+									id="admin_name"
+									ref={(el) => (tagForm.current[2] = el)}
+								/>
+							</div>
+							{/* path  */}
+							<div className="col-12">
+								<label className="form-label">password</label>
+								<input
+									type="password"
+									className="form-control"
+									name="admin_name"
+									id="admin_name"
+									ref={(el) => (tagForm.current[3] = el)}
+								/>
+							</div>
+							{/* path  */}
+							<div className="col-12">
+								<label className="form-label">
+									confirmPassword
+								</label>
+								<input
+									type="password"
+									className="form-control"
+									name="admin_name"
+									id="admin_name"
+									ref={(el) => (tagForm.current[4] = el)}
+								/>
 							</div>
 							{/* โทรศัพท์มือถือ */}
 							<div className="col-12">
-								<label className="form-label"> เบอร์โทรศัพท์ที่สามารถติดต่อได้ </label>
-								<input type="tel" className="form-control" name="school_tel" id="school_tel" ref={el => tagForm.current[3] = el} />
+								<label className="form-label">
+									{" "}
+									เบอร์โทรศัพท์ที่สามารถติดต่อได้{" "}
+								</label>
+								<input
+									type="tel"
+									className="form-control"
+									name="school_tel"
+									id="school_tel"
+									ref={(el) => (tagForm.current[5] = el)}
+								/>
 							</div>
-							
+
 							{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 							<div className="col-12">
-								<label className="form-label">  เอกสารยืนยันโรงเรียน </label>
-								<br/>
-								<FileBase64 className="form-control" onDone={(ev)=> getFiles(ev)}/>
+								<label className="form-label">
+									{" "}
+									เอกสารยืนยันโรงเรียน{" "}
+								</label>
+								<br />
+								<input
+									className="form-control"
+									type="file"
+									id="formFile"
+									onChange={(ev) => encodeImageFileAsURL(ev)}
+								/>
 							</div>
-							
+							{/* ดูเอกสารยืนยันโรงเรียน */}
+							<div className="col-12 d-none" ref={click_check}>
+								<label className="form-label">
+									กรุณากดเพื่อเช็คเอกสารยืนยันโรงเรียน :
+									<p
+										onClick={(ev) => checkFile(file, ev)}
+										className="bg-info text-center rounded rounded-3"
+									>
+										check picture
+									</p>
+								</label>
+							</div>
 							{/* ปุ่มยืนยัน */}
 							<div className="col-12">
-								<button className="btn btn-warning">ยืนยัน</button>
+								<button className="btn btn-warning">
+									ยืนยัน
+								</button>
 							</div>
 						</form>
 					</div>

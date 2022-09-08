@@ -1,6 +1,12 @@
 import React from "react"
+import ErrorPage from "next/error";
 
-export default function EditStudent(){
+export default function EditStudent({ school_data }) {
+	
+	if (!school_data.paymentStatus) {
+		return <ErrorPage statusCode={404} />;
+	}
+
     const data = [
         {student_name:"toto",role:"1",school_name:"horwang"},
         {student_name:"tata",role:"2",school_name:"kaset"},

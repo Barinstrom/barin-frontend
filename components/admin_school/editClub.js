@@ -1,6 +1,12 @@
 import React from "react"
+import ErrorPage from "next/error";
 
-export default function EditClub(){
+export default function EditClub({ school_data }) {
+	
+		if (!school_data.paymentStatus) {
+			return <ErrorPage statusCode={404} />;
+		}
+
     const data = [
         {congre_name:"บอล",count_student:"23",congre_school:"tepsirin"},
         {congre_name:"บาส",count_student:"53",congre_school:"horwang"},

@@ -1,7 +1,13 @@
 import React from "react"
 import { useState } from "react";
+import ErrorPage from "next/error";
 
-export default function InsertTeacher() {
+export default function InsertTeacher({ school_data }) {
+
+	if (!school_data.paymentStatus) {
+		return <ErrorPage statusCode={404} />;
+	}
+
 	const [csvFile, setCsvFile] = useState();
 
 	function csvJSON(csv){

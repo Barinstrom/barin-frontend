@@ -1,7 +1,8 @@
 import React from "react";
-import { useState,useEffect } from "react";
+import { useRef,useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+
 
 import CheckoutForm from "../Stripe_CheckoutForm";
 
@@ -10,8 +11,84 @@ const stripePromise = loadStripe(
 );
 
 export default function SchoolData({ school_data }) {
-
 	const [clientSecret, setClientSecret] = useState("");
+	const [picture, setPicture] = useState(school_data.urlLogo);
+	const btnEdit = useRef();
+	const btnCancel = useRef();
+	const btnConfirm = useRef();
+	const schoolName = useRef();
+	const schoolLogo = useRef();
+	const schoolNameShow = useRef();
+	const schoolNameInput = useRef();
+	const uploadImg = useRef();
+
+	const [savedata, setsavedata] = useState();
+
+	/* img to base64 */
+	function encodeImageFileAsURL(ev) {
+		//console.log(ev);
+		var file = ev.target.files[0];
+		var reader = new FileReader();
+		reader.onloadend = function () {
+			// console.log("RESULT", reader.result);
+			setPicture(reader.result);
+		};
+		reader.readAsDataURL(file);
+	}
+
+	/* click edit data */
+	function taskEdit(ev) {
+		ev.preventDefault();
+		btnCancel.current.classList.remove("d-none");
+		btnConfirm.current.classList.remove("d-none");
+		btnEdit.current.classList.add("d-none");
+
+		/* save old data use when cancel */
+		const for_save = {
+			picture: picture,
+			schoolName: schoolNameInput.current.value,
+			uploadImg: uploadImg.current.value,
+		};
+		setsavedata(a);
+		//console.log(savedata);
+
+		schoolName.current.classList.remove("d-none");
+		schoolNameShow.current.classList.add("d-none");
+		schoolLogo.current.classList.remove("d-none");
+	}
+
+	/* click cancel */
+	function taskCancel(ev) {
+		ev.preventDefault();
+		btnCancel.current.classList.add("d-none");
+		btnConfirm.current.classList.add("d-none");
+		btnEdit.current.classList.remove("d-none");
+
+		/* now data -> old data */
+		schoolNameInput.current.value = savedata.schoolName;
+		uploadImg.current.value = savedata.uploadImg;
+		setPicture(savedata.picture);
+
+		schoolName.current.classList.add("d-none");
+		schoolNameShow.current.classList.remove("d-none");
+		schoolLogo.current.classList.add("d-none");
+	}
+
+	/* click confirm */
+	function taskConfirm(ev) {
+		ev.preventDefault();
+
+		const will_json = {
+			schoolName: schoolNameInput.current.value,
+			urlLogo: picture,
+		};
+		console.log(will_json);
+
+		/* api call */
+
+		/* end api call */
+		window.location.reload(true);
+	}
 
 	useEffect(() => {
 		console.log("set Stripe");
@@ -24,7 +101,7 @@ export default function SchoolData({ school_data }) {
 			.then((res) => res.json())
 			.then((data) => setClientSecret(data.clientSecret));
 	}, []);
-	
+
 	if (school_data.paymentStatus) {
 		return (
 			<main>
@@ -41,47 +118,85 @@ export default function SchoolData({ school_data }) {
 				`}</style>
 
 				<div className="container">
-					<div className="card d-flex flex-column flex-md-row justiy-centent-center align-items-center border">
+					<form className="card d-flex flex-column flex-md-row justiy-centent-center align-items-center border">
 						<div className="">
 							<img
 								className="img-size p-2"
-								src={school_data.urlLogo}
+								src={picture}
 								alt="Card image cap"
 							/>
 						</div>
 						<div className="card-body ms-2 me-2 ms-md-4 ms-xl-7 me-md-5">
-							<h2 className="card-title mt-3">
+							<h4
+								className="card-text mt-3 d-none"
+								ref={schoolName}
+							>
+								<label for="staticEmail" className="form-label">
+									School Name :{" "}
+								</label>
+								<input
+									type="text"
+									className="form-control"
+									id="staticEmail"
+									defaultValue={school_data.schoolName}
+									ref={schoolNameInput}
+								/>
+							</h4>
+							<h2
+								className="card-title mt-3"
+								ref={schoolNameShow}
+							>
 								{school_data.schoolName}
 							</h2>
 							<h5 className="card-text mt-2">
 								School Status : {school_data.Status}
 							</h5>
+
 							<h5 className="card-text mt-2">
 								Payment Status :{" "}
-								{school_data.paymentStatus
-									? "Paid"
-									: "Unpaid"}
+								{school_data.paymentStatus ? "Paid" : "Unpaid"}
 							</h5>
-							<div className="">
-								<label
-									className="form-label mt-2"
-								>
-									เปลี่ยนรูปภาพ
-								</label>
+							<div className="d-none mt-2" ref={schoolLogo}>
+								<div className="card-text">
+									เลือกรูปภาพที่จะเปลี่ยน(ถ้าต้องการแก้ไข):
+								</div>
 								<input
 									className="form-control"
 									type="file"
 									id="formFile"
+									onChange={(ev) => encodeImageFileAsURL(ev)}
+									ref={uploadImg}
 								/>
 							</div>
+							<div className="d-flex flex-column-reverse flex-md-row justify-content-end  mt-2">
+								<button
+									className="btn btn-danger d-none me-2 w-100 mt-2"
+									ref={btnCancel}
+									onClick={(ev) => taskCancel(ev)}
+								>
+									ยกเลิก
+								</button>
+								<button
+									className="btn btn-warning w-100 mt-2"
+									ref={btnEdit}
+									onClick={(ev) => taskEdit(ev)}
+								>
+									แก้ไข
+								</button>
+								<button
+									className="btn btn-success d-none w-100 mt-2"
+									ref={btnConfirm}
+									onClick={(ev) => taskConfirm(ev)}
+								>
+									ตกลง
+								</button>
+							</div>
 						</div>
-					</div>
-					
+					</form>
 				</div>
 			</main>
 		);
 	} else if (!school_data.paymentStatus) {
-
 		const appearance = {
 			theme: "stripe",
 		};
