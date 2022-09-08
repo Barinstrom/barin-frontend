@@ -2,10 +2,6 @@ import React from "react"
 import ErrorPage from "next/error";
 
 export default function EditClub({ school_data }) {
-	
-		if (!school_data.paymentStatus) {
-			return <ErrorPage statusCode={404} />;
-		}
 
     const data = [
         {congre_name:"บอล",count_student:"23",congre_school:"tepsirin"},
@@ -20,6 +16,11 @@ export default function EditClub({ school_data }) {
 		ev.preventDefault();
 		/* ค้นหาชุมนุม */
 	}
+
+		if (!school_data.paymentStatus) {
+			return <ErrorPage statusCode={404} />;
+		}
+
     return (
 		<main>
 			<div className="text-center fs-1">EditClub</div>

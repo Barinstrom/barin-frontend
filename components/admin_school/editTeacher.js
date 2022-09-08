@@ -7,10 +7,6 @@ import ErrorPage from "next/error";
 
 export default function Paginate({ school_data }) {
 
-    if (!school_data.paymentStatus) {
-		return <ErrorPage statusCode={404} />;
-	}
-
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
     const search = useRef()
@@ -183,6 +179,10 @@ export default function Paginate({ school_data }) {
     },[])
 
     
+        if (!school_data.paymentStatus) {
+			return <ErrorPage statusCode={404} />;
+		}
+
     return (
         <section className='mt-3'>
             <div className='container p-3' style={{maxWidth:"1200px"}}>

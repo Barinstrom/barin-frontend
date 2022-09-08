@@ -4,10 +4,6 @@ import ErrorPage from 'next/error'
 
 export default function TimeConfig({ school_data }) {
 
-	if (!school_data.paymentStatus) {
-		return <ErrorPage statusCode={404} />;
-	}
-
 	// for save data
 	const [savedata, setsavedata] = useState();
 	// เปิดภาคเรียน
@@ -87,6 +83,12 @@ export default function TimeConfig({ school_data }) {
 			form.current.elements[i].readOnly = true
 		}
 	}
+
+	
+	if (!school_data.paymentStatus) {
+		return <ErrorPage statusCode={404} />;
+	}
+
 	
 	return (
 		<main>

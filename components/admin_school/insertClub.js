@@ -4,9 +4,7 @@ import ErrorPage from "next/error";
 
 export default function InsertTeacher({ school_data }) {
 
-	if (!school_data.paymentStatus) {
-		return <ErrorPage statusCode={404} />;
-	}
+
 
 	const [csvFile, setCsvFile] = useState();
 
@@ -44,7 +42,11 @@ export default function InsertTeacher({ school_data }) {
 		
 			 reader.readAsText(file);
 
-    }
+		}
+	
+		if (!school_data.paymentStatus) {
+			return <ErrorPage statusCode={404} />;
+		}
 
    	return (
 		<main>

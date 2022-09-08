@@ -3,9 +3,7 @@ import ErrorPage from "next/error";
 
 export default function EditStudent({ school_data }) {
 	
-	if (!school_data.paymentStatus) {
-		return <ErrorPage statusCode={404} />;
-	}
+
 
     const data = [
         {student_name:"toto",role:"1",school_name:"horwang"},
@@ -20,6 +18,11 @@ export default function EditStudent({ school_data }) {
 		ev.preventDefault();
 		/* ค้นหาชุมนุม */
 	}
+
+		if (!school_data.paymentStatus) {
+			return <ErrorPage statusCode={404} />;
+		}
+
     return (
 		<main>
 			<div className="text-center fs-1">EditStudent</div>
