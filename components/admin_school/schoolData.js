@@ -49,7 +49,7 @@ export default function SchoolData({ school_data }) {
 			schoolName: schoolNameInput.current.value,
 			uploadImg: uploadImg.current.value,
 		};
-		setsavedata(a);
+		setsavedata(for_save);
 		//console.log(savedata);
 
 		schoolName.current.classList.remove("d-none");
@@ -131,7 +131,7 @@ export default function SchoolData({ school_data }) {
 								className="card-text mt-3 d-none"
 								ref={schoolName}
 							>
-								<label for="staticEmail" className="form-label">
+								<label className="form-label">
 									School Name :{" "}
 								</label>
 								<input
