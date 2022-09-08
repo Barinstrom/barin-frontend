@@ -56,17 +56,17 @@ export default function ForgotPass(){
         </div>
         <form onSubmit={(ev)=> editPwd(ev)}>
           <div className='form-floating'>
-            <input type="text" name="confirmNewPassword" className={`form-control`} placeholder="รหัสผ่านเดิม" ref={(el) => pwd.current[0] = el}/>
+            <input type="text" name="confirmNewPassword" className={`form-control`} id={`${styles.block1}`} placeholder="รหัสผ่านเดิม" ref={(el) => pwd.current[0] = el}/>
             <label className='form-label'>รหัสผ่านใหม่</label>
           </div>
           
-          <div className='form-floating mt-2'>
-            <input type="text" name="newPassword" className={`form-control`} placeholder="รหัสผ่านใหม่" ref={(el) => pwd.current[1] = el}/>
+          <div className='form-floating'>
+            <input type="text" name="newPassword" className={`form-control`} id={`${styles.block2}`} placeholder="รหัสผ่านใหม่" ref={(el) => pwd.current[1] = el}/>
             <label className='form-label'>ยืนยันรหัสผ่าน</label>
           </div>
           
-          <div className='mt-5 d-flex justify-content-center'>
-            <button className='btn btn-danger'>แก้ไขรหัสผ่าน</button>
+          <div className='mt-5 d-flex justify-content-center align-items-center'>
+            <button className='btn btn-success w-25'>ยืนยัน</button>
           </div>
         </form>
       </main> 

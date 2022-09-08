@@ -13,15 +13,24 @@ import SchoolData from "../../components/admin_school/schoolData";
 import TimeConfig from "../../components/admin_school/timeConfig";
 
 export default function Admin({ school_data }) {
-
 	const nav = useRef();
 	const time = useRef();
-	/* ตัวแปรเก็บค่า timer */
 	let timer;
+	const optionBtn = useRef([])
+	
 	const [component, setComponent] = useState(<SchoolData school_data={school_data} />)
 	
 	useEffect(() => {
 		controllTime("start");
+		
+		if (!school_data.paymentStatus){
+			for (let i=0;i<9;i++){
+				if (i == 0){
+					continue
+				}
+				optionBtn.current[i].hidden = true
+			}
+		}
 
 		return () => {
 			controllTime("cancell");
@@ -69,7 +78,6 @@ export default function Admin({ school_data }) {
 		nav.current.classList.toggle("active");
 	};
 
-	
 	return (
 		<>
 			<header className={`${styles.head} navbar navbar-dark bg-dark`}>
@@ -82,9 +90,7 @@ export default function Admin({ school_data }) {
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>
-							<span ref={time}>
-								
-							</span>
+							<span ref={time}></span>
 						</div>
 						<div className={`${styles.logo_title} me-3`}>
 							<span className="ms-2">
@@ -109,24 +115,20 @@ export default function Admin({ school_data }) {
 					min-height: 100vh;
 					position: fixed;
 					padding: 3px;
-					transform: translate(-5%, 80px);
+					transform: translate(0,80px);
 					transition: transform 0.3s ease;
 					z-index: 100;
 				}
 				
-				.nav_header.active {
-					transform: translateY(80px);
-				}
 				@media screen and (max-width: 1200px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
 					}
 					.nav_header.active {
-						transform: translateY(80px);
+						transform: translate(0,80px);
 					}
 				}
 
-				.h2_alert,
 				.h2_alert {
 					font-size: 36px;
 				}
@@ -147,18 +149,18 @@ export default function Admin({ school_data }) {
 				<div className={styles.box_menu}>
 					<ul>
 						<li>
-							<button
-								className="btn btn-success w-100"
+							<button className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(0, ev)}
+								ref={(el) => optionBtn.current[0] = el} 
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>ข้อมูลโรงเรียน</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success  w-100"
+							<button className="btn btn-success  w-100"
 								onClick={(ev) => changeComponent(1, ev)}
+								ref={(el) => optionBtn.current[1] = el}
 							>
 								<i className="fa-solid fa-user me-2"></i>
 								<span className={styles.item}>
@@ -167,63 +169,63 @@ export default function Admin({ school_data }) {
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success w-100"
+							<button className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(2, ev)}
+								ref={(el) => optionBtn.current[2] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>เพิ่มข้อมูลครู</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success w-100"
+							<button className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(3, ev)}
+								ref={(el) => optionBtn.current[3] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>เพิ่มข้อมูลนักเรียน</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success w-100"
+							<button className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(4, ev)}
+								ref={(el) => optionBtn.current[4] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>เพิ่มข้อมูลชุมนุม</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success  w-100"
+							<button className="btn btn-success  w-100"
 								onClick={(ev) => changeComponent(5, ev)}
+								ref={(el) => optionBtn.current[5] = el}
 							>
 								<i className="fa-solid fa-address-card me-2"></i>
 								<span>แก้ไขข้อมูลนักเรียน</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success  w-100"
+							<button className="btn btn-success  w-100"
 								onClick={(ev) => changeComponent(6, ev)}
+								ref={(el) => optionBtn.current[6] = el}
 							>
 								<i className="fa-solid fa-address-card me-2"></i>
 								<span>แก้ไขข้อมูลครู</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success  w-100"
+							<button className="btn btn-success  w-100"
 								onClick={(ev) => changeComponent(7, ev)}
+								ref={(el) => optionBtn.current[7] = el}
 							>
 								<i className="fa-solid fa-list-check me-2"></i>
 								<span>แก้ไขข้อมูลชุมนม</span>
 							</button>
 						</li>
 						<li>
-							<button
-								className="btn btn-success  w-100"
+							<button className="btn btn-success  w-100"
 								onClick={(ev) => changeComponent(8, ev)}
+								ref={(el) => optionBtn.current[8] = el}
 							>
 								<i className="fa-solid fa-list-check me-2"></i>
 								<span>แก้ไขข้อมูลตัวเอง</span>
@@ -233,6 +235,7 @@ export default function Admin({ school_data }) {
 				</div>
 			</nav>
 
+			{/* ส่วน component มาแสดงผล */}
 			<main className={styles.content}>
 				<div className="container">
 					{component}
@@ -274,7 +277,7 @@ export async function getStaticProps(context) {
 	const school_data = {
 		schoolName: "Stamp Witnapat School",
 		Status: "active",
-		paymentStatus: false, // จ่ายเงินหรือยัง
+		paymentStatus: true, // จ่ายเงินหรือยัง
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",

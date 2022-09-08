@@ -69,22 +69,21 @@ export default function Login() {
         
         {/* อีเมลล์ */}
         <div className='form-floating'>
-          <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.email}`} ref={email}/>
+          <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
           <label className='form-label'>อีเมลล์</label>
         </div>
         
         {/* รหัสผ่าน */}
         <div className='form-floating'>
-          <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.password}`} ref={password} />
+          <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.block2}`} ref={password} />
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
         <div className='mt-5 d-flex flex-column justify-content-center align-items-center'>
-          {/* เมื่อกดปุ่มจะเกิด event */}
           <button className='btn btn-success w-25' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
           {/* ไปหน้า register */}
           <Link href="/register"><button className='btn btn-info mt-2 w-25'>ลงทะเบียน</button></Link>
-          <Link href="/"><button className='btn btn-warning mt-2 w-25'>ลืมรหัสผ่าน</button></Link>
+          <Link href="/forgotPass"><button className='btn btn-warning mt-2 w-25'>ลืมรหัสผ่าน</button></Link>
         </div>
       </section> 
     </main>
