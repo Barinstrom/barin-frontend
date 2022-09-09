@@ -37,6 +37,7 @@ export default function TimeConfig({ school_data }) {
 		ev.preventDefault()
 		btnCancel.current.classList.remove("d-none")
 		btnEdit.current.classList.add("d-none")
+		schoolYear.current.disabled = false
 	
 		for (let i =0 ;i<form.current.elements.length;i++){
 			if (form.current.elements[i].nodeName === "BUTTON"){
@@ -52,12 +53,13 @@ export default function TimeConfig({ school_data }) {
 		btnEdit.current.classList.remove("d-none")
 
 		// reset data
+		schoolYear.current.disabled = true
 		schoolYear.current.value = "choose";
-		endOfSchoolYear.current.value = null;
-		endOfRegisterDate.current.value = null;
-		endOfRegisterTime.current.value = null;
-		registerTime.current.value = null;
-		registerDate.current.value = null;
+		endOfSchoolYear.current.value = "";
+		endOfRegisterDate.current.value = "";
+		endOfRegisterTime.current.value = "";
+		registerTime.current.value = "";
+		registerDate.current.value = "";
 	
 		for (let i =0 ;i<form.current.elements.length;i++){
 			if (form.current.elements[i].nodeName === "BUTTON"){
@@ -114,7 +116,7 @@ export default function TimeConfig({ school_data }) {
 						<label className="form-label">ปีการศึกษา</label>
 						<div className="input-group">
 							<label className="input-group-text" >เลือกปีการศึกษา</label>
-							<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear}>
+							<select className="form-select" disabled onChange={(ev) => setData(ev)} ref={schoolYear}>
 								<option value="choose">
 									Choose ...
 								</option>

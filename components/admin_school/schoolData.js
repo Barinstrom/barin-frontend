@@ -54,7 +54,7 @@ export default function SchoolData({ school_data }) {
 		btnEdit.current.classList.remove("d-none");
 
 		/* now data -> old data */
-		schoolNameInput.current.value = school_data.schoolName;
+		schoolNameInput.current.value = schoolNameInput.current.defaultValue;
 		uploadImg.current.value = null;
 		setPicture(school_data.urlLogo);
 
