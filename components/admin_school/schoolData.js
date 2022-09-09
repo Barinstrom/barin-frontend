@@ -22,8 +22,6 @@ export default function SchoolData({ school_data }) {
 	const schoolNameInput = useRef();
 	const uploadImg = useRef();
 
-	const [savedata, setsavedata] = useState();
-
 	/* img to base64 */
 	function encodeImageFileAsURL(ev) {
 		//console.log(ev);
@@ -43,15 +41,6 @@ export default function SchoolData({ school_data }) {
 		btnConfirm.current.classList.remove("d-none");
 		btnEdit.current.classList.add("d-none");
 
-		/* save old data use when cancel */
-		const for_save = {
-			picture: picture,
-			schoolName: schoolNameInput.current.value,
-			uploadImg: uploadImg.current.value,
-		};
-		setsavedata(for_save);
-		//console.log(savedata);
-
 		schoolName.current.classList.remove("d-none");
 		schoolNameShow.current.classList.add("d-none");
 		schoolLogo.current.classList.remove("d-none");
@@ -65,9 +54,9 @@ export default function SchoolData({ school_data }) {
 		btnEdit.current.classList.remove("d-none");
 
 		/* now data -> old data */
-		schoolNameInput.current.value = savedata.schoolName;
-		uploadImg.current.value = savedata.uploadImg;
-		setPicture(savedata.picture);
+		schoolNameInput.current.value = school_data.schoolName;
+		uploadImg.current.value = null;
+		setPicture(school_data.urlLogo);
 
 		schoolName.current.classList.add("d-none");
 		schoolNameShow.current.classList.remove("d-none");

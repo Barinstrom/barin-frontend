@@ -17,15 +17,15 @@ export default function Admin({ school_data }) {
 	const time = useRef();
 	let timer;
 	const optionBtn = useRef([])
-	
+
 	const [component, setComponent] = useState(<SchoolData school_data={school_data} />)
-	
+
 	useEffect(() => {
 		controllTime("start");
-		
-		if (!school_data.paymentStatus){
-			for (let i=0;i<9;i++){
-				if (i == 0){
+
+		if (!school_data.paymentStatus) {
+			for (let i = 0; i < 9; i++) {
+				if (i == 0) {
 					continue
 				}
 				optionBtn.current[i].hidden = true
@@ -41,19 +41,19 @@ export default function Admin({ school_data }) {
 		if (num == 0) {
 			setComponent(<SchoolData school_data={school_data} />);
 		} else if (num == 1) {
-			setComponent(<TimeConfig school_data={school_data}  />);
+			setComponent(<TimeConfig school_data={school_data} />);
 		} else if (num == 2) {
-			setComponent(<InsertTeacher school_data={school_data}  />);
+			setComponent(<InsertTeacher school_data={school_data} />);
 		} else if (num == 3) {
-			setComponent(<InsertStudent school_data={school_data}  />);
+			setComponent(<InsertStudent school_data={school_data} />);
 		} else if (num == 4) {
-			setComponent(<InsertClub school_data={school_data}  />);
+			setComponent(<InsertClub school_data={school_data} />);
 		} else if (num == 5) {
-			setComponent(<EditStudent school_data={school_data}  />);
+			setComponent(<EditStudent school_data={school_data} />);
 		} else if (num == 6) {
-			setComponent(<EditTeacher school_data={school_data}  />);
+			setComponent(<EditTeacher school_data={school_data} />);
 		} else if (num == 7) {
-			setComponent(<EditClub school_data={school_data}  />);
+			setComponent(<EditClub school_data={school_data} />);
 		} else {
 			setComponent(<EditOwnData school_data={school_data} />);
 		}
@@ -151,7 +151,7 @@ export default function Admin({ school_data }) {
 						<li>
 							<button className="btn btn-success w-100"
 								onClick={(ev) => changeComponent(0, ev)}
-								ref={(el) => optionBtn.current[0] = el} 
+								ref={(el) => optionBtn.current[0] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>ข้อมูลโรงเรียน</span>
@@ -243,17 +243,17 @@ export default function Admin({ school_data }) {
 			</main>
 		</>
 	)
-	
+
 }
 
 export async function getStaticPaths() {
 	// เอาไว้ดึง api กำหนด path
 	/* const response = await fetch("http://127.0.0.1:8000/user")
-    const data = await response.json()
-    
-    const b = data.map((e) => {
-        return {params: {id : `${e.id}` }}
-    }) */
+		const data = await response.json()
+	  
+		const b = data.map((e) => {
+				return {params: {id : `${e.id}` }}
+		}) */
 
 	let a = [
 		{ params: { schoolID: "1" } },
@@ -272,8 +272,10 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
 	//console.log(context);
 	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
-    const data = await response.json() */
+		const data = await response.json() */
 	//console.log("context", context);
+
+	// "2020-09-02" = yyyy-mm-dd
 	const school_data = {
 		schoolName: "Stamp Witnapat School",
 		Status: "active",
@@ -281,6 +283,30 @@ export async function getStaticProps(context) {
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",
+		schedule: [{
+			schoolYear: "2020",
+			registerDate: "2020-09-02",
+			registerTime: "09:00:00",
+			endOfRegisterDate: "2020-09-30",
+			endOfRegisterTime: "16:00:00",
+			endOfSchoolYear: "2021-02-03",
+		},
+		{
+			schoolYear: "2021",
+			registerDate: "2021-09-15",
+			registerTime: "08:00:00",
+			endOfRegisterDate: "2020-09-30",
+			endOfRegisterTime: "17:00:00",
+			endOfSchoolYear: "2022-02-03",
+		},
+		{
+			schoolYear: "2022",
+			registerDate: "2022-09-01",
+			registerTime: "11:00:00",
+			endOfRegisterDate: "2022-09-12",
+			endOfRegisterTime: "15:00:00",
+			endOfSchoolYear: "2023-02-03",
+		}]
 	}
 	return {
 		props: { school_data },

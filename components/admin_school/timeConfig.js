@@ -4,40 +4,38 @@ import ErrorPage from 'next/error'
 
 export default function TimeConfig({ school_data }) {
 
-	// for save data
-	const [savedata, setsavedata] = useState();
-	// เปิดภาคเรียน
-	const date_start_term = useRef();
+	// ปีการศึกษา
+	const schoolYear = useRef();
 	// ปิดภาคเรียน
-	const date_end_term = useRef();
+	const endOfSchoolYear = useRef();
 	// ปิดลงชุมนุม
-	const date_end_club = useRef();
-	const time_end_club = useRef();
+	const endOfRegisterDate = useRef();
+	const endOfRegisterTime = useRef();
 	// เปิดลงชุมนุม
-	const date_start_club = useRef();
-	const time_start_club = useRef();
+	const registerTime = useRef();
+	const registerDate = useRef();
 
 	const form = useRef()
 	const btnEdit = useRef()
 	const btnCancel = useRef()
 	const btnConfirm = useRef()
 	
+	function setData(event) {
+		event.preventDefault();
+		const schedule = JSON.parse(event.target.value);
+		//console.log(schedule)
+		endOfSchoolYear.current.value = schedule.endOfSchoolYear;
+		endOfRegisterDate.current.value = schedule.endOfRegisterDate;
+		endOfRegisterTime.current.value = schedule.endOfRegisterTime;
+		registerTime.current.value = schedule.registerTime;
+		registerDate.current.value = schedule.registerDate;
+	}
+
 	function taskEdit(ev){
 		ev.preventDefault()
 		btnCancel.current.classList.remove("d-none")
 		btnConfirm.current.classList.remove("d-none")
 		btnEdit.current.classList.add("d-none")
-
-		// save data
-		const for_save = {
-			date_end_club: date_end_club.current.value,
-			date_end_term: date_end_term.current.value,
-			date_start_club: date_start_club.current.value,
-			date_start_term: date_start_term.current.value,
-			time_end_club: time_end_club.current.value,
-			time_start_club: time_start_club.current.value,
-		}
-		setsavedata(for_save);
 	
 		for (let i =0 ;i<form.current.elements.length;i++){
 			if (form.current.elements[i].nodeName === "BUTTON"){
@@ -54,12 +52,12 @@ export default function TimeConfig({ school_data }) {
 		btnEdit.current.classList.remove("d-none")
 
 		// reset data
-		date_end_club.current.value = savedata.date_end_club;
-		date_end_term.current.value = savedata.date_end_term;
-		date_start_club.current.value = savedata.date_start_club;
-		date_start_term.current.value = savedata.date_start_term;
-		time_end_club.current.value = savedata.time_end_club;
-		time_start_club.current.value = savedata.time_start_club;
+		schoolYear.current.value = null;
+		endOfSchoolYear.current.value = null;
+		endOfRegisterDate.current.value = null;
+		endOfRegisterTime.current.value = null;
+		registerTime.current.value = null;
+		registerDate.current.value = null;
 	
 		for (let i =0 ;i<form.current.elements.length;i++){
 			if (form.current.elements[i].nodeName === "BUTTON"){
@@ -95,24 +93,34 @@ export default function TimeConfig({ school_data }) {
 			<div className="container">
 				<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
 				<form className="row g-4 p-2" ref={form}>
-					<div className="col-md-6">
-						<label className="form-label">เปิดภาคเรียน</label>
-						<input type="date" className="form-control" readOnly defaultValue={"2022-09-02"} ref={date_start_term}></input>
+					<div className="">
+						<label className="form-label">ปีการศึกษา</label>
+						<div className="input-group">
+							<label className="input-group-text" >เลือกปีการศึกษา</label>
+							<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear}>
+								<option selected></option>
+								{school_data.schedule.map((e, i) => {
+									return (
+										<option value={JSON.stringify(e)} >{e.schoolYear}</option>
+									);
+								})}
+							</select>
+						</div>
 					</div>
-					<div className="col-md-6">
+					<div className="">
 						<label className="form-label">ปิดภาคเรียน</label>
-						<input type="date" className="form-control" readOnly defaultValue={"2022-09-02"} ref={date_end_term}></input>
+						<input type="date" className="form-control" readOnly defaultValue={null} ref={endOfSchoolYear}></input>
 					</div>
 					
 					<div className="col-md-6 mt-4">
 						<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" readOnly defaultValue={"2022-09-02"} ref={date_start_club}></input>
-						<input type="time" className="form-control mt-3" readOnly defaultValue={"09:00:00"} ref={time_start_club}></input>
+						<input type="date" className="form-control" readOnly defaultValue={null} ref={registerDate}></input>
+						<input type="time" className="form-control mt-3" readOnly defaultValue={null} ref={registerTime}></input>
 					</div>
 					<div className="col-md-6 mt-4">
-						<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" readOnly defaultValue={"2022-09-02"} ref={date_end_club}></input>
-						<input type="time" className="form-control mt-3" readOnly defaultValue={"11:00:00"} ref={time_end_club}></input>
+						<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
+						<input type="date" className="form-control" readOnly defaultValue={null} ref={endOfRegisterDate} ></input>
+						<input type="time" className="form-control mt-3" readOnly defaultValue={null} ref={endOfRegisterTime} ></input>
 					</div>
 					<div className="d-flex justify-content-end">
 						<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
