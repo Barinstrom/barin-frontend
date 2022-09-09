@@ -4,44 +4,56 @@ import { useState } from "react";
 import ErrorPage from "next/error";
 
 export default function InsertTeacher({ school_data }) {
-
-
-
 	const [csvFile, setCsvFile] = useState();
-
-	function csvJSON(csv){
-		let lines=csv.split("\n");
-		let result = [];
-		let headers=lines[0].split(",");
-	  
-		for(let i=1;i<lines.length;i++){
-			let obj = {};
-			let currentline=lines[i].split(",");
-	  
-			for(let j=0;j<headers.length;j++){
-				obj[headers[j].trim()] = currentline[j].trim();
-			}
-	  
-			result.push(obj);
-	  	}
-		
-			//return result; //JavaScript object
-			return result; //JSON
-	  }
-
-	const submit = () => {
-        const file = csvFile;
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-          const text = e.target.result;
-          console.log("data = ",text);
-		  console.log(csvJSON(text))
-		  // แล้วนำ csvJSON(text) ไปใช้ต่อ
+	
+	/* ส่วนของการแปลง string เป็น object */
+    const stringtoObject = (text) => {
+        const result = []
+        const tmp = text.split("\n")
+        const heads = tmp[0].split(",")
+        
+        for (let i=1;i<tmp.length-1;i++){
+            const line = tmp[i].split(",")
+            const object = {}
+            for (let j=0;j<heads.length;j++){
+                if (line[j] === ""){
+                    return "data is undefined"
+                }else{
+                    object[heads[j].trim()] = line[j].trim()
+                }
+            }
+            result.push(object)
         }
+        return result
+    }
+	
+	/* เมื่อกดปุ่มทำการอ่านข้อมูลจากไฟล์ csv */
+    const submit = (ev) => {
+        ev.preventDefault();
+		if (csvFile === ""){
+			alert("โปรดเลือกไฟล์ที่ต้องการส่งด้วย")
+			return
+		}
 		
-			 reader.readAsText(file);
+		const fileSuccess = csvFile
+        //console.log(fileSuccess)
+        
+        // ใช้ FileReader ในการอ่านไฟล์
+        const reader = new FileReader()
+        reader.readAsText(fileSuccess)
 
+        // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
+        reader.onload = (ev) => {
+            const text = ev.target.result;
+            //console.log(text)
+            const result = stringtoObject(text)
+            if (result === "data is undefined"){
+                alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
+                return
+            }else{
+                console.log(result)
+            }
+        }
     }
 
 	/* เมื่อกด click ปุ่มฟอร์มใน modal เพิ่มนักเรียน 1 คน จะทำการส่งข้อมูลไปให้ backend */
@@ -81,16 +93,12 @@ export default function InsertTeacher({ school_data }) {
 				<div className="card-footer">
 					<form>
 						<div className="input-group">
-							<input className="form-control" type='file'
+							<input className="form-control" 
+								type='file'
 								accept='.csv'
-								id='csvFile'
-								onChange={(e) => {
-										setCsvFile(e.target.files[0])
-								}}/>
-							<button type="submit" className="btn btn-primary" onClick={(e) => {
-								e.preventDefault()
-								if(csvFile)submit()
-							}}>ใส่ข้อมูล</button>
+								onChange={(ev) => {setCsvFile(ev.target.files[0])
+							}}/>
+							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 						</div>
 					</form>
 

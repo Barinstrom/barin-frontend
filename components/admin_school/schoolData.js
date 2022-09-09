@@ -27,11 +27,11 @@ export default function SchoolData({ school_data }) {
 		//console.log(ev);
 		var file = ev.target.files[0];
 		var reader = new FileReader();
+		reader.readAsDataURL(file);
 		reader.onloadend = function () {
-			// console.log("RESULT", reader.result);
+			//console.log("RESULT", reader.result);
 			setPicture(reader.result);
 		};
-		reader.readAsDataURL(file);
 	}
 
 	/* click edit data */
@@ -66,6 +66,10 @@ export default function SchoolData({ school_data }) {
 	/* click confirm */
 	function taskConfirm(ev) {
 		ev.preventDefault();
+		
+		if (!schoolNameInput.current.value){
+			alert("โปรดใส่ชื่อโรงเรียน")
+		}
 
 		const will_json = {
 			schoolName: schoolNameInput.current.value,
@@ -76,7 +80,7 @@ export default function SchoolData({ school_data }) {
 		/* api call */
 
 		/* end api call */
-		window.location.reload(true);
+		window.location.reload();
 	}
 
 	useEffect(() => {
@@ -115,13 +119,10 @@ export default function SchoolData({ school_data }) {
 								alt="Card image cap"
 							/>
 						</div>
-						<div className="card-body ms-2 me-2 ms-md-4 ms-xl-7 me-md-5">
-							<h4
-								className="card-text mt-3 d-none"
-								ref={schoolName}
-							>
+						<div className="card-body border">
+							<h4 className="card-text mt-3 d-none" ref={schoolName}>
 								<label className="form-label">
-									School Name :{" "}
+									School Name :
 								</label>
 								<input
 									type="text"
@@ -131,10 +132,7 @@ export default function SchoolData({ school_data }) {
 									ref={schoolNameInput}
 								/>
 							</h4>
-							<h2
-								className="card-title mt-3"
-								ref={schoolNameShow}
-							>
+							<h2 className="card-title mt-3" ref={schoolNameShow}>
 								{school_data.schoolName}
 							</h2>
 							<h5 className="card-text mt-2">
@@ -142,7 +140,7 @@ export default function SchoolData({ school_data }) {
 							</h5>
 
 							<h5 className="card-text mt-2">
-								Payment Status :{" "}
+								Payment Status :
 								{school_data.paymentStatus ? "Paid" : "Unpaid"}
 							</h5>
 							<div className="d-none mt-2" ref={schoolLogo}>

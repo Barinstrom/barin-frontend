@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 
-export default function Paginate({ school_data }) {
+export default function EditTeacher({ school_data }) {
 
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
@@ -76,20 +76,32 @@ export default function Paginate({ school_data }) {
     }
 
     function generate(result){
+        console.log(result)
         const paginate_tmp = []
-        
-        if (result.prevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}>&laquo;</button>)    
+        if (result.hasPrevPage && result.page - 5 >= 1){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
         }else{
-            paginate_tmp.push(<button className='page-link disabled'>&laquo;</button>)
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+        }
+        
+        if (result.hasPrevPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
         
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
-        if (result.nextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}>&raquo;</button>)    
+        if (result.hasNextPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
         }else{
-            paginate_tmp.push(<button className='page-link disabled'>&raquo;</button>)
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+        }
+
+        if (result.hasNextPage && result.page + 5 <= result.totalPages){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+5))}><i className="fa-solid fa-angles-right"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
 
         return paginate_tmp
@@ -186,6 +198,7 @@ export default function Paginate({ school_data }) {
     return (
         <section className='mt-3'>
             <div className='container p-3' style={{maxWidth:"1200px"}}>
+            <div className="text-center fs-1 mb-3">EditTeacher</div>
                 <div className='row'>
                     <div className='col-12'>
                         <form className='mb-3'>
