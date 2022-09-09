@@ -52,7 +52,7 @@ export default function TimeConfig({ school_data }) {
 		btnEdit.current.classList.remove("d-none")
 
 		// reset data
-		schoolYear.current.value = null;
+		schoolYear.current.value = "";
 		endOfSchoolYear.current.value = null;
 		endOfRegisterDate.current.value = null;
 		endOfRegisterTime.current.value = null;
@@ -97,11 +97,13 @@ export default function TimeConfig({ school_data }) {
 						<label className="form-label">ปีการศึกษา</label>
 						<div className="input-group">
 							<label className="input-group-text" >เลือกปีการศึกษา</label>
-							<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear}>
-								<option selected></option>
+							<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear} defaultValue="">
+								<option value="" disabled>
+									Choose ...
+								</option>
 								{school_data.schedule.map((e, i) => {
 									return (
-										<option value={JSON.stringify(e)} >{e.schoolYear}</option>
+										<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
 									);
 								})}
 							</select>
