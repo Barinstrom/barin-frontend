@@ -283,9 +283,10 @@ export async function getStaticProps(context) {
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",
+		nowSchoolYear: "2022",
 		schedule:[
 			{
-				nowSchoolYear:true,
+				// nowSchoolYear:true,
 				schoolYear: "2022",
 				registerDate: "",
 				registerTime: "",

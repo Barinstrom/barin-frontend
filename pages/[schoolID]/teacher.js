@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/admin.module.css";
 import { get_userdata } from "../../utils/auth";
-import OwnClub from "../../components/teacher/ownClub";
+// import OwnClub from "../../components/teacher/ownClub";
+import OwnClub from "../../components/test/ownClubTest";
+
 
 export default function Admin({ data }) {
 	console.log(data);
