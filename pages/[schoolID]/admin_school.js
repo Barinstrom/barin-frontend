@@ -283,19 +283,19 @@ export async function getStaticProps(context) {
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",
-		nowSchoolYear: "2022",
+		nowSchoolYear: "2020",
 		schedule:[
+			// {
+			// 	// nowSchoolYear:true,
+			// 	schoolYear: "2022",
+			// 	registerDate: "",
+			// 	registerTime: "",
+			// 	endOfRegisterDate: "",
+			// 	endOfRegisterTime: "",
+			// 	endOfSchoolYear: "",
+			// },
 			{
-				// nowSchoolYear:true,
-				schoolYear: "2022",
-				registerDate: "",
-				registerTime: "",
-				endOfRegisterDate: "",
-				endOfRegisterTime: "",
-				endOfSchoolYear: "",
-			},
-			{
-				nowSchoolYear:false,
+				// nowSchoolYear:false,
 				schoolYear: "2021",
 				registerDate: "2021-05-01",
 				registerTime: "10:00:00",
@@ -304,7 +304,7 @@ export async function getStaticProps(context) {
 				endOfSchoolYear: "2021-10-13",
 			},
 			{
-				nowSchoolYear:false,
+				// nowSchoolYear:false,
 				schoolYear: "2020",
 				registerDate: "2020-05-01",
 				registerTime: "09:00:00",
@@ -313,7 +313,7 @@ export async function getStaticProps(context) {
 				endOfSchoolYear: "2020-10-15",
 			},
 			{
-				nowSchoolYear:false,
+				// nowSchoolYear:false,
 				schoolYear: "2019",
 				registerDate: "2019-05-01",
 				registerTime: "10:00:00",
