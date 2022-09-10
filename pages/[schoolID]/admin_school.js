@@ -283,30 +283,43 @@ export async function getStaticProps(context) {
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",
-		schedule: [{
-			schoolYear: "2020",
-			registerDate: "2020-09-02",
-			registerTime: "09:00:00",
-			endOfRegisterDate: "2020-09-30",
-			endOfRegisterTime: "16:00:00",
-			endOfSchoolYear: "2021-02-03",
-		},
-		{
-			schoolYear: "2021",
-			registerDate: "2021-09-15",
-			registerTime: "08:00:00",
-			endOfRegisterDate: "2020-09-30",
-			endOfRegisterTime: "17:00:00",
-			endOfSchoolYear: "2022-02-03",
-		},
-		{
-			schoolYear: "2022",
-			registerDate: "2022-09-01",
-			registerTime: "11:00:00",
-			endOfRegisterDate: "2022-09-12",
-			endOfRegisterTime: "15:00:00",
-			endOfSchoolYear: "2023-02-03",
-		}]
+		schedule:[
+			{
+				nowSchoolYear:true,
+				schoolYear: "2022",
+				registerDate: "",
+				registerTime: "",
+				endOfRegisterDate: "",
+				endOfRegisterTime: "",
+				endOfSchoolYear: "",
+			},
+			{
+				nowSchoolYear:false,
+				schoolYear: "2021",
+				registerDate: "2021-05-01",
+				registerTime: "10:00:00",
+				endOfRegisterDate: "2021-05-10",
+				endOfRegisterTime: "16:00:00",
+				endOfSchoolYear: "2021-10-13",
+			},
+			{
+				nowSchoolYear:false,
+				schoolYear: "2020",
+				registerDate: "2020-05-01",
+				registerTime: "09:00:00",
+				endOfRegisterDate: "2020-05-10",
+				endOfRegisterTime: "16:00:00",
+				endOfSchoolYear: "2020-10-15",
+			},
+			{
+				nowSchoolYear:false,
+				schoolYear: "2019",
+				registerDate: "2019-05-01",
+				registerTime: "10:00:00",
+				endOfRegisterDate: "2019-05-12",
+				endOfRegisterTime: "16:00:00",
+				endOfSchoolYear: "2019-10-12",
+			}]
 	}
 	return {
 		props: { school_data },

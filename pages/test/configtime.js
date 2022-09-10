@@ -1,167 +1,49 @@
-/* import React from "react";
-import { useRef,useState } from "react";
-import ErrorPage from 'next/error'
-
-export default function TimeConfig({ school_data }) {
-
-	// ปีการศึกษา
-	const schoolYear = useRef();
-	// ปิดภาคเรียน
-	const endOfSchoolYear = useRef();
-	// ปิดลงชุมนุม
-	const endOfRegisterDate = useRef();
-	const endOfRegisterTime = useRef();
-	// เปิดลงชุมนุม
-	const registerTime = useRef();
-	const registerDate = useRef();
-
-	const form = useRef()
-	const btnEdit = useRef()
-	const btnCancel = useRef()
-	const btnConfirm = useRef()
-	
-	function setData(ev) {
-		ev.preventDefault();
-		if (!(ev.target.value === "choose")){
-			const schedule = JSON.parse(ev.target.value);
-			//console.log(schedule)
-			endOfSchoolYear.current.value = schedule.endOfSchoolYear;
-			endOfRegisterDate.current.value = schedule.endOfRegisterDate;
-			endOfRegisterTime.current.value = schedule.endOfRegisterTime;
-			registerTime.current.value = schedule.registerTime;
-			registerDate.current.value = schedule.registerDate;
-		}
-	}
-
-	function taskEdit(ev){
-		ev.preventDefault()
-		btnCancel.current.classList.remove("d-none")
-		btnEdit.current.classList.add("d-none")
-		schoolYear.current.disabled = false
-	
-		for (let i =0 ;i<form.current.elements.length;i++){
-			if (form.current.elements[i].nodeName === "BUTTON"){
-				continue
-			}
-			form.current.elements[i].readOnly = false
-		}
-	}
-
-	function taskCancel(ev){
-		ev.preventDefault()
-		btnCancel.current.classList.add("d-none")
-		btnEdit.current.classList.remove("d-none")
-
-		// reset data
-		schoolYear.current.disabled = true
-		schoolYear.current.value = "choose";
-		endOfSchoolYear.current.value = "";
-		endOfRegisterDate.current.value = "";
-		endOfRegisterTime.current.value = "";
-		registerTime.current.value = "";
-		registerDate.current.value = "";
-	
-		for (let i =0 ;i<form.current.elements.length;i++){
-			if (form.current.elements[i].nodeName === "BUTTON"){
-				continue
-			}
-			form.current.elements[i].readOnly = true
-		}
-	}
-	
-	function taskConfirm(ev){
-		// ภายในนี้จะมีการส่งข้อมูลด้วย
-		ev.preventDefault()
-
-		if (schoolYear.current.value === "choose"){
-			alert("โปรดเลือกปีการศึกษา")
-			return
-		}
-		
-		btnCancel.current.classList.add("d-none")
-		btnEdit.current.classList.remove("d-none")
-
-
-		const body = {
-			schoolYear:schoolYear.current.value,
-			endOfSchoolYear:endOfSchoolYear.current.value ,
-			endOfRegisterDate:endOfRegisterDate.current.value,
-			endOfRegisterTime:endOfRegisterTime.current.value,
-			registerTime:registerTime.current.value,
-			registerDate:registerDate.current.value
-		}
-		console.log(body)
-	
-		for (let i =0 ;i<form.current.elements.length;i++){
-			if (form.current.elements[i].nodeName === "BUTTON"){
-				continue
-			}
-			form.current.elements[i].readOnly = true
-		}
-		
-	}
-
-	
-	if (!school_data.paymentStatus) {
-		return <ErrorPage statusCode={404} />;
-	}
-
-	
-	return (
-		<main>
-			<div className="container">
-				<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
-				<form className="row g-4 p-2" ref={form}>
-					<div className="">
-						<label className="form-label">ปีการศึกษา</label>
-						<div className="input-group">
-							<label className="input-group-text" >เลือกปีการศึกษา</label>
-							<select className="form-select" disabled onChange={(ev) => setData(ev)} ref={schoolYear}>
-								<option value="choose">
-									Choose ...
-								</option>
-								{school_data.schedule.map((e, i) => {
-									return (
-										<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
-									);
-								})}
-							</select>
-						</div>
-					</div>
-					<div className="">
-						<label className="form-label">ปิดภาคเรียน</label>
-						<input type="date" className="form-control" readOnly defaultValue={null} ref={endOfSchoolYear}></input>
-					</div>
-					
-					<div className="col-md-6 mt-4">
-						<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" readOnly defaultValue={null} ref={registerDate}></input>
-						<input type="time" className="form-control mt-3" readOnly defaultValue={null} ref={registerTime}></input>
-					</div>
-					<div className="col-md-6 mt-4">
-						<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" readOnly defaultValue={null} ref={endOfRegisterDate} ></input>
-						<input type="time" className="form-control mt-3" readOnly defaultValue={null} ref={endOfRegisterTime} ></input>
-					</div>
-					<div className="d-flex justify-content-end">
-						<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
-						<button className="btn btn-warning me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
-						<button className="btn btn-success" ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
-					</div>
-				</form>
-			</div>
-		</main>
-	);
-}
- */
-
-
 import React from "react";
 import { useRef} from "react";
 import ErrorPage from 'next/error'
 
 export default function Configtime({ school_data }) {
-    // ประวัติวันปิดภาคเรียน
+    const schedule = [
+    {
+        nowSchoolYear:true,
+        schoolYear: "2022",
+        registerDate: "",
+        registerTime: "",
+        endOfRegisterDate: "",
+        endOfRegisterTime: "",
+        endOfSchoolYear: "",
+    },
+    {
+        nowSchoolYear:false,
+        schoolYear: "2021",
+        registerDate: "2021-05-01",
+        registerTime: "10:00:00",
+        endOfRegisterDate: "2021-05-10",
+        endOfRegisterTime: "16:00:00",
+        endOfSchoolYear: "2021-10-13",
+    },
+    {
+        nowSchoolYear:false,
+        schoolYear: "2020",
+        registerDate: "2020-05-01",
+        registerTime: "09:00:00",
+        endOfRegisterDate: "2020-05-10",
+        endOfRegisterTime: "16:00:00",
+        endOfSchoolYear: "2020-10-15",
+    },
+    {
+        nowSchoolYear:false,
+        schoolYear: "2019",
+        registerDate: "2019-05-01",
+        registerTime: "10:00:00",
+        endOfRegisterDate: "2019-05-12",
+        endOfRegisterTime: "16:00:00",
+        endOfSchoolYear: "2019-10-12",
+    }]
+
+
+    
+	// ประวัติวันปิดภาคเรียน
 	const HistoryEndOfSchoolYear = useRef();
     // ประวัติวันเปิดลงชุมนุม
     const HistoryRegisterDate = useRef();
@@ -285,16 +167,16 @@ export default function Configtime({ school_data }) {
 		
 	}
 
-	if (!school_data.paymentStatus) {
+	/* if (!school_data.paymentStatus) {
 		return <ErrorPage statusCode={404} />;
-	}
+	} */
 
 	return (
 		<main>
-			<div className="container p-3">
+			<div className="container p-5">
 				<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
                 <button className="btn btn-dark mt-3" data-bs-target="#mymodal" data-bs-toggle="modal">ดูประวัติการตั้งเวลา</button><br/>
-				<span className="badge bg-success mt-4">ปีปัจจุบัน 2022</span>
+				<span className="badge bg-success mt-5">ปีปัจจุบัน 2022</span>
                 <form className="row g-3" ref={form}>
 					<div>
 						<label className="form-label mt-2">วันปิดภาคเรียน</label>
@@ -332,7 +214,7 @@ export default function Configtime({ school_data }) {
                                         <label className="input-group-text" >เลือกปีการศึกษา</label>
                                         <select className="form-select" onChange={(ev) => changeSelectData(ev)} ref={selectInModal}>
                                             <option value="select">select</option>
-                                            {genOption(school_data.schedule).map((e, i) => {
+                                            {genOption(schedule).map((e, i) => {
                                                 return (
                                                     <option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
                                                 );
