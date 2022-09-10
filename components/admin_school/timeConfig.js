@@ -156,10 +156,10 @@ export default function TimeConfig({ school_data }) {
 				<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
 				<form className="row g-4 p-2" ref={form}>
 					<div className="">
-						<div class="alert alert-success" role="alert" ref={alert_now}>
+						<div className="alert alert-success" role="alert" ref={alert_now}>
 							ปีการศึกษาปัจจุบัน - สามารถแก้ไขระยะเวลาต่างๆได้
 						</div>
-						<div class="alert alert-danger d-none" role="alert" ref={alert_pass}>
+						<div className="alert alert-danger d-none" role="alert" ref={alert_pass}>
 							ปีการศึกษาที่ผ่านมา - ไม่สามารถแก้ไขระยะเวลาต่างๆได้
 						</div>
 						<label className="form-label">ปีการศึกษา</label>
