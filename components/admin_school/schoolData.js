@@ -2,6 +2,7 @@ import React from "react";
 import { useRef,useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import Image from "next/image";
 
 
 import CheckoutForm from "../Stripe_CheckoutForm";
@@ -111,15 +112,15 @@ export default function SchoolData({ school_data }) {
 				`}</style>
 
 				<div className="container">
-					<form className="card d-flex flex-column flex-md-row justiy-centent-center align-items-center border">
+					<form className="d-flex flex-column flex-md-row justiy-centent-center align-items-center">
 						<div className="">
-							<img
-								className="img-size p-2"
+							<img 
+								className="img-size p-2 round-md"
 								src={picture}
 								alt="Card image cap"
 							/>
 						</div>
-						<div className="card-body border">
+						<div className="card-body">
 							<h4 className="card-text mt-3 d-none" ref={schoolName}>
 								<label className="form-label">
 									School Name :

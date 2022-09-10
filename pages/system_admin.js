@@ -6,32 +6,45 @@ import Approved from "../components/system_admin/approved";
 import NotApproved from "../components/system_admin/notApproved";
 import Pending from "../components/system_admin/pending";
 
-export default function Admin({ data }) {
-	console.log(data);
+export default function SystemAdmin({ admin_data }) {
 	const nav = useRef();
 	const time = useRef();
+	const optionBtn = useRef([])
+	const hamberger = useRef()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
-
 	const [component, setComponent] = useState(<Pending />);
-
-	useEffect(() => {
-		controllTime("start");
-
-		return () => {
-			controllTime("cancell");
-		};
-	});
 
 	function changeComponent(num, ev) {
 		if (num == 0) {
 			setComponent(<Pending />);
-		} else if (num == 1) {
+		}else if (num == 1) {
 			setComponent(<Approved />);
-		} else {
+		}else{
 			setComponent(<NotApproved />);
 		}
+		
+		for (let i=0;i<=2;i++){
+			if (i == num){
+				optionBtn.current[i].classList.add("nowclick")
+			}else{
+				optionBtn.current[i].classList.remove("nowclick")
+			}
+		}
+		nav.current.classList.remove("active");
+		hamberger.current.classList.remove("hamactive");
 	}
+
+	useEffect(() => {
+		optionBtn.current[0].classList.add("nowclick");
+		controllTime("start");
+		
+		return () => {
+			controllTime("cancell");
+		};
+	},[]);
+
+	
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
@@ -48,66 +61,48 @@ export default function Admin({ data }) {
 	}
 
 	const clickHamberger = () => {
+		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
 
 	return (
 		<>
-			<header className={`${styles.head} navbar navbar-dark bg-dark`}>
-				<div
-					className={`${styles.header_main} text-white d-flex justify-content-between`}
-				>
-					<div className={styles.header_item}>
-						<button
-							className={styles.button_hamberger}
-							onClick={clickHamberger}
-						>
-							<i className="fa-solid fa-bars"></i>
-						</button>
-						<span>Dashboard</span>
-					</div>
-					<div className={`${styles.header_item}`}>
-						<div className={`${styles.time_alert} me-2`}>
-							<span ref={time}>
-								{/* {parseInt(new Date().getHours()) > 9 ?new Date().getHours() : "0" + new Date().getHours()} 
-								: {parseInt(new Date().getMinutes()) > 9 ? new Date().getMinutes() : "0" + new Date().getMinutes()} 
-								: {parseInt(new Date().getSeconds()) > 9 ? new Date().getSeconds() : "0" + new Date().getSeconds()}  */}
-							</span>
-						</div>
-						<div className={`${styles.logo_title} me-3`}>
-							<span className="ms-2">
-								<i className="fa-solid fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
-							</span>
-							<Link href="/">
-								<a className={`${styles.logo} ms-2`}>
-									<img src={"../../dora.jpg"} />
-								</a>
-							</Link>
-						</div>
-					</div>
-				</div>
-			</header>
-
 			<style jsx>{`
 				.nav_header {
-					background-color: #fafafa;
 					min-height: 100vh;
 					position: fixed;
 					padding: 3px;
 					transform: translate(-5%, 80px);
 					transition: transform 0.3s ease;
 					z-index: 100;
+					background-color: transparent;
 				}
 
-				@media screen and (max-width: 1200px) {
+				.button_hamberger{
+					width: 40px;
+					height: 40px;
+					border: none;
+					opacity: 1;
+					border-radius: 15px;
+					font-size: 1.4rem;
+					margin-right: 10px;
+					display: none;
+					background-color: transparent;
+				}
+
+				@media screen and (max-width: 1300px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
 					}
 					.nav_header.active {
 						transform: translateY(80px);
+						background-color: white;
+					}
+					.button_hamberger{
+						display: block;
+					}
+					.button_hamberger.hamactive{
+						background-color: #e8e8e8;
 					}
 				}
 
@@ -126,62 +121,104 @@ export default function Admin({ data }) {
 						font-size: 20px;
 					}
 				}
+
+				.nav_left{
+					border-radius: 10px;
+					padding: 6px 30px;
+					cursor: pointer;
+					text-align:left;
+				}
+
+				.nav_left.nowclick{
+					background-color: #FFFFFF;
+					box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 5px;
+				}
 			`}</style>
 
+
+			<header className={`${styles.head} navbar navbar-dark bg-white`}>
+				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
+					<div className={`${styles.header_item} ms-2 `}>
+						<button
+							className="button_hamberger"
+							onClick={clickHamberger}
+							ref={hamberger}
+						>
+							<i className="fa-solid fa-bars"></i>
+						</button>
+						<span className="ms-3">Dashboard</span>
+					</div>
+					<div className={`${styles.header_item}`}>
+						<div className={`${styles.time_alert} me-2`}>
+							<span ref={time}></span>
+						</div>
+						<div className={`me-2`}>
+							<span className={`${styles.logo_bell}`}>
+								<i className="fa-regular fa-bell"></i>
+							</span>
+							<span className={`${styles.user_name} ms-1`}>
+								{/* {data.data.userId} */}
+							</span>
+							<Link href="/">
+								<a className={`${styles.logo} ms-2`}>
+									<img src={"../../dora.jpg"} />
+								</a>
+							</Link>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			
 			<nav className="nav_header" ref={nav}>
 				<div className={styles.box_menu}>
 					<ul>
 						<li>
-							<button
-								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(0, ev)}
+							<div className={`nav_left`} 
+								onClick={(ev) => changeComponent(0,ev)}
+								ref={el => optionBtn.current[0] = el}
 							>
-								<i className="fa-solid fa-house me-2"></i>
+
+								<i className="fa-solid fa-book me-2"></i>
+								<span>Approved</span>
+							</div>
+						</li>
+
+						<li>
+							<div className={`nav_left`} 
+								onClick={(ev) => changeComponent(1,ev)}
+								ref={el => optionBtn.current[1] = el}
+							>
+								<i className="fa-solid fa-magnifying-glass me-2"></i>
 								<span>Pending</span>
-							</button>
+							</div>
 						</li>
+
 						<li>
-							<button
-								className="btn btn-success  w-100"
-								onClick={(ev) => changeComponent(1, ev)}
+							<div className={`nav_left`} 
+								onClick={(ev) => changeComponent(2,ev)}
+								ref={el => optionBtn.current[2] = el}
 							>
-								<i className="fa-solid fa-user me-2"></i>
-								<span className={styles.item}>Approved</span>
-							</button>
-						</li>
-						<li>
-							<button
-								className="btn btn-success w-100"
-								onClick={(ev) => changeComponent(2, ev)}
-							>
-								<i className="fa-solid fa-house me-2"></i>
+								<i className="fa-solid fa-clock-rotate-left me-2"></i>
 								<span>Not Approved</span>
-							</button>
+							</div>
 						</li>
 					</ul>
 				</div>
 			</nav>
 
+			{/* ส่วน component มาแสดงผล */}
 			<main className={styles.content}>
 				<div className="container">
 					{component}
-
-					{/* <div className="alert alert-success alert-dismissible fade show">
-						<div className='d-flex justify-content-center align-items-center'>
-							<h2 className="alert-heading text-center h2_alert">
-								โปรดรอการยืนยันจาก system admin 
-							</h2>
-							<span className="spinner-grow ms-3 h2_alert"></span>
-						</div>
-						<button className="btn-close" data-bs-dismiss="alert" />
-					</div> */}
 				</div>
 			</main>
+			
 		</>
 	);
 }
 
-export async function getStaticProps(context){
+export async function getStaticProps(context) {
 	//console.log(context);
 	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
     const data = await response.json() */

@@ -103,7 +103,6 @@ export default function EditStudent({ school_data }) {
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
-
         return paginate_tmp
     }
 
