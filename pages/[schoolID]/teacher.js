@@ -127,7 +127,7 @@ export default function Teacher({ teacher_data }) {
 
 				.nav_left.nowclick{
 					background-color: #FFFFFF;
-					box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 5px;
+					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
 				}
 			`}</style>
 

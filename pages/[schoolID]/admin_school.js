@@ -160,7 +160,7 @@ export default function Admin({ school_data }) {
 
 				.nav_left.nowclick{
 					background-color: #FFFFFF;
-					box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 5px;
+					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
 				}
 			`}</style>
 
@@ -289,9 +289,9 @@ export default function Admin({ school_data }) {
 
 			{/* ส่วน component มาแสดงผล */}
 			<main className={styles.content}>
-				<div className="container">
+				<section className="container border">
 					{component}
-				</div>
+				</section>
 			</main>
 
 		</>
@@ -335,7 +335,7 @@ export async function getStaticProps(context) {
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
 		schoolID: "1",
-		nowSchoolYear: "2020",
+		nowSchoolYear: "2021",
 		schedule:[
 			// {
 			// 	// nowSchoolYear:true,

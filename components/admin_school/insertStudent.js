@@ -83,7 +83,7 @@ export default function InsertTeacher({ school_data }) {
 		}
 
    	return (
-		<main>
+		<div>
 			<div className="text-center fs-1">InsertStudent</div>
 			<div className="card mt-5">
 				<div className="card-body">
@@ -101,7 +101,6 @@ export default function InsertTeacher({ school_data }) {
 							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 						</div>
 					</form>
-
 				</div>
 			</div>
 
@@ -161,9 +160,6 @@ export default function InsertTeacher({ school_data }) {
 					</div>
 				</div>
 			</div>
-			
-
-
-		</main>
+		</div>
 	);
 }

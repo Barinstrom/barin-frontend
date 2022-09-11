@@ -195,35 +195,35 @@ export default function EditStudent({ school_data }) {
 		}
 
     return (
-        <section className='mt-3'>
-            <div className='container p-3' style={{maxWidth:"1200px"}}>
+        
+        <div>
             <div className="text-center fs-1 mb-3">EditStudent</div>
-                <div className='row'>
-                    <div className='col-12'>
-                        <form className='mb-3'>
-                            <div className='input-group'>
-                                <span className="input-group-text">ค้นหา</span>
-                                <input type="text" className='form-control' ref={search}></input>
-                                <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                                <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
-                            </div>
-                        </form>
-                        <table className='table table-bordered text-center'>
-                            <thead className='table-dark'>
-                                <tr>
-                                    <th>user</th>
-                                    <th>age</th>
-                                    <th>birthday</th>
-                                    <th>detail</th>
-                                    <th>extra</th>
-                                </tr>
-                            </thead>
-                            {data}
-                        </table> 
-                    </div>
+            <div className='row'>
+                <div className='col-12'>
+                    <form className='mb-3'>
+                        <div className='input-group'>
+                            <span className="input-group-text">ค้นหา</span>
+                            <input type="text" className='form-control' ref={search}></input>
+                            <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+                            <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                        </div>
+                    </form>
+                    <table className='table table-bordered text-center'>
+                        <thead className='table-dark'>
+                            <tr>
+                                <th>user</th>
+                                <th>age</th>
+                                <th>birthday</th>
+                                <th>detail</th>
+                                <th>extra</th>
+                            </tr>
+                        </thead>
+                        {data}
+                    </table> 
                 </div>
-                {paginate}
             </div>
-        </section>   
+            {paginate}
+        </div>
+          
     )
 }

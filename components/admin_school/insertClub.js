@@ -61,7 +61,7 @@ export default function InsertTeacher({ school_data }) {
 		}
 
    	return (
-		<main>
+		<>
 			<div className="text-center fs-1">InsertClub</div>
 			<div className="card mt-5">
 				<div className="card-body">
@@ -93,6 +93,6 @@ export default function InsertTeacher({ school_data }) {
 					</div>
 				</div>
 			</div>
-		</main>
+		</>
 	);
 }

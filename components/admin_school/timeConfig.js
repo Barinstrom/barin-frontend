@@ -74,8 +74,7 @@ export default function TimeConfig({ school_data }) {
 		btnCancel.current.classList.remove("d-none")
 		btnConfirm.current.classList.remove("d-none")
 		btnEdit.current.classList.add("d-none")
-		//schoolYear.current.disabled = true
-	
+		
 		for (let i =0 ;i<form.current.elements.length;i++){
 			if (form.current.elements[i].nodeName === "BUTTON"){
 				continue
@@ -123,7 +122,7 @@ export default function TimeConfig({ school_data }) {
 			registerTime:registerTime.current.value,
 			registerDate:registerDate.current.value
 		}
-		console.log(body)
+		//console.log(body)
 
 		resetData()
 	
@@ -145,51 +144,50 @@ export default function TimeConfig({ school_data }) {
 	}
 
 	return (
-		<main>
-			<div className="container">
-				<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
-				<form className="row g-4 p-2" ref={form}>
-					<div className="">
-						<div className="alert alert-success" role="alert" ref={alert_now}>
-							ปีการศึกษาปัจจุบัน - สามารถแก้ไขระยะเวลาต่างๆได้
-						</div>
-						<div className="alert alert-danger d-none" role="alert" ref={alert_pass}>
-							ปีการศึกษาที่ผ่านมา - ไม่สามารถแก้ไขระยะเวลาต่างๆได้
-						</div>
-						<label className="form-label">ปีการศึกษา</label>
-						<div className="input-group">
-							<label className="input-group-text" >เลือกปีการศึกษา</label>
-							<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear} >
-								{school_data.schedule.map((e, i) => {
-									return (
-										<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
-									);
-								})}
-							</select>
-						</div>
+		<div>
+			<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
+			<form className="row g-4 p-2" ref={form}>
+				<div className="">
+					<div className="alert alert-success" role="alert" ref={alert_now}>
+						ปีการศึกษาปัจจุบัน - สามารถแก้ไขระยะเวลาต่างๆได้
 					</div>
-					<div className="">
-						<label className="form-label">ปิดภาคเรียน</label>
-						<input type="date" className="form-control" disabled  ref={endOfSchoolYear}></input>
+					<div className="alert alert-danger d-none" role="alert" ref={alert_pass}>
+						ปีการศึกษาที่ผ่านมา - ไม่สามารถแก้ไขระยะเวลาต่างๆได้
 					</div>
-					
-					<div className="col-md-6 mt-4">
-						<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" disabled  ref={registerDate}></input>
-						<input type="time" className="form-control mt-3" disabled  ref={registerTime}></input>
+					<label className="form-label">ปีการศึกษา</label>
+					<div className="input-group">
+						<label className="input-group-text" >เลือกปีการศึกษา</label>
+						<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear} >
+							{school_data.schedule.map((e, i) => {
+								return (
+									<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
+								);
+							})}
+						</select>
 					</div>
-					<div className="col-md-6 mt-4">
-						<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
-						<input type="date" className="form-control" disabled  ref={endOfRegisterDate} ></input>
-						<input type="time" className="form-control mt-3" disabled  ref={endOfRegisterTime} ></input>
-					</div>
-					<div className="d-flex justify-content-end">
-						<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
-						<button className="btn btn-warning me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
-						<button className="btn btn-success d-none" ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
-					</div>
-				</form>
-			</div>
-		</main>
-	);
+				</div>
+				<div className="">
+					<label className="form-label">ปิดภาคเรียน</label>
+					<input type="date" className="form-control" disabled  ref={endOfSchoolYear}></input>
+				</div>
+				
+				<div className="col-md-6 mt-4">
+					<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
+					<input type="date" className="form-control" disabled  ref={registerDate}></input>
+					<input type="time" className="form-control mt-3" disabled  ref={registerTime}></input>
+				</div>
+				<div className="col-md-6 mt-4">
+					<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
+					<input type="date" className="form-control" disabled  ref={endOfRegisterDate} ></input>
+					<input type="time" className="form-control mt-3" disabled  ref={endOfRegisterTime} ></input>
+				</div>
+				<div className="d-flex justify-content-end">
+					<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
+					<button className="btn btn-warning me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
+					<button className="btn btn-success d-none" ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
+				</div>
+			</form>
+		</div>
+		
+	)
 }

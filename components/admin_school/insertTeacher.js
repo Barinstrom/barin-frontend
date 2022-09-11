@@ -83,7 +83,7 @@ export default function InsertTeacher({ school_data }) {
 	}
 
    	return (
-		<main>
+		<div>
 			<div className="text-center fs-1">InsertTeacher</div>
 			<div className="card mt-5">
 				<div className="card-body">
@@ -92,7 +92,7 @@ export default function InsertTeacher({ school_data }) {
 				</div>
 				<div className="card-footer">
 					<form>
-					<div className="input-group">
+						<div className="input-group">
 							<input className="form-control" 
 								type='file'
 								accept='.csv'
@@ -101,7 +101,6 @@ export default function InsertTeacher({ school_data }) {
 							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 						</div>
 					</form>
-
 				</div>
 			</div>
 
@@ -152,6 +151,6 @@ export default function InsertTeacher({ school_data }) {
 					</div>
 				</div>
 			</div>
-		</main>
+		</div>
 	);
 }

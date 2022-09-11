@@ -10,22 +10,20 @@ import Swal from "sweetalert2"
 // http://localhost:54321/forgot_password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5lZ29tb3I2NzFAeGl0dWR5LmNvbSIsImlhdCI6MTY2MjEzMjQwMSwiZXhwIjoxNjYyMTMzMzAxfQ.yHBUBpMvOax-_NPPKwUHw3HyWwYtunR7RhxnUNtAbLk
 
 export default function ForgotPass(){
-  const pwd = useRef([])
+  const email = useRef()
   const router = useRouter()
   console.log(router.query)
 
-  async function editPwd(ev){
+  async function clickForm(ev){
     ev.preventDefault()
-    console.log(pwd.current[0].value);
-    console.log(pwd.current[1].value);
     
-    if (pwd.current[0].value != pwd.current[1].value){
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'ใส่รหัสผ่านให้เหมือนกัน',
-      })
-      return 
+    if (!email.current.value){
+      Swal.fire(
+        'โปรดกรอกอีเมลล์ของท่าน',
+        'You clicked the button!',
+        'warning'
+      )
+      return
     }
 
     const form = new FormData(ev.target)
@@ -35,7 +33,7 @@ export default function ForgotPass(){
     const url = `www.google.com/?token=${router.query.token}`
     //const t = "https://jsonplaceholder.typicode.com/posts"
     //console.log(url)
-    try{
+    /* try{
       const result = await axios({
         method:"get",
         url:t,
@@ -45,7 +43,7 @@ export default function ForgotPass(){
       console.log(result)
     }catch(err){
       console.log(err.message)
-    }
+    } */
   } 
   
   return (
@@ -54,18 +52,12 @@ export default function ForgotPass(){
         <div>
           <p className={styles.logo}>Barin Storm</p>
         </div>
-        <form onSubmit={(ev)=> editPwd(ev)}>
-          <div className='form-floating'>
-            <input type="text" name="confirmNewPassword" className={`form-control`} id={`${styles.block1}`} placeholder="รหัสผ่านเดิม" ref={(el) => pwd.current[0] = el}/>
-            <label className='form-label'>รหัสผ่านใหม่</label>
+        <form className="row" onSubmit={(ev)=> clickForm(ev)}>
+          <div className="col-12">
+            <label className='form-label'>อีเมลล์ที่ใช้เปลี่ยนรหัสผ่าน</label>
+            <input type="text" name="email" className="form-control" placeholder={'อีเมลล์'} ref={email}/>
           </div>
-          
-          <div className='form-floating'>
-            <input type="text" name="newPassword" className={`form-control`} id={`${styles.block2}`} placeholder="รหัสผ่านใหม่" ref={(el) => pwd.current[1] = el}/>
-            <label className='form-label'>ยืนยันรหัสผ่าน</label>
-          </div>
-          
-          <div className='mt-5 d-flex justify-content-center align-items-center'>
+          <div className='mt-4 col-12 text-center'>
             <button className='btn btn-success w-25'>ยืนยัน</button>
           </div>
         </form>
