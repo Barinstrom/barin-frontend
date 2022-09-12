@@ -17,6 +17,7 @@
     "date-fns": "^2.29.2",
     "image-to-base64": "^2.2.0",
     "js-cookie": "^3.0.1",
+    "jwt-decode": "^3.1.2",
     "micro": "latest",
     "micro-cors": "latest",
     "next": "12.2.3",
