@@ -1,7 +1,7 @@
 import React from "react";
-import { useState } from "react";
-import { useRef } from "react";
+import { useState,useRef } from "react";
 import Router from "next/router";
+import { register } from "../utils/auth";
 
 export default function Register() {
 	/* state เก็บข้อมูลไฟล์ string base64 และชื่อไฟล์ */
@@ -9,6 +9,7 @@ export default function Register() {
 	/* ตัวแปรผูกข้อมูลเพื่อเอาค่า value */
 	const tagForm = useRef([]);
 	const click_check = useRef();
+	const spin = useRef();
 
 	function checkFile(file, ev) {
 		/* console.log(file)
@@ -54,30 +55,52 @@ export default function Register() {
 			//console.log("ข้อมูลครบ");
 
 			const will_data = {
-				school_name: school_name,
+				schoolName: school_name,
 				email: email,
-				school_tel: tel,
-				school_document: String(file),
+				schoolID: schoolID,
+				certificate_doc: String(file),
 				password: password,
 				confirmPassword: confirmPassword,
 				role: "admin",
 			};
-			console.log(will_data);
+			console.log("gogo");
+			spin.current.classList.remove("d-none");
 			// window.localStorage.setItem("infomation", JSON.stringify(body));
 
 			/* will call register api */
-			
+			const res = await register(will_data);
 
-			/* จะใช้สำหรับสมัครแล้ว ไม่ใช้ omise แล้ว */
-			Router.push({
-				pathname: "/",
-			});
+			console.log(res);
+			spin.current.classList.add("d-none");
+			/* ถ้าได้ res เป็น ... จะ ... */
+			// Router.push({
+			// 	pathname: "/",
+			// });
 		}
 	}
 
 	return (
 		<>
+			<style jsx>{`
+			.spinnerX {
+				position: fixed;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				text-align: center;
+				background-color: rgba(255, 255, 255, 0.8);
+				z-index: 2;
+			}
+			`}</style>
+			
+			<div className="spinnerX pt-5 d-none" ref={spin}>
+				<div className="spinner-border text-primary" role="status">
+				</div>
+			</div>
+
 			<div className="container p-3 mt-4">
+				
 				<div className="row">
 					<div className="col-lg-6 mt-0 p-3">
 						<div>
