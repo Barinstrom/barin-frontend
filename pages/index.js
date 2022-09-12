@@ -8,6 +8,9 @@ import Swal from 'sweetalert2';
 
 
 export default function Login() {
+
+  const spin = useRef()
+
   /* กำหนดตัวแปร route ขึ้นมาเพื่อไปโยงไปอีกลิงค์*/
   const router = useRouter()
   
@@ -28,39 +31,54 @@ export default function Login() {
     if (email_check === "" && password_check === "") {
 		  alert("โปรดกรอกข้อมูลให้ครบถ้วน");
       /* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
-      const body = {
-        userId: data.email,
-        password: "12345",
-        confirmPassword: "12345",
-        email: data.email,
-        role: "admin",
-        certificate_doc:data.school_document
-      };
-			return
+      return;
 		
     } else {
       /*ถ้าหากใส่ข้อมูลครบถ้วน ให้นำค่ามากำหนดเป็น object */
       const body = {
-			  "userId": email_check ,
-			  "password": password_check ,
+			  email: email_check ,
+			  password: password_check ,
       }
       
+      spin.current.classList.remove("d-none");
       /* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
-      let status_login = await checkLogin(body);
+      const result = await checkLogin(body);
+
+      spin.current.classList.add("d-none");
       
       /* ถ้าหากว่า status_login == false  */
-      if (!status_login) {
+      if (!result.status) {
         alert("ข้อมูลไม่ถูกต้อง")
         return
       /* ถ้าหากว่า status_login == true  */
-      }else{
-        router.push("/getData")
+      } else {
+        console.log(result.result)
+        // router.push("/getData")
       }
 		}
   }
   
   return (
     <main className={styles.register}>
+
+      <style jsx>{`
+			.spinnerX {
+				position: fixed;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				text-align: center;
+				background-color: rgba(255, 255, 255, 0.8);
+				z-index: 2;
+			}
+			`}</style>
+			
+			<div className="spinnerX pt-5 d-none" ref={spin}>
+				<div className="spinner-border text-primary" role="status">
+				</div>
+			</div>
+
       <section className={styles.block} >
         {/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
         <div>

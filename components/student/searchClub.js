@@ -16,7 +16,7 @@ export default function Approved() {
 	}
 	
 	return (
-		<main>
+		<div>
 			<style jsx>{`
 				.btn-responsive {
 					width: 15%;
@@ -58,6 +58,6 @@ export default function Approved() {
 					);
 				})}
 			</ul>
-		</main>
+		</div>
 	);
 }

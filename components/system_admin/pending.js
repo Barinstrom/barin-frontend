@@ -1,61 +1,223 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
 
-export default function Approved() {
-	const data = [
-		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
-		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
-		{ teacher_name: "tete", role: "expert", school_name: "jula" },
-		{ teacher_name: "bundit", role: "expert", school_name: "tepsirin" },
-		{ teacher_name: "jitat", role: "expert", school_name: "prachanivet" },
-		{ teacher_name: "kana", role: "expert", school_name: "sangsom" },
-	];
 
-	function clickSearch(ev) {
-		ev.preventDefault();
-		/* ค้นหาโรงเรียน */
+export default function Pending() {
+	const [data,setData] = useState([])
+    const [paginate,setPaginate] = useState([])
+    const search = useRef()
+
+    function detailTest(item){
+		console.log(item)
 	}
+	
+	async function clickReset(ev){
+        ev.preventDefault()
+        window.localStorage.removeItem("search")
+        search.current.value = ""
+        
+        try{
+            const response = await fetch(`http://localhost:8000/paginate/db`,{
+                method:"post",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({"page":1})
 
-	return (
-		<main>
-			<style jsx>{`
-				.btn-responsive {
-					width: 15%;
-				}
-				@media screen and (max-width: 1000px) {
-					.btn-responsive {
-						width: 40%;
-					}
-				}
-				@media screen and (max-width: 576px) {
-					.btn-responsive {
-						width: 100%;
-					}
-				}
-			`}</style>
+            })
+            const result = await response.json()
+            //console.log(result)
+            const paginate_tmp = generate(result)
+            showData(result.docs)
+            showPaginate(paginate_tmp)
+        }catch(err){
+            console.log(err.message)
+        }
+    }
+    
+    /* กรณี search ข้อมูลต่างๆ */
+    async function clickAccept(ev){
+        ev.preventDefault()
+        let body
+        
+        if (!search.current.value){
+            window.localStorage.removeItem("search")
+            body = {"page":1,}
+        }else{
+            window.localStorage.setItem("search",parseInt(search.current.value))
+            body = {
+                "page":1,
+                "info":window.localStorage.getItem("search")
+            }
+        }
+        
+        try{
+            const response = await fetch(`http://localhost:8000/paginate/db`,{
+                method:"post",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(body)
 
-			<div className="text-center fs-1">Pending</div>
-			<form onClick={(ev) => clickSearch(ev)} className="mb-4 mt-2">
-				<div className="input-group">
-					<span className="input-group-text">ค้นหาโรงเรียน</span>
-					<input className="form-control" name="search" />
-					<button className="btn btn-danger">กด</button>
-				</div>
-			</form>
-			<ul className="list-group">
-				{data.map((e, i) => {
-					return (
-						<li key={i} className="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-center">
-							<div className="d-flex flex-column w-100">
-								<h5 className="mb-1">{e.teacher_name}</h5>
-								<small>{e.role}</small>
+            })
+            const result = await response.json()
+            console.log(result)
+            const paginate_tmp = generate(result)
+            showData(result.docs)
+            showPaginate(paginate_tmp)
+        }catch(err){
+            console.log(err.message)
+        }
+    }
+    
+    function changeDate(k){
+        const t = new Date(Date.parse(k))
+        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
+        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
+        return (
+            <>
+                {d}-{m}-{t.getFullYear()}
+            </>
+        )
+    }
+
+    function generate(result){
+        //console.log(result)
+        const paginate_tmp = []
+        if (result.hasPrevPage && result.page - 5 >= 1){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+        }
+        
+        if (result.hasPrevPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+        }
+        
+        paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+        
+        if (result.hasNextPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+        }
+
+        if (result.hasNextPage && result.page + 5 <= result.totalPages){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+5))}><i className="fa-solid fa-angles-right"></i></button>)    
+        }else{
+            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+        }
+        return paginate_tmp
+    }
+
+    
+    async function clickPage(page){
+        //console.log(window.localStorage.getItem("search"))
+        const body = {
+            "page":page,
+            "info":window.localStorage.getItem("search")
+        }
+        
+        try{
+            const response = await fetch(`http://localhost:8000/paginate/db`,{
+                method:"post",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(body)
+            })
+            
+            const result = await response.json()
+            const paginate_tmp = generate(result)
+            //console.log(result)
+            showData(result.docs)
+            showPaginate(paginate_tmp)
+        }catch(err){
+            console.log(err.message)
+        }
+        
+    }
+
+    async function fetchData(){
+        try{
+            const response = await fetch(`http://localhost:8000/paginate/db`,{
+                method:"post",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({"page":1})
+            })
+            const result = await response.json()
+            const paginate_tmp = generate(result)
+            showData(result.docs)
+            showPaginate(paginate_tmp)
+        }catch(err){
+            console.log(err.message)
+        }
+    }
+    
+    function showData(result){
+        const template = (
+            <>
+                {result.map((item,index) => {
+                    return (
+                        <li key={index} className="list-group-item">
+                            <div className='d-block d-sm-flex justify-content-sm-between'>
+								<div className='d-flex justify-content-center align-items-center p-2'>
+									<span>{item.user}</span>
+									<span className='ms-3'>{changeDate(item.birthday)}</span>
+									<span className='badge bg-success ms-3'>status</span>
+								</div>
+								<div className='text-center mt-2 mt-sm-0 text-sm-start '>
+									<span><button className='btn btn-sm btn-secondary w-100' onClick={()=> detailTest(item)}>รายละเอียด</button></span>
+								</div>
 							</div>
-							<button className="btn btn-primary mt-3 mb-3 btn-responsive">
-								รายละเอียด
-							</button>
 						</li>
-					);
-				})}
-			</ul>
-		</main>
-	);
+                    )
+                })}
+            </>
+        )
+        setData(template)
+    }
+
+    function showPaginate(paginate){
+        const template = (
+            <ul className='pagination'>
+                {paginate.map((item,index)=>{
+                    return (
+                        <li key={index} className="page-item">
+                            {item}
+                        </li>
+                    )
+                })}
+            </ul>
+        )
+        setPaginate(template)
+    }
+
+    
+    useEffect(()=>{
+        window.localStorage.removeItem("search")
+        fetchData()
+    },[])
+
+    
+    return (
+        <div>
+            <div className="text-center fs-1 mb-3">Pending</div>
+            <div className='row mb-4'>
+                <div className='col-12'>
+                    <form className='mb-5'>
+                        <div className='input-group'>
+                            <span className="input-group-text">ค้นหา</span>
+                            <input type="text" className='form-control' ref={search}></input>
+                            <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+                            <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                        </div>
+                    </form>
+                    <ul className='list-group list-group-flush border rounded-4 px-3 pb-1 pt-2'>
+                        {data}
+                    </ul> 
+                </div>
+            </div>
+            {paginate}
+        </div>
+    )
 }

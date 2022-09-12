@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
+import { add_student } from "../../utils/auth";
+import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data }) {
 	const [csvFile, setCsvFile] = useState();
@@ -63,18 +65,13 @@ export default function InsertTeacher({ school_data }) {
 		const form = new FormData(ev.target)
 		const formSuccess = Object.fromEntries(form.entries())
 		
-		/* ส่วนนี้รอไปก่อน */
-		/* try{
-			const response = await axios({
-				url:"",
-				method:"post",
-				headers:{"Content-Type":"application/json"},
-				data:JSON.stringify(formSuccess),
-				timeout:3000
-			})
-		}catch(err){
-			console.log(err.message)
-		} */
+		formSuccess.isActive = "Active"
+		//console.log(formSuccess)
+		//console.log(JSON.stringify(formSuccess))
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+		const result = await add_student(formSuccess,token,school_data.schoolID);
+		console.log(result);
 	}
 
 
@@ -83,7 +80,7 @@ export default function InsertTeacher({ school_data }) {
 		}
 
    	return (
-		<main>
+		<div>
 			<div className="text-center fs-1">InsertStudent</div>
 			<div className="card mt-5">
 				<div className="card-body">
@@ -101,7 +98,6 @@ export default function InsertTeacher({ school_data }) {
 							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 						</div>
 					</form>
-
 				</div>
 			</div>
 
@@ -151,7 +147,7 @@ export default function InsertTeacher({ school_data }) {
 								</div>
 								<div className="col-sm-3">
 									<label className="form-label">ปีการศึกษา</label>
-									<input type="number" className="form-control" min="2565" name="enteredYear"/>
+									<input type="number" className="form-control" min={school_data.nowSchoolYear} name="enteredYear"/>
 								</div>
 								<div className="col-12 mt-4 text-center">
 									<input type="submit" className="btn btn-success w-100" value="ตกลง"/>
@@ -161,9 +157,6 @@ export default function InsertTeacher({ school_data }) {
 					</div>
 				</div>
 			</div>
-			
-
-
-		</main>
+		</div>
 	);
 }

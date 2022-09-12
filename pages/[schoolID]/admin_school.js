@@ -13,31 +13,17 @@ import SchoolData from "../../components/admin_school/schoolData";
 import TimeConfig from "../../components/admin_school/timeConfig";
 
 export default function Admin({ school_data }) {
+	// console.log(data);
 	const nav = useRef();
 	const time = useRef();
-	let timer;
 	const optionBtn = useRef([])
-
-	const [component, setComponent] = useState(<SchoolData school_data={school_data} />)
-
-	useEffect(() => {
-		controllTime("start");
-
-		if (!school_data.paymentStatus) {
-			for (let i = 0; i < 9; i++) {
-				if (i == 0) {
-					continue
-				}
-				optionBtn.current[i].hidden = true
-			}
-		}
-
-		return () => {
-			controllTime("cancell");
-		};
-	});
+	const hamberger = useRef()
+	/* ตัวแปรเก็บค่า timer */
+	let timer;
+	const [component, setComponent] = useState(<SchoolData school_data={school_data} />);
 
 	function changeComponent(num, ev) {
+		console.log(ev.target)
 		if (num == 0) {
 			setComponent(<SchoolData school_data={school_data} />);
 		} else if (num == 1) {
@@ -57,8 +43,37 @@ export default function Admin({ school_data }) {
 		} else {
 			setComponent(<EditOwnData school_data={school_data} />);
 		}
+		for (let i=0;i<=8;i++){
+			if (i == num){
+				optionBtn.current[i].classList.add("nowclick")
+			}else{
+				optionBtn.current[i].classList.remove("nowclick")
+			}
+		}
 		nav.current.classList.remove("active");
+		hamberger.current.classList.remove("hamactive");
 	}
+
+	useEffect(() => {
+		optionBtn.current[0].classList.add("nowclick");
+		controllTime("start");
+		
+		
+		if (!school_data.paymentStatus) {
+			for (let i = 0; i < 9; i++) {
+				if (i == 0) {
+					continue
+				}
+				optionBtn.current[i].hidden = true
+			}
+		}
+
+		return () => {
+			controllTime("cancell");
+		};
+	},[]);
+
+	
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
@@ -75,60 +90,52 @@ export default function Admin({ school_data }) {
 	}
 
 	const clickHamberger = () => {
+		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
 
 	return (
 		<>
-			<header className={`${styles.head} navbar navbar-dark bg-dark`}>
-				<div className={`${styles.header_main} text-white d-flex justify-content-between`} >
-					<div className={styles.header_item}>
-						<button className={styles.button_hamberger} onClick={clickHamberger}>
-							<i className="fa-solid fa-bars"></i>
-						</button>
-						<span>Dashboard</span>
-					</div>
-					<div className={`${styles.header_item}`}>
-						<div className={`${styles.time_alert} me-2`}>
-							<span ref={time}></span>
-						</div>
-						<div className={`${styles.logo_title} me-3`}>
-							<span className="ms-2">
-								<i className="fa-solid fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								doreamon
-							</span>
-							<Link href="/">
-								<a className={`${styles.logo} ms-2`}>
-									<img src={"../../dora.jpg"} />
-								</a>
-							</Link>
-						</div>
-					</div>
-				</div>
-			</header>
-
 			<style jsx>{`
 				.nav_header {
-					background-color: #fafafa;
 					min-height: 100vh;
 					position: fixed;
 					padding: 3px;
-					transform: translate(0,80px);
+					transform: translate(-5%, 80px);
 					transition: transform 0.3s ease;
 					z-index: 100;
+					background-color: transparent;
 				}
-				
+
+				.button_hamberger{
+					width: 40px;
+					height: 40px;
+					border: none;
+					opacity: 1;
+					border-radius: 15px;
+					font-size: 1.4rem;
+					margin-right: 10px;
+					display: none;
+					background-color: transparent;
+				}
+
 				@media screen and (max-width: 1300px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
 					}
 					.nav_header.active {
-						transform: translate(0,80px);
+						transform: translateY(80px);
+						background-color: white;
+					}
+					.button_hamberger{
+						display: block;
+					}
+					.button_hamberger.hamactive{
+						background-color: #e8e8e8;
 					}
 				}
 
+				.h2_alert,
 				.h2_alert {
 					font-size: 36px;
 				}
@@ -143,93 +150,138 @@ export default function Admin({ school_data }) {
 						font-size: 20px;
 					}
 				}
+
+				.nav_left{
+					text-align: left;
+					border-radius: 10px;
+					padding: 6px 30px;
+					cursor: pointer;
+				}
+
+				.nav_left.nowclick{
+					background-color: #FFFFFF;
+					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
+				}
 			`}</style>
 
+
+			<header className={`${styles.head} navbar navbar-dark bg-white`}>
+				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
+					<div className={`${styles.header_item} ms-2 `}>
+						<button
+							className="button_hamberger"
+							onClick={clickHamberger}
+							ref={hamberger}
+						>
+							<i className="fa-solid fa-bars"></i>
+						</button>
+						<span className="ms-3">Dashboard</span>
+					</div>
+					<div className={`${styles.header_item}`}>
+						<div className={`${styles.time_alert} me-2`}>
+							<span ref={time}></span>
+						</div>
+						<div className={`me-2`}>
+							<span className={`${styles.logo_bell}`}>
+								<i className="fa-regular fa-bell"></i>
+							</span>
+							<span className={`${styles.user_name} ms-1`}>
+								{/* {data.data.userId} */}
+							</span>
+							<Link href="/">
+								<a className={`${styles.logo} ms-2`}>
+									<img src={"../../dora.jpg"} />
+								</a>
+							</Link>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			
 			<nav className="nav_header" ref={nav}>
-				<div className={styles.box_menu}>
+ 				<div className={styles.box_menu}>
 					<ul>
-						<li>
-							<button className="btn btn-success w-100"
+ 						<li>
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(0, ev)}
 								ref={(el) => optionBtn.current[0] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
 								<span>ข้อมูลโรงเรียน</span>
-							</button>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success  w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(1, ev)}
 								ref={(el) => optionBtn.current[1] = el}
 							>
-								<i className="fa-solid fa-user me-2"></i>
-								<span className={styles.item}>
-									ตั้งเวลาลงทะเบียน
-								</span>
-							</button>
+								<i className="fa-solid fa-calendar-days me-2 ms-1"></i>
+								<span >ตั้งเวลาลงทะเบียน	</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(2, ev)}
 								ref={(el) => optionBtn.current[2] = el}
 							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>เพิ่มข้อมูลครู</span>
-							</button>
+								<i className="fa-solid fa-chalkboard-user "></i>
+								<span className="ms-2">เพิ่มข้อมูลครู</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(3, ev)}
 								ref={(el) => optionBtn.current[3] = el}
 							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>เพิ่มข้อมูลนักเรียน</span>
-							</button>
+								<i className="fa-solid fa-chalkboard-user "></i>
+								<span className="ms-2">เพิ่มข้อมูลนักเรียน</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(4, ev)}
 								ref={(el) => optionBtn.current[4] = el}
 							>
-								<i className="fa-solid fa-house me-2"></i>
+								<i className="fa-solid fa-book me-2 ms-1"></i>
 								<span>เพิ่มข้อมูลชุมนุม</span>
-							</button>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success  w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(5, ev)}
 								ref={(el) => optionBtn.current[5] = el}
 							>
-								<i className="fa-solid fa-address-card me-2"></i>
-								<span>แก้ไขข้อมูลนักเรียน</span>
-							</button>
+								<i className="fa-solid fa-list-check"></i>
+								<span className="ms-2">แก้ไขข้อมูลนักเรียน</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success  w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(6, ev)}
 								ref={(el) => optionBtn.current[6] = el}
 							>
-								<i className="fa-solid fa-address-card me-2"></i>
-								<span>แก้ไขข้อมูลครู</span>
-							</button>
+								<i className="fa-solid fa-list-check"></i>
+								<span className="ms-2">แก้ไขข้อมูลครู</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success  w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(7, ev)}
 								ref={(el) => optionBtn.current[7] = el}
 							>
-								<i className="fa-solid fa-list-check me-2"></i>
-								<span>แก้ไขข้อมูลชุมนม</span>
-							</button>
+								<i className="fa-solid fa-list-check"></i>
+								<span className="ms-2">แก้ไขข้อมูลชุมนม</span>
+							</div>
 						</li>
 						<li>
-							<button className="btn btn-success  w-100"
+							<div className={`nav_left`} 
 								onClick={(ev) => changeComponent(8, ev)}
 								ref={(el) => optionBtn.current[8] = el}
 							>
-								<i className="fa-solid fa-list-check me-2"></i>
-								<span>แก้ไขข้อมูลตัวเอง</span>
-							</button>
+								<i className="fa-solid fa-list-check"></i>
+								<span className="ms-2">แก้ไขข้อมูลตัวเอง</span>
+							</div>
 						</li>
 					</ul>
 				</div>
@@ -237,13 +289,13 @@ export default function Admin({ school_data }) {
 
 			{/* ส่วน component มาแสดงผล */}
 			<main className={styles.content}>
-				<div className="container">
+				<section className="container border">
 					{component}
-				</div>
+				</section>
 			</main>
-		</>
-	)
 
+		</>
+	);
 }
 
 export async function getStaticPaths() {
@@ -282,8 +334,8 @@ export async function getStaticProps(context) {
 		paymentStatus: true, // จ่ายเงินหรือยัง
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
-		schoolID: "1",
-		nowSchoolYear: "2020",
+		schoolID: "stamp",
+		nowSchoolYear: "2021",
 		schedule:[
 			// {
 			// 	// nowSchoolYear:true,

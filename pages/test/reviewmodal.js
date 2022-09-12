@@ -6,13 +6,21 @@ import {
   updateComment as updateCommentApi,
   deleteComment as deleteCommentApi,
 } from "../../components/test/comments/testapi";
-import styles from "../../styles/comment.module.css";
-export default function Comment() {
+export default function Review() {
+  ///* 1.เหลือแก้ให้ starrating reset เพื่อเลือกใหม่ */
+  ///* 2.แก้ Overall ให้ตาม database */
+  ///* 3.แก้ ชื่อ clubname ตรงกับที่เลือก */
+  ///* 4.pagination */
+  ///* 5.linkข้อมูลกับ database */
+
+  //Testing เลือก myuserId 1 แบบ
+
   //สำหรับเช็คidที่ซ้ำกับที่มีแล้ว
   // const myuserId = "2456";
   //สำหรับเช็คidที่ซ้ำกับที่ไม่มี
   const myuserId = "1234";
   //
+
   const [backendComments, setBackendComments] = useState([]);
   const [starRated, setStarRated] = useState(0);
   const own_comment = useRef();
@@ -105,7 +113,7 @@ export default function Comment() {
     const comment = own_comment.current.value;
     const rating = localStorage.getItem("star");
     if (!rating) {
-      alert("please rate this club");
+      alert("please rate this club again");
       return;
     } else {
       own_comment.current.disabled = true;
@@ -265,15 +273,13 @@ export default function Comment() {
                       <div className="card mt-2" key={i}>
                         <div className="card-header">{createdAt}</div>
                         <div className="card-body">
-                          <div className={styles.comment}>
-                            <div className={styles.commentimagecontainer}>
+                          <div className="comment">
+                            <div className="commentimagecontainer">
                               <img src="/user-icon.png" />
                             </div>
-                            <div className={styles.commentrightpart}>
-                              <div className={styles.commentcontent}>
-                                <div className={styles.commentauthor}>
-                                  Anonymous
-                                </div>
+                            <div className="commentrightpart">
+                              <div className="commentcontent">
+                                <div className="commentauthor">Anonymous</div>
                                 <i className="fa-solid fa-badge-check"></i>
                               </div>
                             </div>
@@ -283,6 +289,32 @@ export default function Comment() {
                           </span>
                           <p className="card-text">{e.body}</p>
                         </div>
+                        <style>
+                          {`
+                            .comment {
+                              display: flex;
+                              margin-bottom: 28px;
+                            }
+                            .commentimagecontainer {
+                              margin-right: 12px;
+                            }
+                            .commentimagecontainer img {
+                              border-radius: 50px;
+                            }
+                            .commentrightpart {
+                              width: 100%;
+                            }
+                            .commentcontent {
+                              display: flex;
+                            }
+                            .commentauthor {
+                              padding-top: 11px;
+                              margin-right: 8px;
+                              font-size: 20px;
+                              color: rgb(59, 130, 246);
+                            }
+                        `}
+                        </style>
                       </div>
                     );
                   })}

@@ -40,11 +40,17 @@ export default function EditClub({ school_data }) {
     /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
-        window.localStorage.setItem("search",parseInt(search.current.value))
+        let body
         
-        const body = {
-            "page":1,
-            "info":window.localStorage.getItem("search")
+        if (!search.current.value){
+            window.localStorage.removeItem("search")
+            body = {"page":1,}
+        }else{
+            window.localStorage.setItem("search",parseInt(search.current.value))
+            body = {
+                "page":1,
+                "info":window.localStorage.getItem("search")
+            }
         }
         
         try{
@@ -55,7 +61,7 @@ export default function EditClub({ school_data }) {
 
             })
             const result = await response.json()
-            //console.log(result)
+            console.log(result)
             const paginate_tmp = generate(result)
             showData(result.docs)
             showPaginate(paginate_tmp)
@@ -76,7 +82,7 @@ export default function EditClub({ school_data }) {
     }
 
     function generate(result){
-        console.log(result)
+        //console.log(result)
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -103,7 +109,6 @@ export default function EditClub({ school_data }) {
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
-
         return paginate_tmp
     }
 
@@ -196,35 +201,34 @@ export default function EditClub({ school_data }) {
 		}
 
     return (
-        <section className='mt-3'>
-            <div className='container p-3' style={{maxWidth:"1200px"}}>
-                <div className="text-center fs-1 mb-3">EditClub</div>
-                <div className='row'>
-                    <div className='col-12'>
-                        <form className='mb-3'>
-                            <div className='input-group'>
-                                <span className="input-group-text">ค้นหา</span>
-                                <input type="text" className='form-control' ref={search}></input>
-                                <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                                <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
-                            </div>
-                        </form>
-                        <table className='table table-bordered text-center'>
-                            <thead className='table-dark'>
-                                <tr>
-                                    <th>user</th>
-                                    <th>age</th>
-                                    <th>birthday</th>
-                                    <th>detail</th>
-                                    <th>extra</th>
-                                </tr>
-                            </thead>
-                            {data}
-                        </table> 
-                    </div>
+        
+        <div>
+            <div className="text-center fs-1 mb-3">EditClub</div>
+            <div className='row'>
+                <div className='col-12'>
+                    <form className='mb-3'>
+                        <div className='input-group'>
+                            <span className="input-group-text">ค้นหา</span>
+                            <input type="text" className='form-control' ref={search}></input>
+                            <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+                            <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                        </div>
+                    </form>
+                    <table className='table table-bordered text-center'>
+                        <thead className='table-dark'>
+                            <tr>
+                                <th>user</th>
+                                <th>age</th>
+                                <th>birthday</th>
+                                <th>detail</th>
+                                <th>extra</th>
+                            </tr>
+                        </thead>
+                        {data}
+                    </table> 
                 </div>
-                {paginate}
             </div>
-        </section>   
+            {paginate}
+        </div>
     )
 }
