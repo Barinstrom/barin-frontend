@@ -1,6 +1,8 @@
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
+import { add_teacher } from "../../utils/auth";
+import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data }) {
 	const [csvFile, setCsvFile] = useState();
@@ -63,18 +65,17 @@ export default function InsertTeacher({ school_data }) {
 		const formSuccess = Object.fromEntries(form.entries())
 		console.log(formSuccess)
 		
-		/* ส่วนนี้รอไปก่อน */
-		/* try{
-			const response = await axios({
-				url:"",
-				method:"post",
-				headers:{"Content-Type":"application/json"},
-				data:JSON.stringify(formSuccess),
-				timeout:3000
-			})
-		}catch(err){
-			console.log(err.message)
-		} */
+		formSuccess.schoolID = school_data.schoolID
+
+		// will remove
+		formSuccess.clubs = [
+            "631c6c83206c37ff705b2931",
+            "631c6e5cb0f33e324f1b1e3c"
+        ]
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+		const result = await add_teacher(formSuccess,token,school_data.schoolID);
+		console.log(result);
 	}
 
 	

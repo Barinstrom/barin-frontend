@@ -2,7 +2,7 @@ import React from "react";
 import { useRef, useState, useEffect } from "react";
 import { format, compareAsc } from "date-fns";
 
-export default function Approved() {
+export default function SearchClubStdTest() {
   const [clubname, setClubName] = useState("");
   const [clubinfo, setClubInfo] = useState("");
   const [clubId, setClubId] = useState("");

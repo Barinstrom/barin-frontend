@@ -5,6 +5,7 @@ import cookie from "js-cookie";
 //https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
 const Url = "https://barinapi.tawanchai.com";
+const stagingUrl = "https://barin-backend-staging.herokuapp.com"
 
 /* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
 const headers_setting = {
@@ -13,7 +14,7 @@ const headers_setting = {
 
 // register
 export async function register(data) {
-	const apiUrl = Url + "/register";
+	const apiUrl = stagingUrl + "/register";
 	
 	const options = {
 		method: "POST",
@@ -39,7 +40,7 @@ export async function register(data) {
 
 // login & set token
 export async function checkLogin(data){
-	let apiUrl = Url + "/login";
+	let apiUrl = stagingUrl + "/login";
 
 	const options = {
 		method: "POST",
@@ -55,23 +56,32 @@ export async function checkLogin(data){
 		if (response.ok) {
 			const result = await response.json();
 			/* เช็คข้อมูลดูค่า token */
-			console.log(result)
+			// console.log("result =",result)
 			const token = result.token;
+			console.log(token)
 			cookie.set("token", token, { expires: 1 });
-			console.log("result");
-			return true
+			return {
+				status: true,
+				result
+			}
 		}
 		else {
-			return false
+			return {
+				status: false,
+				error: "have error"
+			}
 		}
 	}catch(err){
 		console.log(err.message)
-		return false
+		return {
+			status: false,
+			error: err.message
+		}
 	}
 }
 
 // ดึงข้อมูลคนมา
-export async function get_userdata(token) {
+export async function get_userdata(token,data) {
 	const apiUrl = Url + "/auth/profile";
 	try {
 		const response = await fetch(apiUrl, {
@@ -84,6 +94,99 @@ export async function get_userdata(token) {
 		
 		if (response.ok) {
 			return user_info;
+		} else {
+			return false;
+		}
+	} catch(err) {
+		console.log(err.message);
+		return false;
+	}
+};
+
+
+// เพิ่ม 1 นร
+export async function add_student(data,token,schoolID) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-student";
+	console.log("url =", apiUrl)
+	console.log(JSON.stringify(data))
+	try {
+		const response = await fetch(apiUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "POST",
+			body: JSON.stringify(data),
+		})
+		console.log(response)
+		/* ข้อมูลของ user ที่ return กลับมา */
+		const status = await response.json();
+		//console.log(user_info)
+		
+		if (response.ok) {
+			return status;
+		} else {
+			return false;
+		}
+	} catch(err) {
+		console.log(err.message);
+		return false;
+	}
+};
+
+
+// เพิ่ม 1 คลับ
+export async function add_club(data,token,schoolID) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-club";
+	console.log("url =", apiUrl)
+	console.log(JSON.stringify(data))
+	try {
+		const response = await fetch(apiUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "POST",
+			body: JSON.stringify(data),
+		})
+		console.log(response)
+		/* ข้อมูลของ user ที่ return กลับมา */
+		const status = await response.json();
+		//console.log(user_info)
+		
+		if (response.ok) {
+			return status;
+		} else {
+			return false;
+		}
+	} catch(err) {
+		console.log(err.message);
+		return false;
+	}
+};
+
+
+// เพิ่ม 1 ครู
+export async function add_teacher(data,token,schoolID) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teacher";
+	console.log("url =", apiUrl)
+	console.log(JSON.stringify(data))
+	try {
+		const response = await fetch(apiUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "POST",
+			body: JSON.stringify(data),
+		})
+		console.log(response)
+		/* ข้อมูลของ user ที่ return กลับมา */
+		const status = await response.json();
+		//console.log(user_info)
+		
+		if (response.ok) {
+			return status;
 		} else {
 			return false;
 		}

@@ -1,6 +1,8 @@
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
+import { add_club } from "../../utils/auth";
+import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data }) {
 	const [csvFile, setCsvFile] = useState("");
@@ -30,31 +32,70 @@ export default function InsertTeacher({ school_data }) {
     /* เมื่อกดปุ่มทำการอ่านข้อมูลจากไฟล์ csv */
     const submit = (ev) => {
         ev.preventDefault();
-		if (csvFile === ""){
-			alert("โปรดเลือกไฟล์ที่ต้องการส่งด้วย")
-			return
-		}
-		
-		const fileSuccess = csvFile
-        //console.log(fileSuccess)
-        
-        // ใช้ FileReader ในการอ่านไฟล์
-        const reader = new FileReader()
-        reader.readAsText(fileSuccess)
+			if (csvFile === ""){
+				alert("โปรดเลือกไฟล์ที่ต้องการส่งด้วย")
+				return
+			}
+			
+			const fileSuccess = csvFile
+			//console.log(fileSuccess)
+			
+			// ใช้ FileReader ในการอ่านไฟล์
+			const reader = new FileReader()
+			reader.readAsText(fileSuccess)
 
-        // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
-        reader.onload = (ev) => {
-            const text = ev.target.result;
-            //console.log(text)
-            const result = stringtoObject(text)
-            if (result === "data is undefined"){
-                alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
-                return
-            }else{
-                console.log(result)
-            }
-        }
-    }
+			// เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
+			reader.onload = (ev) => {
+					const text = ev.target.result;
+					//console.log(text)
+					const result = stringtoObject(text)
+					if (result === "data is undefined"){
+							alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
+							return
+					}else{
+							console.log(result)
+					}
+			}
+		}
+	
+		/* เมื่อกด click ปุ่มฟอร์มใน modal เพิ่มคลับ 1 คลับ จะทำการส่งข้อมูลไปให้ backend */
+		async function SubmitOneClub(ev){
+			ev.preventDefault()
+
+			const form = new FormData(ev.target)
+			const formSuccess = Object.fromEntries(form.entries())
+			
+			const currentDate = new Date()   
+			const startDate = new Date(currentDate.getTime());
+			startDate.setHours(formSuccess.startTime.split(":")[0]);
+			startDate.setMinutes(formSuccess.startTime.split(":")[1]);
+
+			const endDate = new Date(currentDate.getTime());
+			endDate.setHours(formSuccess.endTime.split(":")[0]);
+			endDate.setMinutes(formSuccess.endTime.split(":")[1]);
+
+			const valid = startDate < endDate 
+			if (!valid) {
+				alert("schedule ไม่ถูกต้อง")
+				return;
+			}
+			else {
+				console.log(formSuccess)
+				formSuccess.schedule = [formSuccess.startTime + "-" + formSuccess.endTime]
+				
+				const cookies = new Cookies();
+				const token = cookies.get("token");
+				const result = await add_club(formSuccess,token,school_data.schoolID);
+				console.log(result);
+			}
+			
+			//console.log(JSON.stringify(formSuccess))
+			// const cookies = new Cookies();
+			// const token = cookies.get("token");
+			// const result = await add_student(formSuccess,token,school_data.schoolID);
+			// console.log(result);
+			
+		}
 	
 		if (!school_data.paymentStatus) {
 			return <ErrorPage statusCode={404} />;
@@ -89,10 +130,68 @@ export default function InsertTeacher({ school_data }) {
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">
-						<button  className="btn btn-primary">ใส่ข้อมูล</button>
+						<button  className="btn btn-primary" data-bs-target="#mymodal" data-bs-toggle="modal">ใส่ข้อมูล</button>
 					</div>
 				</div>
 			</div>
+			
+			{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
+			<div className="modal fade" id="mymodal">
+				<div className="modal-dialog">
+					<div className="modal-content">
+						<div className="modal-header">
+							<div className="w-100 mt-1">
+								<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+							</div>
+						</div>
+						<div className="modal-body">
+							<form className="row gy-2 gx-3" onSubmit={(ev) => SubmitOneClub(ev)}>
+								<div className="col-12">
+									<label className="form-label">ชื่อคลับ</label>
+									<input type="text" className="form-control" name="clubName"/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">รหัสวิชา</label>
+									<input type="text" className="form-control" name="groupID"/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">category</label>
+									<select className="form-select"  name="category" defaultValue={"none"}>
+										<option value="none">None</option>
+										<option value="1">One</option>
+										<option value="2">Two</option>
+										<option value="3">Three</option>
+									</select>
+								</div>
+								<div className="col-12">
+									<label className="form-label">รายละเอียดคลับ</label>
+									<textarea className="form-control" rows="3" name="clubInfo"></textarea>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">จำนวนนักเรียนสูงสุด</label>
+									<input type="number" className="form-control" name="limit"/>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">ปีการศึกษา</label>
+									<input type="number" className="form-control" min={school_data.nowSchoolYear} name="schoolYear"/>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">เวลาเริ่ม</label>
+									<input type="time" className="form-control mt-3" name="startTime"></input>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">เวลาจบ</label>
+									<input type="time" className="form-control mt-3" name="endTime"></input>
+								</div>
+								<div className="col-12 mt-4 text-center">
+									<input type="submit" className="btn btn-success w-100" value="ตกลง"/>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+					
 		</>
 	);
 }

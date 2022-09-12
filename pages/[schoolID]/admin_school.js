@@ -334,7 +334,7 @@ export async function getStaticProps(context) {
 		paymentStatus: true, // จ่ายเงินหรือยัง
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
-		schoolID: "1",
+		schoolID: "stamp",
 		nowSchoolYear: "2021",
 		schedule:[
 			// {
