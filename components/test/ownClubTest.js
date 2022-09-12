@@ -15,19 +15,18 @@ export default function OwnClub() {
     const [clubsch, setClubSch] = useState("")
     const [clubimg, setClubImg] = useState("")
     const [clublimit, setClubLimit] = useState("")
+    const uploadImg = useRef();
 
-    //เลือกไฟล์รูปภาพ
-    const [file,setFile] = useState()
-    const [nameFile,setNameFile] = useState()
-    function getFiles(ev){
-        const base64file = ev.base64
-        const namefile = ev.name
-        /* set ค่า state */
-        setFile(base64file);
-        setNameFile(namefile);
-    //ทำให้เปลี่ยนเป็นตามที่เลือก
-        setClubImg(base64file);
-    }
+    function encodeImageFileAsURL(ev) {
+		//console.log(ev);
+		var file = ev.target.files[0];
+		var reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = function () {
+			//console.log("RESULT", reader.result);
+			setClubImg(reader.result);
+		};
+	}
 
     function clickModal(ev){
         ev.preventDefault()
@@ -39,8 +38,6 @@ export default function OwnClub() {
         setClubSch(club.sch)
         setClubImg(club.img)
         setClubLimit(club.limit)
-        setFile(null)
-        setNameFile(null)
     }
 
     function Edit(){
@@ -49,9 +46,11 @@ export default function OwnClub() {
         const des_in = document.getElementById("club_des")
         const sch_in = document.getElementById("club_sch")
         const limit_in = document.getElementById("club_limit")
+        const img_in = document.getElementById("club_img")
         submit.removeAttribute("hidden")
         name_in.removeAttribute("disabled")
         des_in.removeAttribute("disabled")
+        img_in.removeAttribute("disabled")
         sch_in.removeAttribute("disabled")
         limit_in.removeAttribute("disabled")
     }    
@@ -62,8 +61,10 @@ export default function OwnClub() {
         const des_in = document.getElementById("club_des")
         const sch_in = document.getElementById("club_sch")
         const limit_in = document.getElementById("club_limit")
+        const img_in = document.getElementById("club_img")
         name_in.setAttribute("disabled",1)
         des_in.setAttribute("disabled",1)
+        img_in.setAttribute("disabled",1)
         sch_in.setAttribute("disabled",1)
         limit_in.setAttribute("disabled",1)
         submit.setAttribute("hidden", 1)
@@ -92,12 +93,16 @@ export default function OwnClub() {
         const name_in = document.getElementById("club_name")
         const des_in = document.getElementById("club_des")
         const sch_in = document.getElementById("club_sch")
+        const img_in = document.getElementById("club_img")
         const limit_in = document.getElementById("club_limit")
         name_in.setAttribute("disabled",1)
         des_in.setAttribute("disabled",1)
         sch_in.setAttribute("disabled",1)
         limit_in.setAttribute("disabled",1)
+        img_in.setAttribute("disabled",1)
         submit.setAttribute("hidden", 1)
+        uploadImg.current.value = "";
+		setClubImg("https://dummyimage.com/300x300");
     }
 
 	return (
@@ -157,7 +162,7 @@ export default function OwnClub() {
                                 <label>Picture:</label>
                                 <img src={clubimg} className="form-control mt-2"></img>
                                 <br></br>
-                                <FileBase64 className="form-control" onDone={(ev)=> getFiles(ev)} required/>
+                                <input className="form-control" type="file" id="club_img" onChange={(ev) => encodeImageFileAsURL(ev)} ref={uploadImg} disabled/>
                             </div>
                             {/* Club Limit */}
                             <div className="form-group mx-4 my-2" style={{width: "25%"}}>
