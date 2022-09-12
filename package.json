@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@stripe/react-stripe-js": "^1.0.0",
     "@stripe/stripe-js": "^1.0.0",
     "axios": "^0.27.2",
@@ -18,7 +21,7 @@
     "js-cookie": "^3.0.1",
     "micro": "latest",
     "micro-cors": "latest",
-    "next": "12.2.3",
+    "next": "^12.3.0",
     "omise": "^0.8.5",
     "omise-nodejs": "^0.0.11",
     "react": "18.2.0",
