@@ -3,6 +3,8 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
+import { get_pending } from '../../utils/system';
+import Cookies from "universal-cookie";
 
 
 export default function Pending() {
@@ -137,20 +139,30 @@ export default function Pending() {
         
     }
 
-    async function fetchData(){
-        try{
-            const response = await fetch(`http://localhost:8000/paginate/db`,{
-                method:"post",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({"page":1})
-            })
-            const result = await response.json()
-            const paginate_tmp = generate(result)
-            showData(result.docs)
-            showPaginate(paginate_tmp)
-        }catch(err){
-            console.log(err.message)
+    async function fetchData() {
+        const body = {
+            "page" : 1,
         }
+        const cookies = new Cookies();
+		const token = cookies.get("token");
+        const result = await get_pending(body,token)
+        console.log(result)
+        // const paginate_tmp = generate(result)
+        // showData(result.docs)
+        // showPaginate(paginate_tmp)
+        // try{
+        //     const response = await fetch(`http://localhost:8000/paginate/db`,{
+        //         method:"post",
+        //         headers:{"Content-Type":"application/json"},
+        //         body:JSON.stringify({"page":1})
+        //     })
+        //     const result = await response.json()
+        //     const paginate_tmp = generate(result)
+        //     showData(result.docs)
+        //     showPaginate(paginate_tmp)
+        // }catch(err){
+        //     console.log(err.message)
+        // }
     }
     
     function showData(result){

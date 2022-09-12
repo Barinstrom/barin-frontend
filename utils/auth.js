@@ -12,74 +12,6 @@ const headers_setting = {
 	"Content-Type": "application/json;charset=UTF-8",
 }
 
-// register
-export async function register(data) {
-	const apiUrl = stagingUrl + "/register";
-	
-	const options = {
-		method: "POST",
-		headers: headers_setting,
-		body: JSON.stringify(data),
-	}
-	
-	try {
-		const response = await fetch(apiUrl, options);
-		const result = await response.json()
-		//console.log("status code: ", response.status); // 👉️ 200
-		//console.log(result)
-		if (response.ok) {
-			
-			return true
-		} else {
-			return false
-		}
-	} catch(err) {
-		return false
-	}
-};
-
-// login & set token
-export async function checkLogin(data){
-	let apiUrl = stagingUrl + "/login";
-
-	const options = {
-		method: "POST",
-		headers: headers_setting,
-		body: JSON.stringify(data),
-	}
-	
-	try{
-		const response = await fetch(apiUrl,options);
-		/* ดู response ที่ได้มา */
-		//console.log(response)
-		
-		if (response.ok) {
-			const result = await response.json();
-			/* เช็คข้อมูลดูค่า token */
-			// console.log("result =",result)
-			const token = result.token;
-			console.log(token)
-			cookie.set("token", token, { expires: 1 });
-			return {
-				status: true,
-				result
-			}
-		}
-		else {
-			return {
-				status: false,
-				error: "have error"
-			}
-		}
-	}catch(err){
-		console.log(err.message)
-		return {
-			status: false,
-			error: err.message
-		}
-	}
-}
-
 // ดึงข้อมูลคนมา
 export async function get_userdata(token,data) {
 	const apiUrl = Url + "/auth/profile";
@@ -169,6 +101,36 @@ export async function add_club(data,token,schoolID) {
 // เพิ่ม 1 ครู
 export async function add_teacher(data,token,schoolID) {
 	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teacher";
+	console.log("url =", apiUrl)
+	console.log(JSON.stringify(data))
+	try {
+		const response = await fetch(apiUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "POST",
+			body: JSON.stringify(data),
+		})
+		console.log(response)
+		/* ข้อมูลของ user ที่ return กลับมา */
+		const status = await response.json();
+		//console.log(user_info)
+		
+		if (response.ok) {
+			return status;
+		} else {
+			return false;
+		}
+	} catch(err) {
+		console.log(err.message);
+		return false;
+	}
+};
+
+// เพิ่มครู หลายคน
+export async function add_teachers(data,token,schoolID) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teachers";
 	console.log("url =", apiUrl)
 	console.log(JSON.stringify(data))
 	try {
