@@ -17,7 +17,7 @@ export default function SystemAdmin({ admin_data }) {
 
 	function changeComponent(num, ev) {
 		if (num == 0) {
-			setComponent(<Pending />);
+			setComponent(<Pending  />);
 		}else if (num == 1) {
 			setComponent(<Approved />);
 		}else{
@@ -180,7 +180,7 @@ export default function SystemAdmin({ admin_data }) {
 							>
 
 								<i className="fa-solid fa-book me-2"></i>
-								<span>Approved</span>
+								<span>Pending</span>
 							</div>
 						</li>
 
@@ -190,7 +190,7 @@ export default function SystemAdmin({ admin_data }) {
 								ref={el => optionBtn.current[1] = el}
 							>
 								<i className="fa-solid fa-magnifying-glass me-2"></i>
-								<span>Pending</span>
+								<span>Approved</span>
 							</div>
 						</li>
 

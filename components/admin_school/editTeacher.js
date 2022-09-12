@@ -40,11 +40,17 @@ export default function EditTeacher({ school_data }) {
     /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
-        window.localStorage.setItem("search",parseInt(search.current.value))
+        let body
         
-        const body = {
-            "page":1,
-            "info":window.localStorage.getItem("search")
+        if (!search.current.value){
+            window.localStorage.removeItem("search")
+            body = {"page":1,}
+        }else{
+            window.localStorage.setItem("search",parseInt(search.current.value))
+            body = {
+                "page":1,
+                "info":window.localStorage.getItem("search")
+            }
         }
         
         try{
@@ -55,7 +61,7 @@ export default function EditTeacher({ school_data }) {
 
             })
             const result = await response.json()
-            //console.log(result)
+            console.log(result)
             const paginate_tmp = generate(result)
             showData(result.docs)
             showPaginate(paginate_tmp)
@@ -76,7 +82,7 @@ export default function EditTeacher({ school_data }) {
     }
 
     function generate(result){
-        console.log(result)
+        //console.log(result)
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -103,7 +109,6 @@ export default function EditTeacher({ school_data }) {
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
-
         return paginate_tmp
     }
 
