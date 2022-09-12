@@ -4,6 +4,7 @@ import styles from "../../styles/admin.module.css";
 import { get_userdata } from "../../utils/auth";
 // import OwnClub from "../../components/teacher/ownClub";
 import OwnClub from "../../components/test/ownClubTest";
+import StudentList from "../../components/test/studentList";
 
 
 export default function Teacher({ teacher_data }) {
@@ -18,9 +19,11 @@ export default function Teacher({ teacher_data }) {
 	function changeComponent(num, ev) {
 		if (num == 0) {
 			setComponent(<OwnClub />);
+		}else if(num == 1){
+			setComponent(<StudentList />)
 		}
 		
-		for (let i=0;i<=0;i++){
+		for (let i=0;i<=1;i++){
 			if (i == num){
 				optionBtn.current[i].classList.add("nowclick")
 			}else{
@@ -180,6 +183,16 @@ export default function Teacher({ teacher_data }) {
 							</div>
 						</li>
 
+						<li>
+							<div className={`nav_left`} 
+								onClick={(ev) => changeComponent(1,ev)}
+								ref={el => optionBtn.current[1] = el}
+							>
+
+								<i className="fa-solid fa-book me-2"></i>
+								<span>รายชื่อนักเรียน</span>
+							</div>
+						</li>
 					</ul>
 				</div>
 			</nav>
