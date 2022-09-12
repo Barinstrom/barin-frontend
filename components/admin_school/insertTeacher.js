@@ -66,6 +66,12 @@ export default function InsertTeacher({ school_data }) {
 		console.log(formSuccess)
 		
 		formSuccess.schoolID = school_data.schoolID
+
+		// will remove
+		formSuccess.clubs = [
+            "631c6c83206c37ff705b2931",
+            "631c6e5cb0f33e324f1b1e3c"
+        ]
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 		const result = await add_teacher(formSuccess,token,school_data.schoolID);

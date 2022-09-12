@@ -66,7 +66,6 @@ export default function InsertTeacher({ school_data }) {
 		const formSuccess = Object.fromEntries(form.entries())
 		
 		formSuccess.isActive = "Active"
-		formSuccess.schoolID = school_data.schoolID
 		//console.log(formSuccess)
 		//console.log(JSON.stringify(formSuccess))
 		const cookies = new Cookies();

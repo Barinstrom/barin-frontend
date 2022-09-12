@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
-import { add_student } from "../../utils/auth";
+import { add_club } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data }) {
