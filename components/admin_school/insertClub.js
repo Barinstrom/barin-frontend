@@ -85,8 +85,8 @@ export default function InsertTeacher({ school_data }) {
 				
 				const cookies = new Cookies();
 				const token = cookies.get("token");
-				const result = await add_club(formSuccess,token,school_data.schoolID);
-				console.log(result);
+				const response = await add_club(formSuccess,token,school_data.schoolID);
+				console.log(response);
 			}
 			
 			//console.log(JSON.stringify(formSuccess))

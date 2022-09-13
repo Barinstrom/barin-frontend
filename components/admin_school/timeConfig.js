@@ -115,14 +115,23 @@ export default function TimeConfig({ school_data }) {
 		btnEdit.current.classList.remove("d-none")
 
 		const body = {
-			schoolYear:schoolYear.current.value,
+			schoolYear:school_data.nowSchoolYear,
 			endOfSchoolYear:endOfSchoolYear.current.value ,
 			endOfRegisterDate:endOfRegisterDate.current.value,
 			endOfRegisterTime:endOfRegisterTime.current.value,
 			registerTime:registerTime.current.value,
 			registerDate:registerDate.current.value
 		}
-		//console.log(body)
+		// const body = {
+		// 	schoolYear:school_data.nowSchoolYear,
+		// 	endOfSchoolYear:endOfSchoolYear.current.value ,
+		// 	endOfRegisterDate:endOfRegisterDate.current.value,
+		// 	endOfRegisterTime:endOfRegisterTime.current.value,
+		// 	registerTime:registerTime.current.value,
+		// 	registerDate:registerDate.current.value
+		// }
+		console.log(body)
+		console.log(JSON.stringify(body))
 
 		resetData()
 	

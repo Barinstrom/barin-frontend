@@ -3,7 +3,7 @@ import styles from '../styles/index.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
-import { checkLogin } from "../utils/auth";
+import { checkLogin } from "../utils/unauth";
 import Swal from 'sweetalert2';
 
 

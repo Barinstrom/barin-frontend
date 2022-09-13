@@ -1,7 +1,7 @@
 import React from "react";
 import { useState,useRef } from "react";
 import Router from "next/router";
-import { register } from "../utils/auth";
+import { register } from "../utils/unauth";
 
 export default function Register() {
 	/* state เก็บข้อมูลไฟล์ string base64 และชื่อไฟล์ */

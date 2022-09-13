@@ -3,6 +3,8 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
+import { get_pending } from '../../utils/system';
+import Cookies from "universal-cookie";
 
 
 export default function Pending() {
@@ -18,8 +20,17 @@ export default function Pending() {
         ev.preventDefault()
         window.localStorage.removeItem("search")
         search.current.value = ""
+
+        const cookies = new Cookies();
+		const token = cookies.get("token");
+        const result = await get_pending({},token)
+        console.log(result)
         
-        try{
+        const paginate_tmp = generate(result)
+        showData(result.docs)
+        showPaginate(paginate_tmp)
+        
+       /*  try{
             const response = await fetch(`http://localhost:8000/paginate/db`,{
                 method:"post",
                 headers:{"Content-Type":"application/json"},
@@ -33,7 +44,7 @@ export default function Pending() {
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
-        }
+        } */
     }
     
     /* กรณี search ข้อมูลต่างๆ */
@@ -45,14 +56,23 @@ export default function Pending() {
             window.localStorage.removeItem("search")
             body = {"page":1,}
         }else{
-            window.localStorage.setItem("search",parseInt(search.current.value))
+            window.localStorage.setItem("search",search.current.value)
             body = {
                 "page":1,
-                "info":window.localStorage.getItem("search")
+                "query":window.localStorage.getItem("search")
             }
         }
         
-        try{
+        const cookies = new Cookies();
+		const token = cookies.get("token");
+        const result = await get_pending(body,token)
+        console.log(result)
+        
+        const paginate_tmp = generate(result)
+        showData(result.docs)
+        showPaginate(paginate_tmp)
+        
+        /* try{
             const response = await fetch(`http://localhost:8000/paginate/db`,{
                 method:"post",
                 headers:{"Content-Type":"application/json"},
@@ -66,7 +86,7 @@ export default function Pending() {
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
-        }
+        } */
     }
     
     function changeDate(k){
@@ -115,11 +135,20 @@ export default function Pending() {
     async function clickPage(page){
         //console.log(window.localStorage.getItem("search"))
         const body = {
-            "page":page,
-            "info":window.localStorage.getItem("search")
+            "page" : page,
+            "query":window.localStorage.getItem("search")
         }
         
-        try{
+        const cookies = new Cookies();
+		const token = cookies.get("token");
+        const result = await get_pending(body,token)
+        console.log(result)
+        
+        const paginate_tmp = generate(result)
+        showData(result.docs)
+        showPaginate(paginate_tmp)
+        
+        /* try{
             const response = await fetch(`http://localhost:8000/paginate/db`,{
                 method:"post",
                 headers:{"Content-Type":"application/json"},
@@ -133,12 +162,25 @@ export default function Pending() {
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
-        }
+        } */
         
     }
 
-    async function fetchData(){
-        try{
+    async function fetchData() {
+        const body = {
+            "page" : 1
+        }
+        
+        const cookies = new Cookies();
+		const token = cookies.get("token");
+        const result = await get_pending(body,token)
+        console.log(result)
+        
+        const paginate_tmp = generate(result)
+        showData(result.docs)
+        showPaginate(paginate_tmp)
+        
+        /* try{
             const response = await fetch(`http://localhost:8000/paginate/db`,{
                 method:"post",
                 headers:{"Content-Type":"application/json"},
@@ -150,7 +192,7 @@ export default function Pending() {
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
-        }
+        } */
     }
     
     function showData(result){
@@ -161,8 +203,8 @@ export default function Pending() {
                         <li key={index} className="list-group-item">
                             <div className='d-block d-sm-flex justify-content-sm-between'>
 								<div className='d-flex justify-content-center align-items-center p-2'>
-									<span>{item.user}</span>
-									<span className='ms-3'>{changeDate(item.birthday)}</span>
+									<span>{item.schoolID}</span>
+									<span className='ms-3'>{item.schoolName}</span>
 									<span className='badge bg-success ms-3'>status</span>
 								</div>
 								<div className='text-center mt-2 mt-sm-0 text-sm-start '>

@@ -70,8 +70,8 @@ export default function InsertTeacher({ school_data }) {
 		//console.log(JSON.stringify(formSuccess))
 		const cookies = new Cookies();
 		const token = cookies.get("token");
-		const result = await add_student(formSuccess,token,school_data.schoolID);
-		console.log(result);
+		const response = await add_student(formSuccess,token,school_data.schoolID);
+		console.log(response);
 	}
 
 

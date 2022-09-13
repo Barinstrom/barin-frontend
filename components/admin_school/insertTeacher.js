@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
-import { add_teacher } from "../../utils/auth";
+import { add_teacher,add_teachers } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data }) {
@@ -29,33 +29,37 @@ export default function InsertTeacher({ school_data }) {
     }
 	
 	/* เมื่อกดปุ่มทำการอ่านข้อมูลจากไฟล์ csv */
-    const submit = (ev) => {
-        ev.preventDefault();
-		if (csvFile === ""){
+  const submit = (ev) => {
+    ev.preventDefault();
+		if (!csvFile){
 			alert("โปรดเลือกไฟล์ที่ต้องการส่งด้วย")
 			return
 		}
 		
 		const fileSuccess = csvFile
-        //console.log(fileSuccess)
-        
-        // ใช้ FileReader ในการอ่านไฟล์
-        const reader = new FileReader()
-        reader.readAsText(fileSuccess)
+		// console.log(fileSuccess)
+		
+		// ใช้ FileReader ในการอ่านไฟล์
+		const reader = new FileReader()
+		reader.readAsText(fileSuccess)
 
-        // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
-        reader.onload = (ev) => {
-            const text = ev.target.result;
-            //console.log(text)
-            const result = stringtoObject(text)
-            if (result === "data is undefined"){
-                alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
-                return
-            }else{
-                console.log(result)
-            }
-        }
-    }
+		// เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
+		reader.onload = async (ev) => {
+				const text = await ev.target.result;
+				console.log(text)
+				const result = await stringtoObject(text)
+				if (result === "data is undefined"){
+						alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
+						return
+				}else{
+					console.log(result)
+					const cookies = new Cookies();
+					const token = cookies.get("token");
+					const response = await add_teachers(result,token,school_data.schoolID);
+					console.log(response);
+				}
+		}
+  }
 
 	/* เมื่อกด click ปุ่มฟอร์มใน modal เพิ่มนักเรียน 1 คน จะทำการส่งข้อมูลไปให้ backend */
 	async function SubmitOneStudent(ev){
@@ -67,15 +71,10 @@ export default function InsertTeacher({ school_data }) {
 		
 		formSuccess.schoolID = school_data.schoolID
 
-		// will remove
-		formSuccess.clubs = [
-            "631c6c83206c37ff705b2931",
-            "631c6e5cb0f33e324f1b1e3c"
-        ]
 		const cookies = new Cookies();
 		const token = cookies.get("token");
-		const result = await add_teacher(formSuccess,token,school_data.schoolID);
-		console.log(result);
+		const response = await add_teacher(formSuccess,token,school_data.schoolID);
+		console.log(response);
 	}
 
 	
