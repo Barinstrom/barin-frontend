@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Star from "../../components/test/star";
-import StarRating from "../../components/test/starrating";
+// import StarRating from "../../components/test/starrating";
 import {
   getComments as getCommentsApi,
   updateComment as updateCommentApi,
@@ -14,7 +14,7 @@ export default function Review() {
   ///* 5.linkข้อมูลกับ database */
 
   //Testing เลือก myuserId 1 แบบ
-
+  //@@@@ For Testing
   //สำหรับเช็คidที่ซ้ำกับที่มีแล้ว
   // const myuserId = "2456";
   //สำหรับเช็คidที่ซ้ำกับที่ไม่มี
@@ -89,8 +89,6 @@ export default function Review() {
       own_comment.current.disabled = true;
       setStarRated(temp.star);
       p_starRating.current.classList.add("d-none");
-      // p_Star.current.removeChild(p_Star.current.children[0])
-      // console.log(p_starRating.current.children[1])
       p_Star.current.classList.remove("d-none");
       btn_review.current.classList.add("d-none");
       btn_edit.current.classList.remove("d-none");
@@ -174,6 +172,52 @@ export default function Review() {
       setBackendComments(updatedBackendComments);
     });
   };
+  //starrating
+  function StartRating() {
+    const [rating, setRating] = useState(null);
+    const [hover, setHover] = useState(null);
+    return (
+      <>
+        {[...Array(5)].map((start, i) => {
+          let ratingValue = i + 1;
+          function StartHandle() {
+            setRating(ratingValue);
+            localStorage.setItem("star", ratingValue);
+          }
+  
+          return (
+            <label key={i}>
+              <input
+                type="radio"
+                className="radio bg-success d-none"
+                value={ratingValue}
+                onClick={() => StartHandle()}
+              ></input>
+              <i
+                className="fa-solid fa-star fa-lg star"
+                style={
+                  (ratingValue) > (hover || rating)
+                    ? 
+                    { color: "#e4e5e9" }
+                    : { color: "#ffc107" }
+                }
+                onMouseEnter={() => setHover(ratingValue)}
+                onMouseLeave={() => setHover(null)}
+              ></i>
+            </label>
+          );
+        })}
+  
+  
+        <style jsx>{`
+          .star {
+            cursor: pointer;
+            transition: color 200ms;
+          }
+        `}</style>
+      </>
+    );
+  }
   return (
     <>
       <main className="container vh-100 d-flex justify-content-center align-items-center modal-xl">
@@ -196,7 +240,8 @@ export default function Review() {
                 <p className="" ref={p_starRating}>
                   <span>กรอกคะแนนรีวิว</span>
                   <span className="m-3">
-                    <StarRating />
+                  {StartRating()}
+                  
                   </span>
                 </p>
                 <p className="d-none " ref={p_Star}>

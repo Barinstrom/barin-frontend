@@ -36,12 +36,7 @@ export default function StartRating() {
       })}
 
 
-      <style jsx>{`
-        .star {
-          cursor: pointer;
-          transition: color 200ms;
-        }
-      `}</style>
+      
     </>
   );
 }
