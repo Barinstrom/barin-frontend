@@ -6,6 +6,9 @@ import {
   updateComment as updateCommentApi,
   deleteComment as deleteCommentApi,
 } from "../../components/test/comments/testapi";
+import Cookies from "universal-cookie";
+
+
 export default function Review() {
   ///* 1.เหลือแก้ให้ starrating reset เพื่อเลือกใหม่ */
   ///* 2.แก้ Overall ให้ตาม database */
@@ -31,7 +34,44 @@ export default function Review() {
   const btn_confirm = useRef();
   const btn_delete = useRef();
 
+
+  const cookies = new Cookies();
+	const token = cookies.get("token");
+  async function post_review(data, token, schoolID) {
+    // schoolID = "teststamp"
+    const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-review";
+    // console.log("url =", apiUrl)
+    // console.log(JSON.stringify(data))
+    
+    try {
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        method: "POST",
+        body: JSON.stringify(data),
+      })
+      console.log(response)
+      // res200 ok 400 ผิดรูป 401 tokenผิด 404 ผิดmethod/path
+      /* ข้อมูลของ user ที่ return กลับมา */
+      const status = await response.json();
+      //console.log(user_info)
+      
+      if (response.ok) {
+        return status;
+      } else {
+        return false;
+      }
+    } catch(err) {
+      console.log(err.message);
+      return false;
+    }
+  };
+
+
   function clickModal(ev) {
+
     ev.preventDefault();
     // get api --- paginate
     getCommentsApi().then((data) => {
@@ -65,6 +105,15 @@ export default function Review() {
       star: parseInt(rating),
       createdAt: new Date(),
     };
+    const data = {
+      clubID: "12wewe3",
+      studentID: "55wew5",
+      // textReview: "this is so good"
+
+    }
+    const schoolID = teststamp
+    post_review(data, token, schoolID)
+    console.log("send")
     //
     //
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/admin.module.css";
-//import { get_userdata } from "../../utils/auth";
+import { get_userdata, get_school } from "../../utils/auth";
+
 import EditStudent from "../../components/admin_school/editStudent";
 import EditTeacher from "../../components/admin_school/editTeacher";
 import EditClub from "../../components/admin_school/editClub";
@@ -11,6 +12,11 @@ import InsertStudent from "../../components/admin_school/insertStudent";
 import InsertTeacher from "../../components/admin_school/insertTeacher";
 import SchoolData from "../../components/admin_school/schoolData";
 import TimeConfig from "../../components/admin_school/timeConfig";
+import Reload from "../../components/reload";
+import Cookies from "universal-cookie";
+import Error from "next/error";
+
+
 
 export default function Admin({ school_data }) {
 	// console.log(data);
@@ -20,10 +26,49 @@ export default function Admin({ school_data }) {
 	const hamberger = useRef()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
+	const [statusT,setstatusT] = useState("loading")
 	const [component, setComponent] = useState(<SchoolData school_data={school_data} />);
+
+	useEffect(() => {
+		//waitGet_userdata(token,schoolID)
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+		
+		async function waitGet_userdata(token,schoolID){
+			const dataTemp = await get_userdata(token,schoolID);
+			
+			console.log(dataTemp)
+			if (dataTemp){
+				setstatusT(true)
+				setTimeout(()=>{
+					controllTime("start");
+					optionBtn.current[0].classList.add("nowclick");
+					if (!school_data.paymentStatus) {
+						for (let i = 0; i < 9; i++) {
+							if (i == 0) {
+								continue
+							}
+							optionBtn.current[i].hidden = true
+						}
+					} 
+				},1)
+				 
+	}else{
+				setstatusT(false)
+			}
+		}
+
+		waitGet_userdata(token,"teststamp")
+		
+		return () => {
+			controllTime("cancell");
+		};
+	},[]);
+
 
 	function changeComponent(num, ev) {
 		console.log(ev.target)
+		console.log(num)
 		if (num == 0) {
 			setComponent(<SchoolData school_data={school_data} />);
 		} else if (num == 1) {
@@ -54,24 +99,7 @@ export default function Admin({ school_data }) {
 		hamberger.current.classList.remove("hamactive");
 	}
 
-	useEffect(() => {
-		optionBtn.current[0].classList.add("nowclick");
-		controllTime("start");
-		
-		
-		if (!school_data.paymentStatus) {
-			for (let i = 0; i < 9; i++) {
-				if (i == 0) {
-					continue
-				}
-				optionBtn.current[i].hidden = true
-			}
-		}
-
-		return () => {
-			controllTime("cancell");
-		};
-	},[]);
+	
 
 	
 
@@ -82,7 +110,7 @@ export default function Admin({ school_data }) {
 				const h = String(new Date().getHours()).padStart(2, "0");
 				const m = String(new Date().getMinutes()).padStart(2, "0");
 				const s = String(new Date().getSeconds()).padStart(2, "0");
-				time.current.innerText = `${h}:${m}:${s}`;
+				//time.current.innerText = `${h}:${m}:${s}`;
 			}, 1000);
 		} else {
 			clearInterval(timer);
@@ -94,7 +122,7 @@ export default function Admin({ school_data }) {
 		nav.current.classList.toggle("active");
 	};
 
-	return (
+	const admin_page = (
 		<>
 			<style jsx>{`
 				.nav_header {
@@ -287,15 +315,25 @@ export default function Admin({ school_data }) {
 				</div>
 			</nav>
 
-			{/* ส่วน component มาแสดงผล */}
+			
 			<main className={styles.content}>
 				<section className="container border">
 					{component}
 				</section>
 			</main>
-
 		</>
-	);
+	)
+
+	if (statusT == "loading") { 
+		return <Reload />
+	}
+	else if (statusT) {
+		return admin_page
+	}
+	else {
+		return <Error statusCode={404}/>
+	}
+	
 }
 
 export async function getStaticPaths() {
@@ -311,8 +349,8 @@ export async function getStaticPaths() {
 		{ params: { schoolID: "1" } },
 		{ params: { schoolID: "2" } },
 		{ params: { schoolID: "3" } },
-		{ params: { schoolID: "4" } },
-		{ params: { schoolID: "5" } },
+		{ params: { schoolID: "stamp" } },
+		{ params: { schoolID: "teststamp" } },
 	];
 
 	return {
@@ -325,7 +363,7 @@ export async function getStaticProps(context) {
 	//console.log(context);
 	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
 		const data = await response.json() */
-	//console.log("context", context);
+	// console.log("context", context);
 
 	// "2020-09-02" = yyyy-mm-dd
 	const school_data = {
@@ -334,7 +372,7 @@ export async function getStaticProps(context) {
 		paymentStatus: true, // จ่ายเงินหรือยัง
 		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
 		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
-		schoolID: "stamp",
+		schoolID: context.params.schoolID,
 		nowSchoolYear: "2021",
 		schedule:[
 			// {

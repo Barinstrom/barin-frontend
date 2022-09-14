@@ -1,9 +1,11 @@
 import React from "react";
 import { useRef,useState,useEffect } from "react";
 import ErrorPage from 'next/error'
+import { set_schedule } from "../../utils/auth";
+import Cookies from "universal-cookie";
 
-export default function TimeConfig({ school_data }) {
-
+export default function TimeConfig({school_data}) {
+	//console.log(school_data)
 	useEffect(()=> {
 		school_data.schedule.forEach(e => {
 			if (school_data.nowSchoolYear == e.schoolYear){
@@ -122,6 +124,13 @@ export default function TimeConfig({ school_data }) {
 			registerTime:registerTime.current.value,
 			registerDate:registerDate.current.value
 		}
+		const sent_data = {
+			schoolID: "teststamp",
+			schoolYear: school_data.nowSchoolYear,
+			registerDate: String(registerDate.current.value)+"T"+String(registerTime.current.value), 
+			endOfRegisterDate: String(endOfRegisterDate.current.value)+"T"+String(endOfRegisterTime.current.value), 
+			endOfSchoolYear: endOfSchoolYear.current.value ,
+		}
 		// const body = {
 		// 	schoolYear:school_data.nowSchoolYear,
 		// 	endOfSchoolYear:endOfSchoolYear.current.value ,
@@ -130,8 +139,18 @@ export default function TimeConfig({ school_data }) {
 		// 	registerTime:registerTime.current.value,
 		// 	registerDate:registerDate.current.value
 		// }
-		console.log(body)
-		console.log(JSON.stringify(body))
+		console.log(sent_data)
+		console.log(JSON.stringify(sent_data))
+
+		// api call
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+
+		async function set_schedule_async() {
+			const result = await set_schedule(sent_data, token, "teststamp")
+			console.log(result)
+		}
+		set_schedule_async();
 
 		resetData()
 	

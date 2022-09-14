@@ -1,159 +1,166 @@
-import cookie from "js-cookie";
+import Cookies from "universal-cookie";
+import axios from "axios";
+
 /* url ของจริง */
 //https://barinapi.tawanchai.com
 /* url เทส */
 //https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
 const Url = "https://barinapi.tawanchai.com";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com"
+const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
-/* เป็น option ส่วนหนึ่งที่ต้องใส้ใน fetch */
-const headers_setting = {
-	"Content-Type": "application/json;charset=UTF-8",
-}
-
-// ดึงข้อมูลคนมา
-export async function get_userdata(token,data) {
-	const apiUrl = Url + "/auth/profile";
-	try {
-		const response = await fetch(apiUrl, {
-			headers: { Authorization: `Bearer ${token}` },
+// ดึงข้อมูลของทุกคน
+export async function get_userdata(token, schoolID) {
+	// console.log(token,schoolID)
+	const apiUrl = stagingUrl + String(schoolID) + "/user";
+	try{
+		const result = await axios({
+			method:"get",
+			url: apiUrl,
+			headers: {
+				"Authorization": `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			timeout: 10000
 		})
-		
-		/* ข้อมูลของ user ที่ return กลับมา */
-		const user_info = await response.json();
-		//console.log(user_info)
-		
-		if (response.ok) {
-			return user_info;
-		} else {
-			return false;
-		}
-	} catch(err) {
-		console.log(err.message);
-		return false;
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
 	}
+	
 };
 
+// ดึงข้อมูลโรงเรียน
+export async function get_school(token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/get-school";
+	try{
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				"Authorization": `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
+	}
+	
+};
 
-// เพิ่ม 1 นร
-export async function add_student(data,token,schoolID) {
-	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-student";
-	console.log("url =", apiUrl)
-	console.log(JSON.stringify(data))
+// ตั้งเวลาลงทะเบียน role addmin_school
+export async function set_schedule(data, token, schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/set-schedule";
 	try {
-		const response = await fetch(apiUrl, {
+		const result = await axios({
+			url: apiUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
+			method: "patch",
+			data:JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
+	}
+}
+
+// เพิ่มข้อมูลนักเรียน role addmin_school
+export async function add_student(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
+	// console.log("url =", apiUrl)
+	// console.log(JSON.stringify(data))
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
 			method: "POST",
 			body: JSON.stringify(data),
+			timeout: 10000
 		})
-		console.log(response)
-		/* ข้อมูลของ user ที่ return กลับมา */
-		const status = await response.json();
-		//console.log(user_info)
-		
-		if (response.ok) {
-			return status;
-		} else {
-			return false;
-		}
-	} catch(err) {
-		console.log(err.message);
-		return false;
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
 	}
+
 };
 
 
 // เพิ่ม 1 คลับ
 export async function add_club(data,token,schoolID) {
-	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-club";
-	console.log("url =", apiUrl)
-	console.log(JSON.stringify(data))
-	try {
-		const response = await fetch(apiUrl, {
+	const apiUrl = stagingUrl + String(schoolID) + "/add-club";
+	
+		try {
+		const result = await axios({
+			url: apiUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			method: "POST",
-			body: JSON.stringify(data),
+			method: "post",
+			data:JSON.stringify(data),
+			timeout: 10000
 		})
-		console.log(response)
-		/* ข้อมูลของ user ที่ return กลับมา */
-		const status = await response.json();
-		//console.log(user_info)
-		
-		if (response.ok) {
-			return status;
-		} else {
-			return false;
-		}
-	} catch(err) {
-		console.log(err.message);
-		return false;
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
 	}
 };
 
 
 // เพิ่ม 1 ครู
 export async function add_teacher(data,token,schoolID) {
-	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teacher";
-	console.log("url =", apiUrl)
-	console.log(JSON.stringify(data))
+	const apiUrl = stagingUrl + String(schoolID) + "/add-teacher";
+
 	try {
-		const response = await fetch(apiUrl, {
+		const result = await axios({
+			url: apiUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			method: "POST",
-			body: JSON.stringify(data),
+			method: "post",
+			data:JSON.stringify(data),
+			timeout: 10000
 		})
-		console.log(response)
-		/* ข้อมูลของ user ที่ return กลับมา */
-		const status = await response.json();
-		//console.log(user_info)
-		
-		if (response.ok) {
-			return status;
-		} else {
-			return false;
-		}
-	} catch(err) {
-		console.log(err.message);
-		return false;
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
 	}
+
 };
 
 // เพิ่มครู หลายคน
 export async function add_teachers(data,token,schoolID) {
-	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teachers";
-	console.log("url =", apiUrl)
-	console.log(JSON.stringify(data))
+	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
 	try {
-		const response = await fetch(apiUrl, {
+		const result = await axios({
+			url: apiUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			method: "POST",
-			body: JSON.stringify(data),
+			method: "post",
+			data:JSON.stringify(data),
+			timeout: 10000
 		})
-		console.log(response)
-		/* ข้อมูลของ user ที่ return กลับมา */
-		const status = await response.json();
-		//console.log(user_info)
-		
-		if (response.ok) {
-			return status;
-		} else {
-			return false;
-		}
-	} catch(err) {
-		console.log(err.message);
-		return false;
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
 	}
 };

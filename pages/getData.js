@@ -1,5 +1,6 @@
 import React from "react";
 import { get_userdata } from "../utils/auth";
+import { get_school } from "../utils/auth";
 import { useState, useEffect } from "react";
 /* มีการใช้ package universal-cookie */
 import Cookies from "universal-cookie";
@@ -7,6 +8,9 @@ import Cookies from "universal-cookie";
 export default function Home2() {
 	/* ตัวแปร data จะนำไปใช้เก็บข้อมูลที่ fetch มาจาก backend */
 	const [data, setData] = useState("");
+	const [school, setSchool] = useState("");
+
+	const schoolID = "teststamp"
 	
 	/* จะทำ useeffect ก็ต่อเมื่อ render แค่ครั้งแรกเท่านั้น  */
 	useEffect(() => {
@@ -16,14 +20,21 @@ export default function Home2() {
 		//console.log("token =", token);
 		
 		/* มีการสร้างฟังชันก์เพื่อเรียก get_userdata  โดยต้องใช้ async await เพราะว่าต้องมีการรอให้ได้ข้อมูลก่อน เสร็จก่อนถึงจะไปทำอย่างอื่นได้*/
-		async function waitGet_userdata(){
-			const dataTemp = await get_userdata(token);
+		async function waitGet_userdata(token,schoolID){
+			const dataTemp = await get_userdata(token,schoolID);
 			setData(dataTemp)
-			//console.log(dataTemp)
+			console.log("user",dataTemp)
+		}
+
+		async function waitGet_schooldata(token,schoolID){
+			const dataTemp = await get_school(token,schoolID);
+			setSchool(dataTemp)
+			console.log("school",dataTemp)
 		}
 		
 		/* เรียกฟังชันก์ พร้อมส่งค่า token ไป */
-		waitGet_userdata(token)
+		waitGet_userdata(token,schoolID)
+		waitGet_schooldata(token,schoolID)
 	},[])
 	
 	/* ถ้าหากไม่มีข้อมูลให้แสดงส่วนนี้ */

@@ -8,52 +8,54 @@ import Swal from 'sweetalert2';
 
 
 export default function Login() {
-
   const spin = useRef()
-
-  /* กำหนดตัวแปร route ขึ้นมาเพื่อไปโยงไปอีกลิงค์*/
-  const router = useRouter()
-  
-  /* ใช้ useRef ผูกค่าไว้กับ tag html ตัวนั้น */
   const email = useRef()
   const password = useRef()
+
+  const router = useRouter()
   
-  /* function ในการเช็คว่าใส่ข้อมูลครบไหม */
+  
   async function clickLogin(ev){
-    /* ป้องกันกันส่งข้อมูลไป server */
     ev.preventDefault();
     
-    /* นำค่าที่ได้มาเก็บในตัวแปร สองตัวดังนี้ */
     const email_check = email.current.value;
 	  const password_check = password.current.value;
 		
-    /* เช็คข้อมูลปกติ */
-    if (email_check === "" && password_check === "") {
-		  alert("โปรดกรอกข้อมูลให้ครบถ้วน");
-      /* เรียกฟังชันก์ checkLogin แล้วส่ง body เป็น parameter ไป  */
-      return;
-		
-    } else {
-      /*ถ้าหากใส่ข้อมูลครบถ้วน ให้นำค่ามากำหนดเป็น object */
-      const body = {
-			  email: email_check ,
-			  password: password_check ,
-      }
+    if (!email_check || !password_check) {
+		  Swal.fire(
+        'โปรดกรอกข้อมูลให้ครบถ้วน!',
+        '',
+        'warning',
+      )
+      return
+		}else{
+        const body = {
+			    email: email_check ,
+			    password: password_check ,
+        }
       
       spin.current.classList.remove("d-none");
-      /* เรียกฟังชัน checkLogin แล้วส่ง body ไป  */
+      
+      // เรียกฟังชันก์จาก unauth
       const result = await checkLogin(body);
-
+      
       spin.current.classList.add("d-none");
       
-      /* ถ้าหากว่า status_login == false  */
-      if (!result.status) {
-        alert("ข้อมูลไม่ถูกต้อง")
+      
+      if (!result) {
+        Swal.fire(
+          'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบ อีเมลและรหัสผ่าน!',   
+          '',
+          'error',
+        )
         return
-      /* ถ้าหากว่า status_login == true  */
       } else {
-        console.log(result.result)
-        // router.push("/getData")
+        Swal.fire(
+          'เข้าสู่ระบบสำเร็จ',      
+          '',
+          'success',
+        )
+        router.push("/" + String(result.data.schoolID) + "/admin_school")
       }
 		}
   }
@@ -62,23 +64,25 @@ export default function Login() {
     <main className={styles.register}>
 
       <style jsx>{`
-			.spinnerX {
-				position: fixed;
-				width: 100%;
-				height: 100%;
-				top: 0;
-				left: 0;
-				text-align: center;
-				background-color: rgba(255, 255, 255, 0.8);
-				z-index: 2;
-			}
-			`}</style>
+			.background-spinner{
+          background-color:rgb(0, 0, 0,0.3);
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 100;
+      }
+      
+      `}</style>
 			
-			<div className="spinnerX pt-5 d-none" ref={spin}>
-				<div className="spinner-border text-primary" role="status">
-				</div>
-			</div>
-
+      <div className='background-spinner d-none' ref={spin}>
+        <div className="spinner-border text-primary"></div>
+        
+      </div>
       <section className={styles.block} >
         {/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
         <div>
@@ -97,11 +101,13 @@ export default function Login() {
           <label className='form-label'>รหัสผ่าน</label>
         </div>
 
-        <div className='mt-5 d-flex flex-column justify-content-center align-items-center'>
-          <button className='btn btn-success w-25' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
-          {/* ไปหน้า register */}
-          <Link href="/register"><button className='btn btn-info mt-2 w-25'>ลงทะเบียน</button></Link>
-          <Link href="/forgotPass"><button className='btn btn-warning mt-2 w-25'>ลืมรหัสผ่าน</button></Link>
+        <div className='mt-5 d-flex flex-column justify-content-between align-items-center '>
+          <div className='d-flex flex-column align-items-center w-100'>
+            <button className='btn btn-success w-50 mt-2' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
+            {/* ไปหน้า register */}
+            <Link href="/register"><button className='btn btn-info w-50 mt-2'>ลงทะเบียน</button></Link>
+          </div>
+          <Link href="/forgotPass"><a className='mt-2'>ลืมรหัสผ่าน</a></Link>
         </div>
       </section> 
     </main>

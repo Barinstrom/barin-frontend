@@ -10,6 +10,7 @@ const stripePromise = loadStripe(
 );
 
 export default function SchoolData({ school_data }) {
+	console.log(school_data)
 	const [clientSecret, setClientSecret] = useState("");
 	const [picture, setPicture] = useState(school_data.urlLogo);
 	const btnEdit = useRef();
