@@ -5,7 +5,7 @@ import { set_schedule } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
 export default function TimeConfig({school_data}) {
-	//console.log(school_data)
+	console.log(school_data)
 	useEffect(()=> {
 		school_data.schedule.forEach(e => {
 			if (school_data.nowSchoolYear == e.schoolYear){
@@ -187,7 +187,9 @@ export default function TimeConfig({school_data}) {
 						<label className="input-group-text" >เลือกปีการศึกษา</label>
 						<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear} >
 							{school_data.schedule.map((e, i) => {
+								console.log(i, e)
 								return (
+									
 									<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
 								);
 							})}

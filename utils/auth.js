@@ -9,6 +9,29 @@ import axios from "axios";
 const Url = "https://barinapi.tawanchai.com";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
+
+// ดึงข้อมูลที่เกี่ยวข้องกะคนนั้น
+export async function get_data(token, schoolID) {
+	// console.log(token,schoolID)
+	const apiUrl = stagingUrl + String(schoolID) + "/data";
+	try{
+		const result = await axios({
+			method:"get",
+			url: apiUrl,
+			headers: {
+				"Authorization": `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
+	}
+	
+};
+
 // ดึงข้อมูลของทุกคน
 export async function get_userdata(token, schoolID) {
 	// console.log(token,schoolID)

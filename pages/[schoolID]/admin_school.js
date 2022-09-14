@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/admin.module.css";
-import { get_userdata, get_school } from "../../utils/auth";
+import { get_data } from "../../utils/auth";
 
 import EditStudent from "../../components/admin_school/editStudent";
 import EditTeacher from "../../components/admin_school/editTeacher";
@@ -18,7 +18,7 @@ import Error from "next/error";
 
 
 
-export default function Admin({ school_data }) {
+export default function Admin({ schoolID,school_data }) {
 	// console.log(data);
 	const nav = useRef();
 	const time = useRef();
@@ -26,21 +26,23 @@ export default function Admin({ school_data }) {
 	const hamberger = useRef()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
-	const [statusT,setstatusT] = useState("loading")
-	const [component, setComponent] = useState(<SchoolData school_data={school_data} />);
+	const [statusT, setstatusT] = useState("loading")
+	const [school_data2,setSchool_data] = useState()
+	const [component, setComponent] = useState();
 
 	useEffect(() => {
 		//waitGet_userdata(token,schoolID)
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 		
-		async function waitGet_userdata(token,schoolID){
-			const dataTemp = await get_userdata(token,schoolID);
-			
-			console.log(dataTemp)
+		async function waitGet_data(token,schoolID){
+			const dataTemp = await get_data(token,schoolID);
+			setSchool_data(dataTemp.data.data_school)
+			console.log(dataTemp.data.data_school)
 			if (dataTemp){
 				setstatusT(true)
-				setTimeout(()=>{
+				setComponent(<SchoolData school_data={dataTemp.data.data_school} />)
+				setTimeout(() => {
 					controllTime("start");
 					optionBtn.current[0].classList.add("nowclick");
 					if (!school_data.paymentStatus) {
@@ -58,7 +60,7 @@ export default function Admin({ school_data }) {
 			}
 		}
 
-		waitGet_userdata(token,"teststamp")
+		waitGet_data(token,schoolID)
 		
 		return () => {
 			controllTime("cancell");
@@ -70,23 +72,23 @@ export default function Admin({ school_data }) {
 		console.log(ev.target)
 		console.log(num)
 		if (num == 0) {
-			setComponent(<SchoolData school_data={school_data} />);
+			setComponent(<SchoolData school_data={school_data2} />);
 		} else if (num == 1) {
-			setComponent(<TimeConfig school_data={school_data} />);
+			setComponent(<TimeConfig school_data={school_data2} />);
 		} else if (num == 2) {
-			setComponent(<InsertTeacher school_data={school_data} />);
+			setComponent(<InsertTeacher school_data={school_data2} />);
 		} else if (num == 3) {
-			setComponent(<InsertStudent school_data={school_data} />);
+			setComponent(<InsertStudent school_data={school_data2} />);
 		} else if (num == 4) {
-			setComponent(<InsertClub school_data={school_data} />);
+			setComponent(<InsertClub school_data={school_data2} />);
 		} else if (num == 5) {
-			setComponent(<EditStudent school_data={school_data} />);
+			setComponent(<EditStudent school_data={school_data2} />);
 		} else if (num == 6) {
-			setComponent(<EditTeacher school_data={school_data} />);
+			setComponent(<EditTeacher school_data={school_data2} />);
 		} else if (num == 7) {
-			setComponent(<EditClub school_data={school_data} />);
+			setComponent(<EditClub school_data={school_data2} />);
 		} else {
-			setComponent(<EditOwnData school_data={school_data} />);
+			setComponent(<EditOwnData school_data={school_data2} />);
 		}
 		for (let i=0;i<=8;i++){
 			if (i == num){
@@ -364,7 +366,7 @@ export async function getStaticProps(context) {
 	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
 		const data = await response.json() */
 	// console.log("context", context);
-
+	const schoolID = context.params.schoolID
 	// "2020-09-02" = yyyy-mm-dd
 	const school_data = {
 		schoolName: "Stamp Witnapat School",
@@ -413,7 +415,7 @@ export async function getStaticProps(context) {
 			}]
 	}
 	return {
-		props: { school_data },
+		props: { schoolID,school_data },
 		revalidate: 1,
 	};
 }

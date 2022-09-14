@@ -136,7 +136,7 @@ export default function SchoolData({ school_data }) {
 							{school_data.schoolName}
 						</h2>
 						<h5 className="card-text mt-2">
-							School Status : {school_data.Status}
+							School Status : {school_data.status}
 						</h5>
 
 						<h5 className="card-text mt-2">
