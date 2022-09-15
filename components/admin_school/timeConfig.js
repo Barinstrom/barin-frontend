@@ -4,17 +4,28 @@ import ErrorPage from 'next/error'
 import { set_schedule } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
-export default function TimeConfig({school_data}) {
-	console.log(school_data)
-	useEffect(()=> {
-		school_data.schedule.forEach(e => {
-			if (school_data.nowSchoolYear == e.schoolYear){
+export default function TimeConfig({ school_data, schoolID }) {
+	// 2022-09-26T00:15:00.000+00:00
+	// "2022-09-26 11:00:00"
+	// console.log(school_data)
+	school_data.nowSchoolYear = 2021
+	useEffect(() => {
+		school_data.schedule.map((e,i) => {
+			if (school_data.nowSchoolYear == e.schoolYear) {
+				// console.log("print school = ",e) //JSON.stringify(e)
+				const [ endOfSchoolYearX, xx ] = e.endOfSchoolYear.split("T")
+				const [ endOfRegisterDateX, endOfRegisterTimeX ] = e.endOfRegisterDate.split("T")
+				const [ registerDateX, registerTimeX ] = e.registerDate.split("T")
 				schoolYear.current.defaultValue = JSON.stringify(e)
-				endOfSchoolYear.current.defaultValue = e.endOfRegisterDate
-				registerDate.current.defaultValue = e.registerDate
-				registerTime.current.defaultValue = e.registerTime
-				endOfRegisterDate.current.defaultValue = e.endOfRegisterDate
-				endOfRegisterTime.current.defaultValue = e.endOfRegisterTime
+				endOfSchoolYear.current.defaultValue = endOfSchoolYearX
+				registerDate.current.defaultValue = registerDateX
+				registerTime.current.defaultValue = registerTimeX.substring(0,5)
+				endOfRegisterDate.current.defaultValue = endOfRegisterDateX
+				endOfRegisterTime.current.defaultValue = endOfRegisterTimeX.substring(0,5)
+
+				if (i == 0) {
+					btnEdit.current.classList.remove("d-none")
+				}
 			}
 		})
 	},[])
@@ -39,6 +50,7 @@ export default function TimeConfig({school_data}) {
 
 	function resetData() {
 		// reset data
+		console.log("reset = schoolYear.current.defaultValue",schoolYear.current.defaultValue)
 		schoolYear.current.value = schoolYear.current.defaultValue
 		endOfSchoolYear.current.value = endOfSchoolYear.current.defaultValue
 		endOfRegisterDate.current.value = registerDate.current.defaultValue
@@ -64,11 +76,14 @@ export default function TimeConfig({school_data}) {
 		}
 
 		//console.log(schedule)
-		endOfSchoolYear.current.value = schedule.endOfSchoolYear;
-		endOfRegisterDate.current.value = schedule.endOfRegisterDate;
-		endOfRegisterTime.current.value = schedule.endOfRegisterTime;
-		registerTime.current.value = schedule.registerTime;
-		registerDate.current.value = schedule.registerDate;
+		const [ endOfSchoolYearX, xx ] = schedule.endOfSchoolYear.split("T")
+		const [ endOfRegisterDateX, endOfRegisterTimeX ] = schedule.endOfRegisterDate.split("T")
+		const [ registerDateX, registerTimeX ] = schedule.registerDate.split("T")
+		endOfSchoolYear.current.value = endOfSchoolYearX;
+		endOfRegisterDate.current.value = endOfRegisterDateX;
+		endOfRegisterTime.current.value = endOfRegisterTimeX.substring(0, 5);
+		registerTime.current.value = registerTimeX.substring(0, 5);
+		registerDate.current.value = registerDateX;
 	}
 
 	function taskEdit(ev){
@@ -125,10 +140,10 @@ export default function TimeConfig({school_data}) {
 			registerDate:registerDate.current.value
 		}
 		const sent_data = {
-			schoolID: "teststamp",
+			schoolID: schoolID,
 			schoolYear: school_data.nowSchoolYear,
-			registerDate: String(registerDate.current.value)+"T"+String(registerTime.current.value), 
-			endOfRegisterDate: String(endOfRegisterDate.current.value)+"T"+String(endOfRegisterTime.current.value), 
+			registerDate: String(registerDate.current.value)+" "+String(registerTime.current.value), 
+			endOfRegisterDate: String(endOfRegisterDate.current.value)+" "+String(endOfRegisterTime.current.value), 
 			endOfSchoolYear: endOfSchoolYear.current.value ,
 		}
 		// const body = {
@@ -139,8 +154,8 @@ export default function TimeConfig({school_data}) {
 		// 	registerTime:registerTime.current.value,
 		// 	registerDate:registerDate.current.value
 		// }
-		console.log(sent_data)
-		console.log(JSON.stringify(sent_data))
+		// console.log(sent_data)
+		// console.log(JSON.stringify(sent_data))
 
 		// api call
 		const cookies = new Cookies();
@@ -148,9 +163,12 @@ export default function TimeConfig({school_data}) {
 
 		async function set_schedule_async() {
 			const result = await set_schedule(sent_data, token, "teststamp")
-			console.log(result)
+			// console.log(result)
+			if(result.data.success){
+				window.location.href = "/" + schoolID +"/admin_school"
+			}
 		}
-		set_schedule_async();
+		const result = set_schedule_async();
 
 		resetData()
 	
@@ -164,6 +182,7 @@ export default function TimeConfig({school_data}) {
 			}
 			form.current.elements[i].disabled = true
 		}
+
 		
 	}
 
@@ -187,11 +206,19 @@ export default function TimeConfig({school_data}) {
 						<label className="input-group-text" >เลือกปีการศึกษา</label>
 						<select className="form-select" onChange={(ev) => setData(ev)} ref={schoolYear} >
 							{school_data.schedule.map((e, i) => {
-								console.log(i, e)
-								return (
-									
-									<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
-								);
+								// console.log(i, e)
+								if (school_data.schedule.schoolYear == school_data.nowSchoolYear) {
+									console.log("school_data.schedule.schoolYear",school_data.schedule.schoolYear)
+									return (
+										<option value={JSON.stringify(e)} key={i} selected>{e.schoolYear}</option>
+									);
+								}
+								else {
+									return (
+										<option value={JSON.stringify(e)} key={i}>{e.schoolYear}</option>
+									);
+								}
+								
 							})}
 						</select>
 					</div>
@@ -213,7 +240,7 @@ export default function TimeConfig({school_data}) {
 				</div>
 				<div className="d-flex justify-content-end">
 					<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
-					<button className="btn btn-warning me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
+					<button className="btn btn-warning d-none me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
 					<button className="btn btn-success d-none" ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
 				</div>
 			</form>

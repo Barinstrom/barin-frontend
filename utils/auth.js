@@ -170,6 +170,7 @@ export async function add_teacher(data,token,schoolID) {
 // เพิ่มครู หลายคน
 export async function add_teachers(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
+	console.log("data = ",data)
 	try {
 		const result = await axios({
 			url: apiUrl,

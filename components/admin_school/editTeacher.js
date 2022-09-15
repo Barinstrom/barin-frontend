@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 
-export default function EditTeacher({ school_data }) {
+export default function EditTeacher({ school_data,schoolID }) {
 
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
@@ -138,12 +138,12 @@ export default function EditTeacher({ school_data }) {
         
     }
 
-    async function fetchData(){
+    async function fetchData(body = {"page":1}){
         try{
             const response = await fetch(`http://localhost:8000/paginate/db`,{
                 method:"post",
                 headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({"page":1})
+                body:JSON.stringify(body)
             })
             const result = await response.json()
             const paginate_tmp = generate(result)

@@ -3,34 +3,101 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
+import axios from 'axios';
 import ErrorPage from "next/error";
 
-export default function EditStudent({ school_data }) {
+export default function EditStudent({ school_data,schoolID }) {
 
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
     const search = useRef()
 
-    function detailTest(item){
-		console.log(item)
+    const user = useRef()
+    const age = useRef()
+    const birthday = useRef()
+    const detail = useRef()
+
+    function detailInfo(item,ev){
+		//console.log(ev.target.getAttribute("data-bs-id"))
+        user.current.setAttribute("data-id",ev.target.getAttribute("data-bs-id"))
+        user.current.value = item.user
+        age.current.value = item.age
+        
+        const t = new Date(Date.parse(item.birthday))
+        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
+        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
+        const timer =  `${t.getFullYear()}-${m}-${d}`
+        
+        birthday.current.value = timer
+        detail.current.value = item.detail
 	}
-	
-	async function clickReset(ev){
+
+    async function updateStudent(){
+        const body = {
+            user:user.current.value,
+            age:age.current.value,
+            birthday:birthday.current.value,
+            detail:detail.current.value,
+            edit:user.current.getAttribute("data-id")
+        }
+        //console.log(body)
+
+        try{
+            const result = await axios({
+                method:"post",
+                url:"http://localhost:8000/edit/db",
+                headers:{'Content-Type':'application/json'},
+                data:JSON.stringify(body),
+                timeout:10000
+            })
+
+            if (result.status === 200){
+                const body = {
+                    "page":window.localStorage.getItem("page"),
+                    "info":window.localStorage.getItem("search")
+                }
+                const result = await axios({
+                    method:"post",
+                    url:"http://localhost:8000/paginate/db",
+                    headers:{'Content-Type':'application/json'},
+                    data:JSON.stringify(body),
+                    timeout:10000
+                })
+                
+                const paginate_tmp = generate(result.data)
+                showData(result.data.docs)
+                showPaginate(paginate_tmp)
+            }
+            
+            
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    async function clickReset(ev){
         ev.preventDefault()
         window.localStorage.removeItem("search")
         search.current.value = ""
         
         try{
-            const response = await fetch(`http://localhost:8000/paginate/db`,{
-                method:"post",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({"page":1})
+            // const response = await fetch(`http://localhost:8000/paginate/db`,{
+            //     method:"post",
+            //     headers:{"Content-Type":"application/json"},
+            //     body:JSON.stringify({"page":1})
 
+            // })
+            const result = await axios({
+                method:"post",
+                url:"http://localhost:8000/paginate/db",
+                headers:{'Content-Type':'application/json'},
+                data:JSON.stringify({"page":1}),
+                timeout:10000
             })
-            const result = await response.json()
+            // const result = await response.json()
             //console.log(result)
-            const paginate_tmp = generate(result)
-            showData(result.docs)
+            const paginate_tmp = generate(result.data)
+            showData(result.data.docs)
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
@@ -44,7 +111,7 @@ export default function EditStudent({ school_data }) {
         
         if (!search.current.value){
             window.localStorage.removeItem("search")
-            body = {"page":1,}
+            body = {"page":1}
         }else{
             window.localStorage.setItem("search",parseInt(search.current.value))
             body = {
@@ -54,16 +121,23 @@ export default function EditStudent({ school_data }) {
         }
         
         try{
-            const response = await fetch(`http://localhost:8000/paginate/db`,{
-                method:"post",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(body)
+            // const response = await fetch(`http://localhost:8000/paginate/db`,{
+            //     method:"post",
+            //     headers:{"Content-Type":"application/json"},
+            //     body:JSON.stringify(body)
+            // })
 
+            const result = await axios({
+                method:"post",
+                url:"http://localhost:8000/paginate/db",
+                headers:{'Content-Type':'application/json'},
+                data:JSON.stringify(body),
+                timeout:10000
             })
-            const result = await response.json()
-            console.log(result)
-            const paginate_tmp = generate(result)
-            showData(result.docs)
+            // const result = await response.json()
+            //console.log(result)
+            const paginate_tmp = generate(result.data)
+            showData(result.data.docs)
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
@@ -119,36 +193,53 @@ export default function EditStudent({ school_data }) {
             "page":page,
             "info":window.localStorage.getItem("search")
         }
-        
+        window.localStorage.setItem("page",page)
+
         try{
-            const response = await fetch(`http://localhost:8000/paginate/db`,{
+            // const response = await fetch(`http://localhost:8000/paginate/db`,{
+            //     method:"post",
+            //     headers:{"Content-Type":"application/json"},
+            //     body:JSON.stringify(body)
+            // })
+
+            const result = await axios({
                 method:"post",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(body)
+                url:"http://localhost:8000/paginate/db",
+                headers:{'Content-Type':'application/json'},
+                data:JSON.stringify(body),
+                timeout:10000
             })
-            
-            const result = await response.json()
-            const paginate_tmp = generate(result)
+            // const result = await response.json()
             //console.log(result)
-            showData(result.docs)
+            const paginate_tmp = generate(result.data)
+            showData(result.data.docs)
             showPaginate(paginate_tmp)
+            
+
         }catch(err){
             console.log(err.message)
         }
         
     }
 
-    async function fetchData(){
+    async function fetchData(body = {"page":1}){
         try{
-            const response = await fetch(`http://localhost:8000/paginate/db`,{
+            // const response = await fetch(`http://localhost:8000/paginate/db`,{
+            //     method:"post",
+            //     headers:{"Content-Type":"application/json"},
+            //     body:JSON.stringify({"page":1})
+            // })
+            
+            const result = await axios({
                 method:"post",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({"page":1})
+                url:"http://localhost:8000/paginate/db",
+                headers:{'Content-Type':'application/json'},
+                data:JSON.stringify(body),
+                timeout:10000
             })
-            const result = await response.json()
-            const paginate_tmp = generate(result)
-            //console.log(result)
-            showData(result.docs)
+            
+            const paginate_tmp = generate(result.data)
+            showData(result.data.docs)
             showPaginate(paginate_tmp)
         }catch(err){
             console.log(err.message)
@@ -165,7 +256,15 @@ export default function EditStudent({ school_data }) {
                             <td>{item.age}</td>
                             <td>{changeDate(item.birthday)}</td>
                             <td>{item.detail}</td>
-                            <td><button className='btn btn-info' onClick={()=> detailTest(item)}>รายละเอียด</button></td>
+                            <td>
+                                <button className='btn btn-info' 
+                                    onClick={(ev) => detailInfo(item,ev)}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editStudentModal"
+                                    data-bs-id={item._id}
+                                    >รายละเอียด
+                                </button>
+                            </td>
                         </tr>
                     )
                 })}
@@ -192,6 +291,7 @@ export default function EditStudent({ school_data }) {
     
     useEffect(()=>{
         window.localStorage.removeItem("search")
+        window.localStorage.removeItem("page")
         fetchData()
     },[])
 
@@ -201,7 +301,7 @@ export default function EditStudent({ school_data }) {
 		}
 
     return (
-        
+    <>
         <div>
             <div className="text-center fs-1 mb-3">EditStudent</div>
             <div className='row'>
@@ -230,5 +330,42 @@ export default function EditStudent({ school_data }) {
             </div>
             {paginate}
         </div>
+
+        <div className="modal fade" id="editStudentModal">
+            <div className="modal-dialog">
+                <div className='modal-content'>
+                    <div className='modal-header'>
+                        <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+                        <button className='btn-close' data-bs-dismiss="modal"></button>
+                    </div>
+                    <div className='modal-body'>
+                        <form className="row gy-2 gx-3">
+                            <div className="col-12">
+                                <label className="form-label">user</label>
+                                <input type="text" className="form-control" name="user" ref={user}/>
+                            </div>
+                            <div className="col-12">
+                                <label className="form-label">age</label>
+                                <input type="text" className="form-control" name="age" ref={age}/>
+                            </div>
+                            <div className="col-12">
+                                <label className="form-label">birthday</label>
+                                <input type="text" className="form-control" name="birthday" ref={birthday}/>
+                            </div>
+                            <div className="col-12">
+                                <label className="form-label" >detail</label>
+                                <textarea className='form-control' ref={detail}></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div className='modal-footer'>
+                        <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+                        <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </>
+        
     )
 }

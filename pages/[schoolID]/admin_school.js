@@ -16,82 +16,84 @@ import Reload from "../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
 
-
-
 export default function Admin({ schoolID,school_data }) {
-	// console.log(data);
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
 	const hamberger = useRef()
-	/* ตัวแปรเก็บค่า timer */
 	let timer;
-	const [statusT, setstatusT] = useState("loading")
-	const [school_data2,setSchool_data] = useState()
-	const [component, setComponent] = useState();
+
+	const [displayFirst,setDisplayFirst] = useState("loading")
+	const [data_school,setData_school] = useState()
+	const [readyTime,setReadyTime] = useState(false)
+	const [countBtn,SetCountBtn] = useState(0)
+	const [chooseBtnStart,setchooseBtnStart] = useState(false)
 
 	useEffect(() => {
-		//waitGet_userdata(token,schoolID)
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-		
-		async function waitGet_data(token,schoolID){
-			const dataTemp = await get_data(token,schoolID);
-			setSchool_data(dataTemp.data.data_school)
-			console.log(dataTemp.data.data_school)
-			if (dataTemp){
-				setstatusT(true)
-				setComponent(<SchoolData school_data={dataTemp.data.data_school} />)
-				setTimeout(() => {
-					controllTime("start");
-					optionBtn.current[0].classList.add("nowclick");
-					if (!school_data.paymentStatus) {
-						for (let i = 0; i < 9; i++) {
-							if (i == 0) {
-								continue
-							}
-							optionBtn.current[i].hidden = true
-						}
-					} 
-				},1)
-				 
-	}else{
-				setstatusT(false)
+		if (chooseBtnStart){
+			optionBtn.current[0].classList.add("nowclick");
+			if (!school_data.paymentStatus) {
+				for (let i = 0; i < 9; i++) {
+					if (i !== 0) {
+						optionBtn.current[i].hidden = true
+					}
+				}
+			} 
+		}
+	},[chooseBtnStart])
+
+	useEffect(() => {
+		if (readyTime){
+			controllTime("start");
+			
+			return () => {
+				controllTime("cancell");
 			}
 		}
+	},[readyTime])
 
-		waitGet_data(token,schoolID)
-		
-		return () => {
-			controllTime("cancell");
-		};
-	},[]);
+	useEffect(() => {
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+
+		Promise.all([get_data(token,schoolID)])
+		.then(result => {
+			const data_tmp = result[0]
+			if (data_tmp){
+				setDisplayFirst(true)
+				setData_school(data_tmp.data.data_school)
+				setchooseBtnStart(true)
+				setReadyTime(true)
+			}else{
+				setDisplayFirst(false)
+			}
+		})
+	},[])
 
 
-	function changeComponent(num, ev) {
-		console.log(ev.target)
-		console.log(num)
+	function changeComponent(num) {
 		if (num == 0) {
-			setComponent(<SchoolData school_data={school_data2} />);
+			SetCountBtn(0)
 		} else if (num == 1) {
-			setComponent(<TimeConfig school_data={school_data2} />);
+			SetCountBtn(1)
 		} else if (num == 2) {
-			setComponent(<InsertTeacher school_data={school_data2} />);
+			SetCountBtn(2)
 		} else if (num == 3) {
-			setComponent(<InsertStudent school_data={school_data2} />);
+			SetCountBtn(3)
 		} else if (num == 4) {
-			setComponent(<InsertClub school_data={school_data2} />);
+			SetCountBtn(4)
 		} else if (num == 5) {
-			setComponent(<EditStudent school_data={school_data2} />);
+			SetCountBtn(5)
 		} else if (num == 6) {
-			setComponent(<EditTeacher school_data={school_data2} />);
+			SetCountBtn(6)
 		} else if (num == 7) {
-			setComponent(<EditClub school_data={school_data2} />);
+			SetCountBtn(7)
 		} else {
-			setComponent(<EditOwnData school_data={school_data2} />);
+			SetCountBtn(8)
 		}
+		
 		for (let i=0;i<=8;i++){
-			if (i == num){
+			if (i === num){
 				optionBtn.current[i].classList.add("nowclick")
 			}else{
 				optionBtn.current[i].classList.remove("nowclick")
@@ -101,10 +103,6 @@ export default function Admin({ schoolID,school_data }) {
 		hamberger.current.classList.remove("hamactive");
 	}
 
-	
-
-	
-
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
 		if (check == "start") {
@@ -112,13 +110,34 @@ export default function Admin({ schoolID,school_data }) {
 				const h = String(new Date().getHours()).padStart(2, "0");
 				const m = String(new Date().getMinutes()).padStart(2, "0");
 				const s = String(new Date().getSeconds()).padStart(2, "0");
-				//time.current.innerText = `${h}:${m}:${s}`;
+				time.current.innerText = `${h}:${m}:${s}`;
 			}, 1000);
 		} else {
 			clearInterval(timer);
 		}
 	}
 
+	let component = null
+	if (countBtn === 0){
+		component = <SchoolData school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 1){
+		component = <TimeConfig school_data={data_school} schoolID={schoolID} />
+	}else if (countBtn === 2){
+		component = <InsertTeacher school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 3){
+		component = <InsertStudent school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 4){
+		component = <InsertClub school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 5){
+		component = <EditStudent school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 6){
+		component = <EditTeacher school_data={data_school} schoolID={schoolID}/>
+	}else if (countBtn === 7){
+		component = <EditClub school_data={data_school} schoolID={schoolID}/>
+	}else{
+		component = <EditOwnData school_data={data_school} schoolID={schoolID}/>
+	}
+	
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
@@ -194,7 +213,6 @@ export default function Admin({ schoolID,school_data }) {
 				}
 			`}</style>
 
-
 			<header className={`${styles.head} navbar navbar-dark bg-white`}>
 				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
 					<div className={`${styles.header_item} ms-2 `}>
@@ -228,13 +246,12 @@ export default function Admin({ schoolID,school_data }) {
 				</div>
 			</header>
 
-			
 			<nav className="nav_header" ref={nav}>
  				<div className={styles.box_menu}>
 					<ul>
  						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(0, ev)}
+								onClick={() => changeComponent(0)}
 								ref={(el) => optionBtn.current[0] = el}
 							>
 								<i className="fa-solid fa-house me-2"></i>
@@ -243,7 +260,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(1, ev)}
+								onClick={() => changeComponent(1)}
 								ref={(el) => optionBtn.current[1] = el}
 							>
 								<i className="fa-solid fa-calendar-days me-2 ms-1"></i>
@@ -252,7 +269,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(2, ev)}
+								onClick={() => changeComponent(2)}
 								ref={(el) => optionBtn.current[2] = el}
 							>
 								<i className="fa-solid fa-chalkboard-user "></i>
@@ -261,7 +278,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(3, ev)}
+								onClick={() => changeComponent(3)}
 								ref={(el) => optionBtn.current[3] = el}
 							>
 								<i className="fa-solid fa-chalkboard-user "></i>
@@ -270,7 +287,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(4, ev)}
+								onClick={() => changeComponent(4)}
 								ref={(el) => optionBtn.current[4] = el}
 							>
 								<i className="fa-solid fa-book me-2 ms-1"></i>
@@ -279,7 +296,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(5, ev)}
+								onClick={() => changeComponent(5)}
 								ref={(el) => optionBtn.current[5] = el}
 							>
 								<i className="fa-solid fa-list-check"></i>
@@ -288,7 +305,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(6, ev)}
+								onClick={() => changeComponent(6)}
 								ref={(el) => optionBtn.current[6] = el}
 							>
 								<i className="fa-solid fa-list-check"></i>
@@ -297,7 +314,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(7, ev)}
+								onClick={() => changeComponent(7)}
 								ref={(el) => optionBtn.current[7] = el}
 							>
 								<i className="fa-solid fa-list-check"></i>
@@ -306,7 +323,7 @@ export default function Admin({ schoolID,school_data }) {
 						</li>
 						<li>
 							<div className={`nav_left`} 
-								onClick={(ev) => changeComponent(8, ev)}
+								onClick={() => changeComponent(8)}
 								ref={(el) => optionBtn.current[8] = el}
 							>
 								<i className="fa-solid fa-list-check"></i>
@@ -317,25 +334,23 @@ export default function Admin({ schoolID,school_data }) {
 				</div>
 			</nav>
 
-			
 			<main className={styles.content}>
-				<section className="container border">
+				<section className="container">
 					{component}
 				</section>
 			</main>
 		</>
 	)
 
-	if (statusT == "loading") { 
+	if (displayFirst === "loading") { 
 		return <Reload />
 	}
-	else if (statusT) {
+	else if (displayFirst) {
 		return admin_page
 	}
 	else {
 		return <Error statusCode={404}/>
 	}
-	
 }
 
 export async function getStaticPaths() {

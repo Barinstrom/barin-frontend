@@ -5,7 +5,7 @@ import ErrorPage from "next/error";
 import { add_student } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
-export default function InsertTeacher({ school_data }) {
+export default function InsertTeacher({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState();
 	
 	/* ส่วนของการแปลง string เป็น object */
@@ -70,7 +70,7 @@ export default function InsertTeacher({ school_data }) {
 		//console.log(JSON.stringify(formSuccess))
 		const cookies = new Cookies();
 		const token = cookies.get("token");
-		const response = await add_student(formSuccess,token,school_data.schoolID);
+		const response = await add_student(formSuccess,token,schoolID);
 		console.log(response);
 	}
 

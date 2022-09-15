@@ -9,7 +9,7 @@ const stripePromise = loadStripe(
 	"pk_test_51Ld8YvDi0FRxBi9CzfQIWC0PWgoMfKxIUnGx3z5MRUoLQIkDxkEiQKhULFITQmlgcZXXcc9Aj8xOI0WCBOuryVhG00WtNTPOIK"
 );
 
-export default function SchoolData({ school_data }) {
+export default function SchoolData({ school_data,schoolID }) {
 	console.log(school_data)
 	const [clientSecret, setClientSecret] = useState("");
 	const [picture, setPicture] = useState(school_data.urlLogo);
@@ -203,7 +203,7 @@ export default function SchoolData({ school_data }) {
 					<div className="App">
 						{clientSecret && (
 							<Elements options={options} stripe={stripePromise}>
-								<CheckoutForm schoolID={school_data.schoolID} />
+								<CheckoutForm schoolID={schoolID} />
 							</Elements>
 						)}
 					</div>

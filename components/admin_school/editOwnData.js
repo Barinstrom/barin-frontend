@@ -1,7 +1,7 @@
 import React from "react";
 import ErrorPage from "next/error";
 
-export default function EditOwnData({ school_data }) {
+export default function EditOwnData({ school_data,schoolID }) {
 
 		if (!school_data.paymentStatus) {
 			return <ErrorPage statusCode={404} />;

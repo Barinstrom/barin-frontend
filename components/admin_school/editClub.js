@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 
-export default function EditClub({ school_data }) {
+export default function EditClub({ school_data,schoolID }) {
 
     const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
