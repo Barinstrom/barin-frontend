@@ -101,3 +101,25 @@ export async function reset_password(data,token) {
 		return false
 	}
 };
+
+
+// pagination editStudent
+export async function paginationStudentEdit(data) {
+	//const apiUrl = stagingUrl + "/updatepassword";
+	
+	try {
+		const result = await axios({
+			method:"post",
+			url:"http://localhost:8000/paginate/db",
+			headers:{'Content-Type':'application/json'},
+			data:JSON.stringify(data),
+			timeout:10000
+		})
+		return result
+	}
+	catch(err){
+		console.log(err.message)
+		return false
+	}
+};
+

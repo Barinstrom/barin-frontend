@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import axios from 'axios';
 import ErrorPage from "next/error";
+import { paginationStudentEdit } from '../../utils/unauth';
 
 export default function EditStudent({ school_data,schoolID }) {
 
-    const [data,setData] = useState([])
-    const [paginate,setPaginate] = useState([])
+    const [data,setData] = useState(null)
+    const [paginate,setPaginate] = useState(null)
     const search = useRef()
 
     const user = useRef()
@@ -56,20 +57,11 @@ export default function EditStudent({ school_data,schoolID }) {
                     "page":window.localStorage.getItem("page"),
                     "info":window.localStorage.getItem("search")
                 }
-                const result = await axios({
-                    method:"post",
-                    url:"http://localhost:8000/paginate/db",
-                    headers:{'Content-Type':'application/json'},
-                    data:JSON.stringify(body),
-                    timeout:10000
-                })
-                
+                const result = await paginationStudentEdit(body)
                 const paginate_tmp = generate(result.data)
                 showData(result.data.docs)
                 showPaginate(paginate_tmp)
             }
-            
-            
         }catch(err){
             console.log(err)
         }
@@ -78,30 +70,18 @@ export default function EditStudent({ school_data,schoolID }) {
     async function clickReset(ev){
         ev.preventDefault()
         window.localStorage.removeItem("search")
+        window.localStorage.setItem("page",1)
+
         search.current.value = ""
         
-        try{
-            // const response = await fetch(`http://localhost:8000/paginate/db`,{
-            //     method:"post",
-            //     headers:{"Content-Type":"application/json"},
-            //     body:JSON.stringify({"page":1})
-
-            // })
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/paginate/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify({"page":1}),
-                timeout:10000
-            })
-            // const result = await response.json()
-            //console.log(result)
-            const paginate_tmp = generate(result.data)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-        }catch(err){
-            console.log(err.message)
+        const body = {
+            "page":1
         }
+        
+        const result = await paginationStudentEdit(body)
+        const paginate_tmp = generate(result.data)
+        showData(result.data.docs)
+        showPaginate(paginate_tmp)
     }
     
     /* กรณี search ข้อมูลต่างๆ */
@@ -120,28 +100,10 @@ export default function EditStudent({ school_data,schoolID }) {
             }
         }
         
-        try{
-            // const response = await fetch(`http://localhost:8000/paginate/db`,{
-            //     method:"post",
-            //     headers:{"Content-Type":"application/json"},
-            //     body:JSON.stringify(body)
-            // })
-
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/paginate/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify(body),
-                timeout:10000
-            })
-            // const result = await response.json()
-            //console.log(result)
-            const paginate_tmp = generate(result.data)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-        }catch(err){
-            console.log(err.message)
-        }
+        const result = await paginationStudentEdit(body)
+        const paginate_tmp = generate(result.data)
+        showData(result.data.docs)
+        showPaginate(paginate_tmp)
     }
     
     function changeDate(k){
@@ -156,7 +118,6 @@ export default function EditStudent({ school_data,schoolID }) {
     }
 
     function generate(result){
-        //console.log(result)
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -188,62 +149,31 @@ export default function EditStudent({ school_data,schoolID }) {
 
     
     async function clickPage(page){
-        //console.log(window.localStorage.getItem("search"))
+        
         const body = {
             "page":page,
             "info":window.localStorage.getItem("search")
         }
-        window.localStorage.setItem("page",page)
-
-        try{
-            // const response = await fetch(`http://localhost:8000/paginate/db`,{
-            //     method:"post",
-            //     headers:{"Content-Type":"application/json"},
-            //     body:JSON.stringify(body)
-            // })
-
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/paginate/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify(body),
-                timeout:10000
-            })
-            // const result = await response.json()
-            //console.log(result)
-            const paginate_tmp = generate(result.data)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-            
-
-        }catch(err){
-            console.log(err.message)
-        }
         
+        window.localStorage.setItem("page",page)
+        
+        const result = await paginationStudentEdit(body)
+        const paginate_tmp = generate(result.data)
+        showData(result.data.docs)
+        showPaginate(paginate_tmp)
     }
 
-    async function fetchData(body = {"page":1}){
-        try{
-            // const response = await fetch(`http://localhost:8000/paginate/db`,{
-            //     method:"post",
-            //     headers:{"Content-Type":"application/json"},
-            //     body:JSON.stringify({"page":1})
-            // })
-            
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/paginate/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify(body),
-                timeout:10000
-            })
-            
-            const paginate_tmp = generate(result.data)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-        }catch(err){
-            console.log(err.message)
+    async function fetchData(){
+        const body = {
+            "page":1,
+            "info":null
         }
+        window.localStorage.setItem("page",1)
+        
+        const result = await paginationStudentEdit(body)
+        const paginate_tmp = generate(result.data)
+        showData(result.data.docs)
+        showPaginate(paginate_tmp)
     }
     
     function showData(result){
@@ -291,81 +221,79 @@ export default function EditStudent({ school_data,schoolID }) {
     
     useEffect(()=>{
         window.localStorage.removeItem("search")
-        window.localStorage.removeItem("page")
         fetchData()
     },[])
 
     
-        if (!school_data.paymentStatus) {
-			return <ErrorPage statusCode={404} />;
-		}
-
-    return (
-    <>
-        <div>
-            <div className="text-center fs-1 mb-3">EditStudent</div>
-            <div className='row'>
-                <div className='col-12'>
-                    <form className='mb-3'>
-                        <div className='input-group'>
-                            <span className="input-group-text">ค้นหา</span>
-                            <input type="text" className='form-control' ref={search}></input>
-                            <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                            <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+    if (!school_data.paymentStatus) {
+        return <ErrorPage statusCode={404} />;
+    }else{
+        return (
+            <>
+                <div>
+                    <div className="text-center fs-1 mb-3">EditStudent</div>
+                    <div className='row'>
+                        <div className='col-12'>
+                            <form className='mb-3'>
+                                <div className='input-group'>
+                                    <span className="input-group-text">ค้นหา</span>
+                                    <input type="text" className='form-control' ref={search}></input>
+                                    <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+                                    <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                                </div>
+                            </form>
+                            <table className='table table-bordered text-center'>
+                                <thead className='table-dark'>
+                                    <tr>
+                                        <th>user</th>
+                                        <th>age</th>
+                                        <th>birthday</th>
+                                        <th>detail</th>
+                                        <th>extra</th>
+                                    </tr>
+                                </thead>
+                                {data}
+                            </table> 
                         </div>
-                    </form>
-                    <table className='table table-bordered text-center'>
-                        <thead className='table-dark'>
-                            <tr>
-                                <th>user</th>
-                                <th>age</th>
-                                <th>birthday</th>
-                                <th>detail</th>
-                                <th>extra</th>
-                            </tr>
-                        </thead>
-                        {data}
-                    </table> 
+                    </div>
+                    {paginate}
                 </div>
-            </div>
-            {paginate}
-        </div>
-
-        <div className="modal fade" id="editStudentModal">
-            <div className="modal-dialog">
-                <div className='modal-content'>
-                    <div className='modal-header'>
-                        <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
-                        <button className='btn-close' data-bs-dismiss="modal"></button>
-                    </div>
-                    <div className='modal-body'>
-                        <form className="row gy-2 gx-3">
-                            <div className="col-12">
-                                <label className="form-label">user</label>
-                                <input type="text" className="form-control" name="user" ref={user}/>
+    
+                <div className="modal fade" id="editStudentModal">
+                    <div className="modal-dialog">
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+                                <button className='btn-close' data-bs-dismiss="modal"></button>
                             </div>
-                            <div className="col-12">
-                                <label className="form-label">age</label>
-                                <input type="text" className="form-control" name="age" ref={age}/>
+                            <div className='modal-body'>
+                                <form className="row gy-2 gx-3">
+                                    <div className="col-12">
+                                        <label className="form-label">user</label>
+                                        <input type="text" className="form-control" name="user" ref={user}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">age</label>
+                                        <input type="text" className="form-control" name="age" ref={age}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">birthday</label>
+                                        <input type="text" className="form-control" name="birthday" ref={birthday}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label" >detail</label>
+                                        <textarea className='form-control' ref={detail}></textarea>
+                                    </div>
+                                </form>
                             </div>
-                            <div className="col-12">
-                                <label className="form-label">birthday</label>
-                                <input type="text" className="form-control" name="birthday" ref={birthday}/>
+                            <div className='modal-footer'>
+                                <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
                             </div>
-                            <div className="col-12">
-                                <label className="form-label" >detail</label>
-                                <textarea className='form-control' ref={detail}></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div className='modal-footer'>
-                        <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                        <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </>
-        
-    )
+            </>
+        )
+    }
 }
