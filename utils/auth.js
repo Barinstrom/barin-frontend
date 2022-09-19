@@ -95,7 +95,7 @@ export async function set_schedule(data, token, schoolID) {
 	}
 }
 
-// เพิ่มข้อมูลนักเรียน role addmin_school
+// เพิ่มข้อมูลนักเรียน 1 คน role admin_school
 export async function add_student(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
 	// console.log("url =", apiUrl)
@@ -117,7 +117,29 @@ export async function add_student(data,token,schoolID) {
 		console.log(err)
 		return false
 	}
+};
 
+
+// เพิ่มข้อมูลนักเรียนหลายคน admin_school
+export async function add_students(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/add-students";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			method: "POST",
+			body: JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
+	}
 };
 
 
@@ -170,7 +192,7 @@ export async function add_teacher(data,token,schoolID) {
 // เพิ่มครู หลายคน
 export async function add_teachers(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
-	console.log("data = ",data)
+	//console.log("data = ",data)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -184,7 +206,7 @@ export async function add_teachers(data,token,schoolID) {
 		})
 		return result
 	} catch (err) {
-		console.log(err)
+		console.log(err.message)
 		return false
 	}
 };

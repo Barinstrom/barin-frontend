@@ -342,6 +342,8 @@ export default function Admin({ schoolID,school_data }) {
 		</>
 	)
 
+	console.log("re-render")
+
 	if (displayFirst === "loading") { 
 		return <Reload />
 	}

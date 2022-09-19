@@ -1,8 +1,7 @@
-import axios from "axios";
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
-import { add_student } from "../../utils/auth";
+import { add_student,add_students } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
 export default function InsertTeacher({ school_data,schoolID }) {
@@ -45,7 +44,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
         reader.readAsText(fileSuccess)
 
         // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
-        reader.onload = (ev) => {
+        reader.onload = async (ev) => {
             const text = ev.target.result;
             //console.log(text)
             const result = stringtoObject(text)
@@ -54,6 +53,10 @@ export default function InsertTeacher({ school_data,schoolID }) {
                 return
             }else{
                 console.log(result)
+				const cookies = new Cookies();
+				const token = cookies.get("token");
+				const response = await add_students(result,token,schoolID);
+				console.log(response);
             }
         }
     }

@@ -11,6 +11,7 @@ export default function EditStudent({ school_data,schoolID }) {
 
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
+    const [displayError,setDisplayError] = useState(false)
     const search = useRef()
 
     const user = useRef()
@@ -57,10 +58,37 @@ export default function EditStudent({ school_data,schoolID }) {
                     "page":window.localStorage.getItem("page"),
                     "info":window.localStorage.getItem("search")
                 }
+                
                 const result = await paginationStudentEdit(body)
-                const paginate_tmp = generate(result.data)
-                showData(result.data.docs)
-                showPaginate(paginate_tmp)
+                
+                if (!result){
+                    setDisplayError(true)
+                }else{
+                    window.localStorage.setItem("page",result.data.totalPages)
+                    
+                    if (result.data.docs.length === 0){
+                        const body = {
+                            "page":window.localStorage.getItem("page"),
+                            "info":window.localStorage.getItem("search")
+                        }
+                        
+                        const result = await paginationStudentEdit(body)
+                        
+                        if (!result){
+                            setDisplayError(true)
+                        }else{
+                            const paginate_tmp = generate(result.data)
+                            setDisplayError(false)
+                            showData(result.data.docs)
+                            showPaginate(paginate_tmp)
+                        }
+                    }else{
+                        const paginate_tmp = generate(result.data)
+                        setDisplayError(false)
+                        showData(result.data.docs)
+                        showPaginate(paginate_tmp)
+                    }
+                }
             }
         }catch(err){
             console.log(err)
@@ -79,9 +107,15 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         
         const result = await paginationStudentEdit(body)
-        const paginate_tmp = generate(result.data)
-        showData(result.data.docs)
-        showPaginate(paginate_tmp)
+        
+        if (!result){
+            setDisplayError(true)
+        }else{
+            const paginate_tmp = generate(result.data)
+            setDisplayError(false)
+            showData(result.data.docs)
+            showPaginate(paginate_tmp)
+        }
     }
     
     /* กรณี search ข้อมูลต่างๆ */
@@ -101,9 +135,15 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         
         const result = await paginationStudentEdit(body)
-        const paginate_tmp = generate(result.data)
-        showData(result.data.docs)
-        showPaginate(paginate_tmp)
+        
+        if (!result){
+            setDisplayError(true)
+        }else{
+            const paginate_tmp = generate(result.data)
+            setDisplayError(false)
+            showData(result.data.docs)
+            showPaginate(paginate_tmp)
+        }
     }
     
     function changeDate(k){
@@ -158,9 +198,15 @@ export default function EditStudent({ school_data,schoolID }) {
         window.localStorage.setItem("page",page)
         
         const result = await paginationStudentEdit(body)
-        const paginate_tmp = generate(result.data)
-        showData(result.data.docs)
-        showPaginate(paginate_tmp)
+        
+        if (!result){
+            setDisplayError(true)
+        }else{
+            const paginate_tmp = generate(result.data)
+            setDisplayError(false)
+            showData(result.data.docs)
+            showPaginate(paginate_tmp)
+        }
     }
 
     async function fetchData(){
@@ -171,9 +217,15 @@ export default function EditStudent({ school_data,schoolID }) {
         window.localStorage.setItem("page",1)
         
         const result = await paginationStudentEdit(body)
-        const paginate_tmp = generate(result.data)
-        showData(result.data.docs)
-        showPaginate(paginate_tmp)
+
+        if (!result){
+            setDisplayError(true)
+        }else{
+            const paginate_tmp = generate(result.data)
+            setDisplayError(false)
+            showData(result.data.docs)
+            showPaginate(paginate_tmp)
+        }
     }
     
     function showData(result){
@@ -205,7 +257,7 @@ export default function EditStudent({ school_data,schoolID }) {
 
     function showPaginate(paginate){
         const template = (
-            <ul className='pagination'>
+            <ul className='pagination justify-content-center'>
                 {paginate.map((item,index)=>{
                     return (
                         <li key={index} className="page-item">
@@ -227,6 +279,12 @@ export default function EditStudent({ school_data,schoolID }) {
     
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
+    }else if (displayError){
+        return (
+            <>
+                <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
+            </>
+        )
     }else{
         return (
             <>
@@ -245,11 +303,11 @@ export default function EditStudent({ school_data,schoolID }) {
                             <table className='table table-bordered text-center'>
                                 <thead className='table-dark'>
                                     <tr>
-                                        <th>user</th>
-                                        <th>age</th>
+                                        <th>อีเมลล์</th>
+                                        <th>ชื่อ-นามสกุล</th>
                                         <th>birthday</th>
                                         <th>detail</th>
-                                        <th>extra</th>
+                                        <th>รายละเอียด</th>
                                     </tr>
                                 </thead>
                                 {data}
