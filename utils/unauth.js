@@ -45,8 +45,8 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
-		const cookie = new Cookies()
-		cookie.set("token",result.data.token)
+		
+
 		return result
 	}
 	catch(err){

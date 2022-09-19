@@ -1,9 +1,9 @@
 import React from 'react';
-import styles from '../styles/index.module.css'
+import styles from '../../styles/index.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
-import { checkLogin } from "../utils/unauth";
+import { checkLogin } from "../../utils/unauth";
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 
@@ -29,52 +29,49 @@ export default function Login() {
         'warning',
       )
       return
-		}else{
+	}else{
         const body = {
-			    email: email_check ,
-			    password: password_check ,
+			email: email_check ,
+			password: password_check ,
         }
       
-      spin.current.classList.remove("d-none");
+    	spin.current.classList.remove("d-none");
       
-      // เรียกฟังชันก์จาก unauth
-      const result = await checkLogin(body);
+        // เรียกฟังชันก์จาก unauth
+        const result = await checkLogin(body);
       
+        spin.current.classList.add("d-none");
       
-      spin.current.classList.add("d-none");
-      
-      console.log(result)
-      if (!result) {
+        console.log(result)
+    
+	if (!result) {
         Swal.fire(
           'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบ อีเมลและรหัสผ่าน!',   
           '',
           'error',
         )
         return
-      } else {
-
-        if((result.data.role === "teacher" || result.data.role ===  "student")){
-          Swal.fire(
-            'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง',      
-            '',
-            'error',
-          )
-          router.push("/" + String(result.data.schoolID) )
-        }
-        
-        else {
-          const cookie = new Cookies()
-		      cookie.set("token",result.data.token)
-          Swal.fire(
-            'เข้าสู่ระบบสำเร็จ',      
-            '',
-            'success',
-          )
-          router.push("/" + String(result.data.schoolID) + "/admin_school")
-        }
-        
-      }
-		}
+    } else {
+		if((result.data.role === "teacher" || result.data.role ===  "student")){
+			const cookie = new Cookies()
+			cookie.set("token",result.data.token)
+			
+			Swal.fire(
+				'เข้าสู่ระบบสำเร็จ',      
+				'',
+				'success',
+			)
+			router.push("/" + String(result.data.schoolID) + "/" + String(result.data.role))
+		}else {
+			Swal.fire(
+				'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง',   
+				'',
+				'error',
+			)
+			router.push("/" )
+			}
+    	}
+	}
   }
   
   return (
@@ -103,7 +100,7 @@ export default function Login() {
       <section className={styles.block} >
         {/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
         <div>
-          <p className={styles.logo}>Barin Storm</p>
+          <p className={styles.logo}>Prommanusorn</p>
         </div>
         
         {/* อีเมลล์ */}
@@ -121,8 +118,6 @@ export default function Login() {
         <div className='mt-5 d-flex flex-column justify-content-between align-items-center '>
           <div className='d-flex flex-column align-items-center w-100'>
             <button className='btn btn-success w-50 mt-2' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
-            {/* ไปหน้า register */}
-            <Link href="/register"><button className='btn btn-info w-50 mt-2'>ลงทะเบียน</button></Link>
           </div>
           <Link href="/forgotPass"><a className='mt-2'>ลืมรหัสผ่าน</a></Link>
         </div>

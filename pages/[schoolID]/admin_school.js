@@ -57,16 +57,22 @@ export default function Admin({ schoolID,school_data }) {
 		const token = cookies.get("token");
 
 		Promise.all([get_data(token,schoolID)])
-		.then(result => {
-			const data_tmp = result[0]
-			if (data_tmp){
-				setDisplayFirst(true)
-				setData_school(data_tmp.data.data_school)
-				setchooseBtnStart(true)
-				setReadyTime(true)
-			}else{
-				setDisplayFirst(false)
-			}
+			.then(result => {
+				// console.log(result[0].data.data_user.role)
+				const data_tmp = result[0]
+				const role = result[0].data.data_user.role
+				if (role !== "admin") {
+					setDisplayFirst(false)
+				}
+				
+				else if (data_tmp){
+					setDisplayFirst(true)
+					setData_school(data_tmp.data.data_school)
+					setchooseBtnStart(true)
+					setReadyTime(true)
+				}else{
+					setDisplayFirst(false)
+				}
 		})
 	},[])
 
@@ -118,12 +124,14 @@ export default function Admin({ schoolID,school_data }) {
 	}
 
 	let component = null
-	if (countBtn === 0){
-		component = <SchoolData school_data={data_school} schoolID={schoolID}/>
-	}else if (countBtn === 1){
+	if (countBtn === 0) {
+		component = <SchoolData school_data={data_school} schoolID={schoolID} />
+	}else if (!school_data.paymentStatus) {
+		component = <Error statusCode={404} />
+	}else if (countBtn === 1) {
 		component = <TimeConfig school_data={data_school} schoolID={schoolID} />
 	}else if (countBtn === 2){
-		component = <InsertTeacher school_data={data_school} schoolID={schoolID}/>
+		component = <InsertTeacher school_data={data_school} schoolID={schoolID} />
 	}else if (countBtn === 3){
 		component = <InsertStudent school_data={data_school} schoolID={schoolID}/>
 	}else if (countBtn === 4){

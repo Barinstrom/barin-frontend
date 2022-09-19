@@ -152,13 +152,13 @@ function showPaginate(paginate){
     return <Reload/>
   }else if (displayError){
     return (
-      <main className='container p-3 border'>
+      <main className='container p-3'>
           <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
       </main>
   )
   }else{
     return (
-      <main className='container p-3 border'>
+      <main className='container p-3'>
         <h3 className='text-center'>ดูรายชื่อนักเรียน</h3>
         <div className='btn-group dropdown'>
           <button className='btn btn-secondary'>ชุมนุม</button>

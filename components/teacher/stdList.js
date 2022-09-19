@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function OwnClub({ school_data,schoolID }) {
+export default function StdList({ school_data,schoolID }) {
 	const data = [
 		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
 		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
@@ -12,7 +12,7 @@ export default function OwnClub({ school_data,schoolID }) {
 
 	return (
 		<main>
-			<div className="text-center fs-1">OwnClub</div>
+			<div className="text-center fs-1">STDLIST</div>
 			<table className="table table-hover table-bordered table-striped text-center">
 				<thead className="table-dark">
 					<tr>

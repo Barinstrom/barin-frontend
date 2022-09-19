@@ -109,7 +109,7 @@ export async function add_student(data,token,schoolID) {
 				"Content-Type": "application/json",
 			},
 			method: "POST",
-			body: JSON.stringify(data),
+			data: JSON.stringify(data),
 			timeout: 10000
 		})
 		return result
@@ -132,7 +132,7 @@ export async function add_students(data,token,schoolID) {
 				"Content-Type": "application/json",
 			},
 			method: "POST",
-			body: JSON.stringify(data),
+			data: JSON.stringify(data),
 			timeout: 10000
 		})
 		return result
