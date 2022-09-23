@@ -39,7 +39,7 @@ export default function Login() {
       
       // เรียกฟังชันก์จาก unauth
       const result = await checkLogin(body);
-      
+      console.log(result)
       
       spin.current.classList.add("d-none");
       
@@ -52,14 +52,26 @@ export default function Login() {
         )
         return
       } else {
+        
+        
+        if (result.data.role === "host"){
+          const cookie = new Cookies()
+		      cookie.set("token",result.data.token)
+          Swal.fire(
+            'เข้าสู่ระบบสำเร็จ',      
+            '',
+            'success',
+          )
+          router.push("/" +"system_admin")
+        }
 
-        if((result.data.role === "teacher" || result.data.role ===  "student")){
+        else if((result.data.role === "teacher" || result.data.role ===  "student")){
           Swal.fire(
             'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง',      
             '',
             'error',
           )
-          router.push("/" + String(result.data.schoolID) )
+          router.push("/" + String(result.data.schoolID))
         }
         
         else {
@@ -72,7 +84,6 @@ export default function Login() {
           )
           router.push("/" + String(result.data.schoolID) + "/admin_school")
         }
-        
       }
 		}
   }

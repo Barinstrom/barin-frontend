@@ -378,6 +378,8 @@ export async function getStaticPaths() {
 		{ params: { schoolID: "3" } },
 		{ params: { schoolID: "stamp" } },
 		{ params: { schoolID: "teststamp" } },
+		{ params: { schoolID: "all" } },
+		{ params: { schoolID: "prachanivet" } },
 	];
 
 	return {

@@ -21,6 +21,26 @@ export default function EditStudent({ school_data,schoolID }) {
     const birthday = useRef()
     const detail = useRef()
 
+    useEffect(()=>{
+        window.localStorage.removeItem("searchEditClub")
+        window.localStorage.removeItem("pageEditClub")
+        const body = {
+            "page":1,
+        }
+        window.localStorage.setItem("pageEditClub",1)
+        
+        paginationClubEdit(body).then(result => {
+            if (!result){
+                setDisplayError(true)
+            }else{
+                const paginate_tmp = generate(result.data)
+                setDisplayError(false)
+                showData(result.data.docs)
+                showPaginate(paginate_tmp)
+            }
+        })
+        console.log(school_data)
+    },[])
 
     function detailInfo(item,ev){
 		//console.log(ev.target.getAttribute("data-bs-id"))
@@ -58,8 +78,8 @@ export default function EditStudent({ school_data,schoolID }) {
 
             if (result.status === 200){
                 const body = {
-                    "page":window.localStorage.getItem("page"),
-                    "info":window.localStorage.getItem("search")
+                    "page":window.localStorage.getItem("pageEditClub"),
+                    "info":window.localStorage.getItem("searchEditClub")
                 }
                 
                 const result = await paginationClubEdit(body)
@@ -67,22 +87,21 @@ export default function EditStudent({ school_data,schoolID }) {
                 if (!result){
                     setDisplayError(true)
                 }else{
-                    window.localStorage.setItem("page",result.data.totalPages)
-                    
                     if (result.data.docs.length === 0){
+                        window.localStorage.setItem("pageEditClub",result.data.totalPages)
+                        
                         const body = {
-                            "page":window.localStorage.getItem("page"),
-                            "info":window.localStorage.getItem("search")
+                            "page":window.localStorage.getItem("pageEditClub"),
+                            "info":window.localStorage.getItem("searchEditClub")
                         }
+                        const result_new = await paginationClubEdit(body)
                         
-                        const result = await paginationClubEdit(body)
-                        
-                        if (!result){
+                        if (!result_new){
                             setDisplayError(true)
                         }else{
-                            const paginate_tmp = generate(result.data)
+                            const paginate_tmp = generate(result_new.data)
                             setDisplayError(false)
-                            showData(result.data.docs)
+                            showData(result_new.data.docs)
                             showPaginate(paginate_tmp)
                         }
                     }else{
@@ -100,8 +119,8 @@ export default function EditStudent({ school_data,schoolID }) {
 
     async function clickReset(ev){
         ev.preventDefault()
-        window.localStorage.removeItem("search")
-        window.localStorage.setItem("page",1)
+        window.localStorage.removeItem("searchEditClub")
+        window.localStorage.setItem("pageEditClub",1)
 
         search.current.value = ""
         
@@ -127,13 +146,14 @@ export default function EditStudent({ school_data,schoolID }) {
         let body
         
         if (!search.current.value){
-            window.localStorage.removeItem("search")
+            window.localStorage.removeItem("searchEditClub")
             body = {"page":1}
         }else{
-            window.localStorage.setItem("search",parseInt(search.current.value))
+            window.localStorage.setItem("pageEditClub",1)
+            window.localStorage.setItem("searchEditClub",parseInt(search.current.value))
             body = {
                 "page":1,
-                "info":window.localStorage.getItem("search")
+                "info":window.localStorage.getItem("searchEditClub")
             }
         }
         
@@ -195,10 +215,10 @@ export default function EditStudent({ school_data,schoolID }) {
         
         const body = {
             "page":page,
-            "info":window.localStorage.getItem("search")
+            "info":window.localStorage.getItem("searchEditClub")
         }
         
-        window.localStorage.setItem("page",page)
+        window.localStorage.setItem("pageEditClub",page)
         
         const result = await paginationClubEdit(body)
         
@@ -212,25 +232,6 @@ export default function EditStudent({ school_data,schoolID }) {
         }
     }
 
-    async function fetchData(){
-        const body = {
-            "page":1,
-            "info":null
-        }
-        window.localStorage.setItem("page",1)
-        
-        const result = await paginationClubEdit(body)
-
-        if (!result){
-            setDisplayError(true)
-        }else{
-            const paginate_tmp = generate(result.data)
-            setDisplayError(false)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-        }
-    }
-    
     function showData(result){
         const template = (
             <tbody>
@@ -250,7 +251,7 @@ export default function EditStudent({ school_data,schoolID }) {
                                 <button className='btn btn-info' 
                                     onClick={(ev) => detailInfo(item,ev)}
                                     data-bs-toggle="modal"
-                                    data-bs-target="#editStudentModal"
+                                    data-bs-target="#editClubModal"
                                     data-bs-id={item._id}
                                     >รายละเอียด
                                 </button>
@@ -278,14 +279,6 @@ export default function EditStudent({ school_data,schoolID }) {
         setPaginate(template)
     }
 
-    
-    useEffect(()=>{
-        window.localStorage.removeItem("search")
-        fetchData()
-        console.log(school_data)
-    },[])
-
-    
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){
@@ -326,7 +319,7 @@ export default function EditStudent({ school_data,schoolID }) {
                     {paginate}
                 </div>
     
-                <div className="modal fade" id="editStudentModal">
+                <div className="modal fade" id="editClubModal">
                     <div className="modal-dialog">
                         <div className='modal-content'>
                             <div className='modal-header'>

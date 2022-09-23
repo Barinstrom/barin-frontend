@@ -19,6 +19,27 @@ export default function EditStudent({ school_data,schoolID }) {
     const birthday = useRef()
     const detail = useRef()
 
+
+    useEffect(()=>{
+        window.localStorage.removeItem("searchEditStudent")
+        window.localStorage.removeItem("pageEditStudent")
+        const body = {
+            "page":1,
+        }
+        window.localStorage.setItem("pageEditStudent",1)
+        
+        paginationStudentEdit(body).then(result => {
+            if (!result){
+                setDisplayError(true)
+            }else{
+                const paginate_tmp = generate(result.data)
+                setDisplayError(false)
+                showData(result.data.docs)
+                showPaginate(paginate_tmp)
+            }
+        })
+    },[])
+
     function detailInfo(item,ev){
 		//console.log(ev.target.getAttribute("data-bs-id"))
         user.current.setAttribute("data-id",ev.target.getAttribute("data-bs-id"))
@@ -42,8 +63,7 @@ export default function EditStudent({ school_data,schoolID }) {
             detail:detail.current.value,
             edit:user.current.getAttribute("data-id")
         }
-        //console.log(body)
-
+        
         try{
             const result = await axios({
                 method:"post",
@@ -55,8 +75,8 @@ export default function EditStudent({ school_data,schoolID }) {
 
             if (result.status === 200){
                 const body = {
-                    "page":window.localStorage.getItem("page"),
-                    "info":window.localStorage.getItem("search")
+                    "page":window.localStorage.getItem("pageEditStudent"),
+                    "info":window.localStorage.getItem("searchEditStudent")
                 }
                 
                 const result = await paginationStudentEdit(body)
@@ -64,22 +84,22 @@ export default function EditStudent({ school_data,schoolID }) {
                 if (!result){
                     setDisplayError(true)
                 }else{
-                    window.localStorage.setItem("page",result.data.totalPages)
                     
                     if (result.data.docs.length === 0){
+                        window.localStorage.setItem("pageEditStudent",result.data.totalPages)
                         const body = {
-                            "page":window.localStorage.getItem("page"),
-                            "info":window.localStorage.getItem("search")
+                            "page":window.localStorage.getItem("pageEditStudent"),
+                            "info":window.localStorage.getItem("searchEditStudent")
                         }
                         
-                        const result = await paginationStudentEdit(body)
+                        const result_new = await paginationStudentEdit(body)
                         
-                        if (!result){
+                        if (!result_new){
                             setDisplayError(true)
                         }else{
-                            const paginate_tmp = generate(result.data)
+                            const paginate_tmp = generate(result_new.data)
                             setDisplayError(false)
-                            showData(result.data.docs)
+                            showData(result_new.data.docs)
                             showPaginate(paginate_tmp)
                         }
                     }else{
@@ -97,8 +117,8 @@ export default function EditStudent({ school_data,schoolID }) {
 
     async function clickReset(ev){
         ev.preventDefault()
-        window.localStorage.removeItem("search")
-        window.localStorage.setItem("page",1)
+        window.localStorage.removeItem("searchEditStudent")
+        window.localStorage.setItem("pageEditStudent",1)
 
         search.current.value = ""
         
@@ -124,13 +144,15 @@ export default function EditStudent({ school_data,schoolID }) {
         let body
         
         if (!search.current.value){
-            window.localStorage.removeItem("search")
+            window.localStorage.removeItem("searchEditStudent")
             body = {"page":1}
         }else{
-            window.localStorage.setItem("search",parseInt(search.current.value))
+            window.localStorage.setItem("pageEditStudent",1)
+            window.localStorage.setItem("searchEditStudent",parseInt(search.current.value))
+
             body = {
                 "page":1,
-                "info":window.localStorage.getItem("search")
+                "info":window.localStorage.getItem("searchEditStudent")
             }
         }
         
@@ -192,10 +214,10 @@ export default function EditStudent({ school_data,schoolID }) {
         
         const body = {
             "page":page,
-            "info":window.localStorage.getItem("search")
+            "info":window.localStorage.getItem("searchEditStudent")
         }
         
-        window.localStorage.setItem("page",page)
+        window.localStorage.setItem("pageEditStudent",page)
         
         const result = await paginationStudentEdit(body)
         
@@ -209,25 +231,6 @@ export default function EditStudent({ school_data,schoolID }) {
         }
     }
 
-    async function fetchData(){
-        const body = {
-            "page":1,
-            "info":null
-        }
-        window.localStorage.setItem("page",1)
-        
-        const result = await paginationStudentEdit(body)
-
-        if (!result){
-            setDisplayError(true)
-        }else{
-            const paginate_tmp = generate(result.data)
-            setDisplayError(false)
-            showData(result.data.docs)
-            showPaginate(paginate_tmp)
-        }
-    }
-    
     function showData(result){
         const template = (
             <tbody>
@@ -270,13 +273,6 @@ export default function EditStudent({ school_data,schoolID }) {
         setPaginate(template)
     }
 
-    
-    useEffect(()=>{
-        window.localStorage.removeItem("search")
-        fetchData()
-    },[])
-
-    
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){

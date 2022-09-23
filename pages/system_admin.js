@@ -6,7 +6,7 @@ import Approved from "../components/system_admin/approved";
 import NotApproved from "../components/system_admin/notApproved";
 import Pending from "../components/system_admin/pending";
 
-export default function SystemAdmin({ admin_data }) {
+export default function SystemAdmin() {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -157,7 +157,6 @@ export default function SystemAdmin({ admin_data }) {
 								<i className="fa-regular fa-bell"></i>
 							</span>
 							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
 							</span>
 							<Link href="/">
 								<a className={`${styles.logo} ms-2`}>

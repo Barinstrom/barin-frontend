@@ -45,8 +45,6 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
-		
-
 		return result
 	}
 	catch(err){
@@ -144,7 +142,6 @@ export async function paginationTeacherEdit(data) {
 
 // pagination editClub
 export async function paginationClubEdit(data) {
-	
 	try {
 		const result = await axios({
 			method:"post",
