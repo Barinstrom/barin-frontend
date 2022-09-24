@@ -207,7 +207,8 @@ export async function add_teachers(data,token,schoolID) {
 		})
 		return result
 	} catch (err) {
-		console.log(err.message)
+
+		console.log(err)
 		return false
 	}
 };
@@ -304,6 +305,50 @@ export async function edit_club(data,token,schoolID) {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 			method: "patch",
+			data:JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err.message)
+		return false
+	}
+};
+
+
+// แสดง ownclub
+export async function get_student_ownclub(token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/student/ownclub";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "get",
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err.message)
+		return false
+	}
+};
+
+// สมัครชุมนุม club
+export async function register_club(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/register-club";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "post",
 			data:JSON.stringify(data),
 			timeout: 10000
 		})

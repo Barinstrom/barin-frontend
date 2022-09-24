@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Approved() {
+export default function Pastclub({schoolID}) {
 	const data = [
 		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
 		{ teacher_name: "tata", role: "expert", school_name: "kaset" },

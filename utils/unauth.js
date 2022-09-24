@@ -23,11 +23,17 @@ export async function register(data) {
 			},
 			timeout: 3000
 		})
-		return result
+		return [true,result]
 	}
 	catch(err){
-		console.log(err.message)
-		return false
+		console.log(err)
+		if (err.response) {
+			return [false,err.response.data]
+		}
+		else {
+			return [false,false]
+		}
+			
 	}
 };
 

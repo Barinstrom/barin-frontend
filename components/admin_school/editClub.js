@@ -9,9 +9,19 @@ import { useRouter } from 'next/router';
 import { paginationClub,edit_club } from '../../utils/auth';
 import Cookies from 'universal-cookie';
 
+const reload = (
+    <main style={{height:"400px"}}>
+        <div className="d-flex justify-content-center h-100 align-items-center">
+            <div className="fs-4">loading ...</div>
+            <div className="spinner-border ms-3"></div>
+        </div>
+    </main>
+)
+
 export default function EditClub({ school_data,schoolID }) {
     const router = useRouter()
-
+    const [reloadTable,setReloadTable] = useState(false)
+    
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError,setDisplayError] = useState(false)
@@ -180,17 +190,6 @@ export default function EditClub({ school_data,schoolID }) {
         }
     }
     
-    function changeDate(k){
-        const t = new Date(Date.parse(k))
-        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
-        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
-        return (
-            <>
-                {d}-{m}-{t.getFullYear()}
-            </>
-        )
-    }
-
     function generate(result){
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
@@ -231,7 +230,9 @@ export default function EditClub({ school_data,schoolID }) {
         
         window.localStorage.setItem("pageEditClub",page)
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -245,31 +246,41 @@ export default function EditClub({ school_data,schoolID }) {
 
     function showData(result){
         const template = (
-            <tbody>
-                {result.map((item,index) => {
-                    return (
-                        <tr key={index}>
-                            <td>{item.clubName}</td>
-                            <td>{item.groupID}</td>
-                            <td>
-                                <button className='btn btn-warning'
-                                    onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
-                                >รายชื่อนักเรียน
-                                </button>
-                            </td>
-                            <td>
-                                <button className='btn btn-info' 
-                                    onClick={(ev) => detailInfo(item,ev)}
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editClubModal"
-                                    data-bs-clubid={item._id}
-                                >แก้ไข
-                                </button>
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
+            <table className='table table-striped text-center align-middle'>
+                <thead>
+                    <tr>
+                        <th width="25%">ชื่อชุมนุม</th>
+                        <th width="25%">รหัสวิชา</th>
+                        <th width="25%">รายชื่อนักเรียน</th>
+                        <th width="25%">แก้ไข</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {result.map((item,index) => {
+                        return (
+                            <tr key={index}>
+                                <td>{item.clubName}</td>
+                                <td>{item.groupID}</td>
+                                <td>
+                                    <button className='btn btn-warning'
+                                        onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
+                                    >รายชื่อนักเรียน
+                                    </button>
+                                </td>
+                                <td>
+                                    <button className='btn btn-info' 
+                                        onClick={(ev) => detailInfo(item,ev)}
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editClubModal"
+                                        data-bs-clubid={item._id}
+                                    >แก้ไข
+                                    </button>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table> 
         )
         setData(template)
     }
@@ -312,17 +323,7 @@ export default function EditClub({ school_data,schoolID }) {
                                     <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            <table className='table table-striped text-center align-middle'>
-                                <thead>
-                                    <tr>
-                                        <th width="25%">ชื่อชุมนุม</th>
-                                        <th width="25%">รหัสวิชา</th>
-                                        <th width="25%">รายชื่อนักเรียน</th>
-                                        <th width="25%">แก้ไข</th>
-                                    </tr>
-                                </thead>
-                                {data}
-                            </table> 
+                            {reloadTable ? reload  : data}
                         </div>
                     </div>
                     {paginate}

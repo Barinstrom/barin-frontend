@@ -108,11 +108,11 @@ export default function Student({ schoolID}) {
 
 	let component = null 
 	if (countBtn === 0){
-		component = <Nowclub />
+		component = <Nowclub schoolID={schoolID}/>
 	}else if (countBtn === 1){
 		component = <Searchclub schoolID={schoolID}/>
 	}else{
-		component = <Pastclub />
+		component = <Pastclub schoolID={schoolID}/>
 	}
 	
 	if (displayFirst === "loading"){

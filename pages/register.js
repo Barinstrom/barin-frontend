@@ -2,6 +2,7 @@ import React from "react";
 import { useState,useRef } from "react";
 import Router from "next/router";
 import { register } from "../utils/unauth";
+import Swal from "sweetalert2";
 
 export default function Register() {
 	/* state เก็บข้อมูลไฟล์ string base64 และชื่อไฟล์ */
@@ -9,7 +10,6 @@ export default function Register() {
 	/* ตัวแปรผูกข้อมูลเพื่อเอาค่า value */
 	const tagForm = useRef([]);
 	const click_check = useRef();
-	const spin = useRef();
 
 	function checkFile(file, ev) {
 		/* console.log(file)
@@ -64,40 +64,48 @@ export default function Register() {
 				role: "admin",
 			};
 			console.log("gogo");
-			spin.current.classList.remove("d-none");
 			// window.localStorage.setItem("infomation", JSON.stringify(body));
 
 			/* will call register api */
-			const res = await register(will_data);
+			const [status,result] = await register(will_data);
 
-			console.log(res);
-			spin.current.classList.add("d-none");
+			console.log(status,result);
 			/* ถ้าได้ res เป็น ... จะ ... */
-			// Router.push({
-			// 	pathname: "/",
-			// });
+			if (!status) {
+				if (result) {
+					Swal.fire({
+						icon: 'error',
+						title: result,  
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+				})
+				}
+				else {
+					Swal.fire({
+						icon: 'error',
+						title: 'สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง!',  
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+				})
+				}
+			}
+			else {
+				Swal.fire({
+						icon: 'success',
+						title: 'สมัครสมาชิกสำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#009431"
+					})
+				Router.push({
+					pathname: "/",
+				});
+			}
 		}
 	}
 
 	return (
 		<>
-			<style jsx>{`
-			.spinnerX {
-				position: fixed;
-				width: 100%;
-				height: 100%;
-				top: 0;
-				left: 0;
-				text-align: center;
-				background-color: rgba(255, 255, 255, 0.8);
-				z-index: 2;
-			}
-			`}</style>
 			
-			<div className="spinnerX pt-5 d-none" ref={spin}>
-				<div className="spinner-border text-primary" role="status">
-				</div>
-			</div>
 
 			<div className="container p-3 mt-4">
 				

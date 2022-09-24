@@ -3,13 +3,22 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { useRouter } from 'next/router';
-import { paginationClub} from '../../utils/auth';
+import { paginationClub,register_club } from '../../utils/auth';
 import Cookies from 'universal-cookie';
+import Swal from 'sweetalert2';
+
+
+const reload = (
+    <main style={{height:"400px"}}>
+        <div className="d-flex justify-content-center h-100 align-items-center">
+            <div className="fs-4">loading ...</div>
+            <div className="spinner-border ms-3"></div>
+        </div>
+    </main>
+)
 
 export default function EditClub({schoolID }) {
-    const router = useRouter()
-    
+    const [reloadTable,setReloadTable] = useState(false)
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError,setDisplayError] = useState(false)
@@ -51,9 +60,10 @@ export default function EditClub({schoolID }) {
         })
     },[])
 
-    function detailInfo(item){
-		//console.log(ev.target.getAttribute("data-bs-id"))
-        //clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+    function detailInfo(item,ev){
+        console.log(item)
+        //console.log(ev.target.getAttribute("data-bs-id"))
+        clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.innerText = item.clubName
         clubInfo.current.innerText = item.clubInfo
         category.current.innerText = item.category
@@ -69,60 +79,27 @@ export default function EditClub({schoolID }) {
     }
 
     async function applyClub(){
-        /* const body = {
-            clubID: clubName.current.getAttribute("data-clubid"),
-            clubName:clubName.current.value,
-            clubInfo:clubInfo.current.value ,
-            category:category.current.value ,
-            limit: limitStudent.current.value ,
-            schoolYear: schoolYear.current.value ,
-            groupID: groupID.current.value,
-            schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ]
+        console.log(clubName.current.getAttribute("data-clubid"))
+        const body = {
+            "clubID":clubName.current.getAttribute("data-clubid")
         }
         
-        console.log(body)
-        try{
-            const result = await edit_club(body,token,schoolID)
+        const result = await register_club(body,token,schoolID)
+        
+        if (!result){
+            Swal.fire(
+                'สมัครไม่สำเร็จ!',
+                '',
+                'warning',
+            )
+        }else{
+            Swal.fire(
+                'สมัครเสร็จสิ้น',
+                '',
+                'success',
+            )
+        }
 
-            if (result.status === 200){
-                const body = {
-                    "page":window.localStorage.getItem("studentPageClub"),
-                    "query":window.localStorage.getItem("studentSearchClub")
-                }
-                
-                const result = await paginationClub(body,token,schoolID)
-                
-                if (!result){
-                    setDisplayError(true)
-                }else{
-                    if (result.data.docs.length === 0){
-                        window.localStorage.setItem("studentPageClub",result.data.totalPages)
-                        
-                        const body = {
-                            "page":window.localStorage.getItem("studentPageClub"),
-                            "query":window.localStorage.getItem("studentSearchClub")
-                        }
-                        const result_new = await paginationClubEdit(body)
-                        
-                        if (!result_new){
-                            setDisplayError(true)
-                        }else{
-                            const paginate_tmp = generate(result_new.data)
-                            setDisplayError(false)
-                            showData(result_new.data.docs)
-                            showPaginate(paginate_tmp)
-                        }
-                    }else{
-                        const paginate_tmp = generate(result.data)
-                        setDisplayError(false)
-                        showData(result.data.docs)
-                        showPaginate(paginate_tmp)
-                    }
-                }
-            }
-        }catch(err){
-            console.log(err)
-        } */
     }
 
     async function clickReset(ev){
@@ -217,7 +194,9 @@ export default function EditClub({schoolID }) {
         
         window.localStorage.setItem("studentPageClub",page)
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -231,25 +210,34 @@ export default function EditClub({schoolID }) {
 
     function showData(result){
         const template = (
-            <tbody>
-                {result.map((item,index) => {
-                    return (
-                        <tr key={index}>
-                            <td>{item.clubName}</td>
-                            <td>{item.groupID}</td>
-                            <td>
-                                <button className='btn btn-info' 
-                                    onClick={(ev) => detailInfo(item,ev)}
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editClubModal"
-                                    data-bs-clubid={item._id}
-                                >ดูรายละเอียด
-                                </button>
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
+            <table className='table table-striped align-middle'>
+                <thead>
+                    <tr>
+                        <th style={{width:"100px"}}>รหัสวิชา</th>
+                        <th style={{width:"400px"}}>ชื่อชุมนุม</th>
+                        <th style={{width:"400px"}} className="text-end"><span className='me-2'>ลงทะเบียน</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {result.map((item,index) => {
+                        return (
+                            <tr key={index}>
+                                <td>{item.groupID}</td>
+                                <td>{item.clubName}</td>
+                                <td className="text-end">
+                                    <button className='btn btn-info btn-sm' 
+                                        onClick={(ev) => detailInfo(item,ev)}
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editClubModal"
+                                        data-bs-clubid={item._id}
+                                    >ดูรายละเอียด
+                                    </button>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table> 
         )
         setData(template)
     }
@@ -290,16 +278,7 @@ export default function EditClub({schoolID }) {
                                     <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            <table className='table table-striped text-center align-middle table-bordered'>
-                                <thead>
-                                    <tr>
-                                        <th style={{width:"400px"}}>ชื่อชุมนุม</th>
-                                        <th style={{width:"400px"}}>รหัสวิชา</th>
-                                        <th style={{width:"200px"}}>ลงทะเบียน</th>
-                                    </tr>
-                                </thead>
-                                {data}
-                            </table> 
+                            {reloadTable ? reload  : data}
                         </div>
                     </div>
                     {paginate}

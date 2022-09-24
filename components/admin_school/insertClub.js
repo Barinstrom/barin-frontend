@@ -3,6 +3,7 @@ import { useState } from "react";
 import ErrorPage from "next/error";
 import { add_club } from "../../utils/auth";
 import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 
 export default function InsertClub({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState("");
@@ -58,45 +59,54 @@ export default function InsertClub({ school_data,schoolID }) {
 			}
 		}
 	
-		/* เมื่อกด click ปุ่มฟอร์มใน modal เพิ่มคลับ 1 คลับ จะทำการส่งข้อมูลไปให้ backend */
 		async function SubmitOneClub(ev){
 			ev.preventDefault()
 
 			const form = new FormData(ev.target)
 			const formSuccess = Object.fromEntries(form.entries())
 			
-			const currentDate = new Date()   
-			const startDate = new Date(currentDate.getTime());
-			startDate.setHours(formSuccess.startTime.split(":")[0]);
-			startDate.setMinutes(formSuccess.startTime.split(":")[1]);
-
-			const endDate = new Date(currentDate.getTime());
-			endDate.setHours(formSuccess.endTime.split(":")[0]);
-			endDate.setMinutes(formSuccess.endTime.split(":")[1]);
-
-			const valid = startDate < endDate 
-			if (!valid) {
-				alert("schedule ไม่ถูกต้อง")
-				return;
+			const currentDate = new Date()
+			const successCurrentDate = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`
+			
+			const startTime = Date.parse(`${successCurrentDate} ${formSuccess.startTime}`)
+			const endTime = Date.parse(`${successCurrentDate} ${formSuccess.endTime}`)
+			
+			if (!(startTime < endTime)) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'ข้อมูล schedule ไม่ถูกต้อง',
+					showConfirmButton:true,
+					confirmButtonColor:"#e3c21c"
+				})
+				return
 			}
 			else {
-				console.log(formSuccess)
+				
 				formSuccess.schedule = [formSuccess.startTime + "-" + formSuccess.endTime]
+				console.log(formSuccess)
 				
 				const cookies = new Cookies();
 				const token = cookies.get("token");
-				const response = await add_club(formSuccess,token,schoolID);
-				console.log(response);
+				const result = await add_club(formSuccess,token,schoolID);
+				
+				if (!result){
+					Swal.fire({
+						icon: 'error',
+						title: 'เพิ่มข้อมูลไม่สำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+					})
+				}else{
+					Swal.fire({
+						icon: 'success',
+						title: 'เพิ่มข้อมูลเสร็จสิ้น',
+						showConfirmButton:true,
+						confirmButtonColor:"#009431"
+					})
+				}
 			}
-			
-			//console.log(JSON.stringify(formSuccess))
-			// const cookies = new Cookies();
-			// const token = cookies.get("token");
-			// const result = await add_student(formSuccess,token,schoolID);
-			// console.log(result);
-			
 		}
-	
+		
 		if (!school_data.paymentStatus) {
 			return <ErrorPage statusCode={404} />;
 		}

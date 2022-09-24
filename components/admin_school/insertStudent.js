@@ -3,6 +3,7 @@ import { useState } from "react";
 import ErrorPage from "next/error";
 import { add_student,add_students } from "../../utils/auth";
 import Cookies from "universal-cookie";
+import Swal from 'sweetalert2';
 
 export default function InsertTeacher({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState();
@@ -64,17 +65,39 @@ export default function InsertTeacher({ school_data,schoolID }) {
 	/* เมื่อกด click ปุ่มฟอร์มใน modal เพิ่มนักเรียน 1 คน จะทำการส่งข้อมูลไปให้ backend */
 	async function SubmitOneStudent(ev){
 		ev.preventDefault()
-
+		
 		const form = new FormData(ev.target)
 		const formSuccess = Object.fromEntries(form.entries())
+		if (!formSuccess.firstname || !formSuccess.lastname || !formSuccess.email || !formSuccess.tel || !formSuccess.classYear || !formSuccess.enteredYear){
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน',
+				showConfirmButton:true,
+				confirmButtonColor:"#e3c21c"
+			})
+			return
+		}
 		
 		formSuccess.isActive = "Active"
-		//console.log(formSuccess)
-		//console.log(JSON.stringify(formSuccess))
 		const cookies = new Cookies();
 		const token = cookies.get("token");
-		const response = await add_student(formSuccess,token,schoolID);
-		console.log(response);
+		const result = await add_student(formSuccess,token,schoolID);
+		
+		if (!result){
+			Swal.fire({
+				icon: 'error',
+				title: 'เพิ่มข้อมูลไม่สำเร็จ',
+				showConfirmButton:true,
+				confirmButtonColor:"#ce0303"
+			})
+		}else{
+			Swal.fire({
+				icon: 'success',
+				title: 'เพิ่มข้อมูลเสร็จสิ้น',
+				showConfirmButton:true,
+				confirmButtonColor:"#009431"
+			})
+		}
 	}
 
 

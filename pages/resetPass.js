@@ -10,7 +10,8 @@ import { reset_password } from "../utils/unauth"
 // Path = 
 // http://localhost:54321/forgot_password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5lZ29tb3I2NzFAeGl0dWR5LmNvbSIsImlhdCI6MTY2MjEzMjQwMSwiZXhwIjoxNjYyMTMzMzAxfQ.yHBUBpMvOax-_NPPKwUHw3HyWwYtunR7RhxnUNtAbLk
 
-export default function ForgotPass(){
+export default function ForgotPass() {
+  const spin = useRef()
   const pass = useRef()
   const conf_pass = useRef()
   const router = useRouter()
@@ -38,12 +39,54 @@ export default function ForgotPass(){
     body.token = router.query.token;
     
     console.log(body)
+    spin.current.classList.remove("d-none");
+
     const response = await reset_password(body);
+
+    spin.current.classList.add("d-none");
     console.log(response)
+    if (!response) {
+      Swal.fire({
+						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+						title: result,  
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+				})
+    }
+    else {
+      Swal.fire({
+        icon: 'success',
+        title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+        showConfirmButton:true,
+        confirmButtonColor:"#009431"
+      })
+    }
   } 
   
   return (
     <main className={styles.register}>
+
+      <style jsx>{`
+			.background-spinner{
+          background-color:rgb(0, 0, 0,0.3);
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 100;
+      }
+      
+      `}</style>
+			
+      <div className='background-spinner d-none' ref={spin}>
+        <div className="spinner-border text-primary"></div>
+        
+      </div>
+
       <main className={styles.block} >
         <div>
           <p className={styles.logo}>Barin Storm</p>
