@@ -51,15 +51,15 @@ export default function Student({ schoolID,school_data }) {
 		Promise.all([get_data(token,schoolID)])
 			.then(result => {
 				// console.log(result)
-				const data_tmp = result[0]
-				const role = result[0].data.data_user.role
+				const data_tmp = result[0].data
+				/* const role = result[0].data.data_user.role
 				if (role !== "teacher") {
 					setDisplayFirst(false)
 				}
 				
-				else if (data_tmp){
+				else */ if (data_tmp){
 					setDisplayFirst(true)
-					setData_school(data_tmp.data.data_school)
+					setData_school(data_tmp.data)
 					setchooseBtnStart(true)
 					setReadyTime(true)
 				}else{

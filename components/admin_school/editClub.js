@@ -72,7 +72,7 @@ export default function EditClub({ school_data,schoolID }) {
     }
 
     async function updateStudent(){
-        const body = {
+        const body_update = {
             clubID: clubName.current.getAttribute("data-clubid"),
             clubName:clubName.current.value,
             clubInfo:clubInfo.current.value ,
@@ -82,19 +82,12 @@ export default function EditClub({ school_data,schoolID }) {
             groupID: groupID.current.value,
             schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ]
         }
+        //console.log(body_update)
         
-        console.log(body)
         try{
-            // const result = await axios({
-            //     method:"post",
-            //     url:"http://localhost:8000/edit/db",
-            //     headers:{'Content-Type':'application/json'},
-            //     data:JSON.stringify(body),
-            //     timeout:10000
-            // })
-            const result = await edit_club(body,token,schoolID)
-
-            if (result.status === 200){
+            const result_update = await edit_club(body_update,token,schoolID)
+            //console.log(result_update)
+            if (result_update.status === 200){
                 const body = {
                     "page":window.localStorage.getItem("pageEditClub"),
                     "query":window.localStorage.getItem("searchEditClub")

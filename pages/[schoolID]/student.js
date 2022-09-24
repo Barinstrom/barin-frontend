@@ -27,15 +27,15 @@ export default function Student({ schoolID}) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token,schoolID)])
+		Promise.all([get_data(token)])
 			.then(result => {
 				//console.log(result[0].data.data_user.role)
-				const data_tmp = result[0]
-				const role = result[0].data.data_user.role
+				const data_tmp = result[0].data
+				/*const role = result[0]
 				if (role !== "student") {
 					setDisplayFirst(false)
 				}
-				else if (data_tmp){
+				else */ if (data_tmp){
 					setDisplayFirst(true)
 					//setData_school(data_tmp.data.data_school)
 					setchooseBtnStart(true)
@@ -110,9 +110,9 @@ export default function Student({ schoolID}) {
 	if (countBtn === 0){
 		component = <Nowclub />
 	}else if (countBtn === 1){
-		component = <Pastclub />
+		component = <Searchclub schoolID={schoolID}/>
 	}else{
-		component = <Searchclub />
+		component = <Pastclub />
 	}
 	
 	if (displayFirst === "loading"){

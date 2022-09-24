@@ -3,15 +3,13 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import axios from 'axios';
-import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClub,edit_club } from '../../utils/auth';
+import { paginationClub} from '../../utils/auth';
 import Cookies from 'universal-cookie';
 
-export default function EditClub({ school_data,schoolID }) {
+export default function EditClub({schoolID }) {
     const router = useRouter()
-
+    
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError,setDisplayError] = useState(false)
@@ -26,23 +24,21 @@ export default function EditClub({ school_data,schoolID }) {
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
     
-    
-
     const cookie = new Cookies()
     const token = cookie.get("token")
     // console.log(token)
 
     useEffect(()=>{
-        window.localStorage.removeItem("searchEditClub")
-        window.localStorage.removeItem("pageEditClub")
+        window.localStorage.removeItem("studentSearchClub")
+        window.localStorage.removeItem("studentPageClub")
         const body = {
             "page":1,
         }
-        window.localStorage.setItem("pageEditClub",1)
+        window.localStorage.setItem("studentPageClub",1)
         
         // console.log("Club ",token)
         paginationClub(body, token, schoolID).then(result => {
-            console.log(result.data.docs)
+            console.log(result)
             
             if (!result){
                 setDisplayError(true)
@@ -53,28 +49,27 @@ export default function EditClub({ school_data,schoolID }) {
                 showPaginate(paginate_tmp)
             }
         })
-        // console.log(school_data)
     },[])
 
-    function detailInfo(item,ev){
+    function detailInfo(item){
 		//console.log(ev.target.getAttribute("data-bs-id"))
-        clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
-        clubName.current.value = item.clubName
-        clubInfo.current.value = item.clubInfo
-        category.current.value = item.category
-        limitStudent.current.value = item.limit
-        schoolYear.current.value = item.schoolYear
-        groupID.current.value = item.groupID
+        //clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+        clubName.current.innerText = item.clubName
+        clubInfo.current.innerText = item.clubInfo
+        category.current.innerText = item.category
+        limitStudent.current.innerText = item.limit + " คน"
+        schoolYear.current.innerText = item.schoolYear
+        groupID.current.innerText = item.groupID
         
             
         let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
         let [ st ,en ] = schedule.split("-")
-        scheduleStart.current.value = st
-        scheduleEnd.current.value = en
+        scheduleStart.current.innerText = st + " นาฬิกา"
+        scheduleEnd.current.innerText = en + " นาฬิกา"
     }
 
-    async function updateStudent(){
-        const body = {
+    async function applyClub(){
+        /* const body = {
             clubID: clubName.current.getAttribute("data-clubid"),
             clubName:clubName.current.value,
             clubInfo:clubInfo.current.value ,
@@ -87,19 +82,12 @@ export default function EditClub({ school_data,schoolID }) {
         
         console.log(body)
         try{
-            // const result = await axios({
-            //     method:"post",
-            //     url:"http://localhost:8000/edit/db",
-            //     headers:{'Content-Type':'application/json'},
-            //     data:JSON.stringify(body),
-            //     timeout:10000
-            // })
             const result = await edit_club(body,token,schoolID)
 
             if (result.status === 200){
                 const body = {
-                    "page":window.localStorage.getItem("pageEditClub"),
-                    "query":window.localStorage.getItem("searchEditClub")
+                    "page":window.localStorage.getItem("studentPageClub"),
+                    "query":window.localStorage.getItem("studentSearchClub")
                 }
                 
                 const result = await paginationClub(body,token,schoolID)
@@ -108,11 +96,11 @@ export default function EditClub({ school_data,schoolID }) {
                     setDisplayError(true)
                 }else{
                     if (result.data.docs.length === 0){
-                        window.localStorage.setItem("pageEditClub",result.data.totalPages)
+                        window.localStorage.setItem("studentPageClub",result.data.totalPages)
                         
                         const body = {
-                            "page":window.localStorage.getItem("pageEditClub"),
-                            "query":window.localStorage.getItem("searchEditClub")
+                            "page":window.localStorage.getItem("studentPageClub"),
+                            "query":window.localStorage.getItem("studentSearchClub")
                         }
                         const result_new = await paginationClubEdit(body)
                         
@@ -134,13 +122,13 @@ export default function EditClub({ school_data,schoolID }) {
             }
         }catch(err){
             console.log(err)
-        }
+        } */
     }
 
     async function clickReset(ev){
         ev.preventDefault()
-        window.localStorage.removeItem("searchEditClub")
-        window.localStorage.setItem("pageEditClub",1)
+        window.localStorage.removeItem("studentSearchClub")
+        window.localStorage.setItem("studentPageClub",1)
 
         search.current.value = ""
         
@@ -166,19 +154,19 @@ export default function EditClub({ school_data,schoolID }) {
         let body
         
         if (!search.current.value){
-            window.localStorage.removeItem("searchEditClub")
+            window.localStorage.removeItem("studentSearchClub")
             body = {"page":1}
         }else{
-            window.localStorage.setItem("pageEditClub",1)
-            window.localStorage.setItem("searchEditClub",parseInt(search.current.value))
+            window.localStorage.setItem("studentPageClub",1)
+            window.localStorage.setItem("studentSearchClub",search.current.value)
             body = {
                 "page":1,
-                "query":window.localStorage.getItem("searchEditClub")
+                "query":window.localStorage.getItem("studentSearchClub")
             }
         }
         
         const result = await paginationClub(body,token,schoolID)
-        
+        console.log(result)
         if (!result){
             setDisplayError(true)
         }else{
@@ -189,17 +177,6 @@ export default function EditClub({ school_data,schoolID }) {
         }
     }
     
-    function changeDate(k){
-        const t = new Date(Date.parse(k))
-        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
-        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
-        return (
-            <>
-                {d}-{m}-{t.getFullYear()}
-            </>
-        )
-    }
-
     function generate(result){
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
@@ -235,10 +212,10 @@ export default function EditClub({ school_data,schoolID }) {
         
         const body = {
             "page":page,
-            "query":window.localStorage.getItem("searchEditClub")
+            "query":window.localStorage.getItem("studentSearchClub")
         }
         
-        window.localStorage.setItem("pageEditClub",page)
+        window.localStorage.setItem("studentPageClub",page)
         
         const result = await paginationClub(body,token,schoolID)
         
@@ -261,18 +238,12 @@ export default function EditClub({ school_data,schoolID }) {
                             <td>{item.clubName}</td>
                             <td>{item.groupID}</td>
                             <td>
-                                <button className='btn btn-warning'
-                                    onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
-                                >รายชื่อนักเรียน
-                                </button>
-                            </td>
-                            <td>
                                 <button className='btn btn-info' 
                                     onClick={(ev) => detailInfo(item,ev)}
                                     data-bs-toggle="modal"
                                     data-bs-target="#editClubModal"
                                     data-bs-clubid={item._id}
-                                >แก้ไข
+                                >ดูรายละเอียด
                                 </button>
                             </td>
                         </tr>
@@ -298,9 +269,7 @@ export default function EditClub({ school_data,schoolID }) {
         setPaginate(template)
     }
 
-    if (!school_data.paymentStatus) {
-        return <ErrorPage statusCode={404} />;
-    }else if (displayError){
+    if (displayError){
         return (
             <>
                 <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
@@ -310,7 +279,7 @@ export default function EditClub({ school_data,schoolID }) {
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">EditClub</div>
+                    <div className="text-center fs-1 mb-3">searchClub</div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
@@ -321,13 +290,12 @@ export default function EditClub({ school_data,schoolID }) {
                                     <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            <table className='table table-striped text-center align-middle'>
+                            <table className='table table-striped text-center align-middle table-bordered'>
                                 <thead>
                                     <tr>
-                                        <th width="25%">ชื่อชุมนุม</th>
-                                        <th width="25%">รหัสวิชา</th>
-                                        <th width="25%">รายชื่อนักเรียน</th>
-                                        <th width="25%">แก้ไข</th>
+                                        <th style={{width:"400px"}}>ชื่อชุมนุม</th>
+                                        <th style={{width:"400px"}}>รหัสวิชา</th>
+                                        <th style={{width:"200px"}}>ลงทะเบียน</th>
                                     </tr>
                                 </thead>
                                 {data}
@@ -341,48 +309,56 @@ export default function EditClub({ school_data,schoolID }) {
                     <div className="modal-dialog">
                         <div className='modal-content'>
                             <div className='modal-header'>
-                                <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+                                <h3 className="modal-title">รายละเอียดชุมนุม</h3>
                                 <button className='btn-close' data-bs-dismiss="modal"></button>
                             </div>
                             <div className='modal-body'>
-                                <form className="row gy-2 gx-3">
-                                <div className="col-12">
-									<label className="form-label">ชื่อคลับ</label>
-									<input type="text" className="form-control" ref={clubName}/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รหัสวิชา</label>
-									<input type="text" className="form-control" ref={groupID}/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">category</label>
-                                    <input type="text" className='form-control' ref={category}/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รายละเอียดคลับ</label>
-									<textarea className="form-control" rows="3" ref={clubInfo} />
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">จำนวนนักเรียนสูงสุด</label>
-									<input type="number" className="form-control" ref={limitStudent}/>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">ปีการศึกษา</label>
-									<input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาเริ่ม</label>
-                                    <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาจบ</label>
-                                    <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd }></input>
-								</div>
-                                </form>
+                                <div className="row">
+                                    <div className="col-12">
+                                        <p>ชื่อคลับ : &nbsp;
+                                            <span ref={clubName}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>รหัสวิชา : &nbsp;
+                                            <span ref={groupID}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>category : &nbsp;
+                                            <span ref={category}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>รายละเอียดคลับ : &nbsp;
+                                            <span ref={clubInfo}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>จำนวนที่รับ : &nbsp;
+                                            <span ref={limitStudent}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>ปีการศึกษา : &nbsp;
+                                            <span ref={schoolYear}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>เวลาเรียน : &nbsp;
+                                            <span ref={scheduleStart}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>เวลาเลิกเรียน: &nbsp;
+                                            <span ref={scheduleEnd}></span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                             <div className='modal-footer'>
                                 <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> applyClub()}>สมัครชุมนุม</button>
                             </div>
                         </div>
                     </div>

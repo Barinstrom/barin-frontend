@@ -58,16 +58,15 @@ export default function Admin({ schoolID,school_data }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0])
-				const data_tmp = result[0]
-				const role = result[0].data.data_user.role
+				console.log(result[0].data)
+				const data_tmp = result[0].data
+				/* const role = result[0].data.data_user.role
 				if (role !== "admin") {
 					setDisplayFirst(false)
 				}
-				
-				else if (data_tmp){
+				else */ if (data_tmp){
 					setDisplayFirst(true)
-					setData_school(data_tmp.data.data_school)
+					setData_school(data_tmp)
 					setchooseBtnStart(true)
 					setReadyTime(true)
 				}else{

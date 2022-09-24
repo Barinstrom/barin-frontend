@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect,useState} from 'react'
 import { get_data } from '../../../utils/auth'
 import Cookies from 'universal-cookie'
-import { paginationStudentEdit } from '../../../utils/unauth'
+import { paginationStudent } from '../../../utils/auth'
 import Reload from '../../../components/reload'
 
 
@@ -19,12 +19,10 @@ export default function StudentList() {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
     
-    const school_ID = router.query.schoolID
-
-    get_data(token,school_ID)
+    get_data(token)
     .then(result => {
       const clubTest = ["บาสเกตบอล","ฟุตบอล","ปิงปอง","แบตมินตัน","ยิมนาสติก","หมากรุก","กอล์ฟ","ว่ายน้ำ","กระโดดเชือก","วิ่ง"]
-      console.log(result.data.data_school.clubs)
+      console.log(result.data)
       generateDropdown(clubTest)
       fetchData()
       setLoading(false)
@@ -80,14 +78,13 @@ export default function StudentList() {
   }
 
   async function clickPage(page){
-          
-    const body = {
+      const body = {
         "page":page,
     }
     
     window.localStorage.setItem("page",page)
     
-    const result = await paginationStudentEdit(body)
+    const result = await paginationStudent(body)
     
     if (!result){
         setDisplayError(true)
@@ -105,7 +102,7 @@ export default function StudentList() {
     }
     window.localStorage.setItem("page",1)
     
-    const result = await paginationStudentEdit(body)
+    const result = await paginationStudent(body)
 
     if (!result){
         setDisplayError(true)

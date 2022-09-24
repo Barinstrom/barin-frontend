@@ -215,14 +215,14 @@ export async function add_teachers(data,token,schoolID) {
 
 
 // pagination editStudent
-export async function paginationStudent(data,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/....";
+export async function paginationStudent(data) {
+	//const apiUrl = stagingUrl + String(schoolID) + "/....";
 	try {
 		const result = await axios({
 			method:"post",
 			url:"http://localhost:8000/paginate/db",
 			headers: {
-				Authorization: `Bearer ${token}`,
+				/* Authorization: `Bearer ${token}`, */
 				'Content-Type': 'application/json'
 			},
 			data:JSON.stringify(data),
@@ -292,10 +292,10 @@ export async function paginationClub(data,token,schoolID) {
 	}
 };
 
-// เพิ่มครู หลายคน
+// แก้ไข club
 export async function edit_club(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/update-club";
-	console.log("data = ",data)
+	
 	try {
 		const result = await axios({
 			url: apiUrl,

@@ -10,9 +10,9 @@ const stripePromise = loadStripe(
 );
 
 export default function SchoolData({ school_data,schoolID }) {
-	console.log(school_data)
+	//console.log(school_data)
 	const [clientSecret, setClientSecret] = useState("");
-	const [picture, setPicture] = useState(school_data.urlLogo);
+	const [picture, setPicture] = useState("https://images.unsplash.com/photo-1663921801167-b522c11d6cf4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80");
 	const btnEdit = useRef();
 	const btnCancel = useRef();
 	const btnConfirm = useRef();
@@ -84,7 +84,7 @@ export default function SchoolData({ school_data,schoolID }) {
 	}
 
 	useEffect(() => {
-		console.log("set Stripe");
+		//console.log("set Stripe");
 		// Create PaymentIntent as soon as the page loads
 		fetch("/api/create-payment-intent", {
 			method: "POST",
