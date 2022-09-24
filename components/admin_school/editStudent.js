@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import axios from 'axios';
 import ErrorPage from "next/error";
-import { paginationStudentEdit } from '../../utils/unauth';
+import { paginationStudent } from '../../utils/auth';
 
 export default function EditStudent({ school_data,schoolID }) {
 
@@ -28,7 +28,7 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditStudent",1)
         
-        paginationStudentEdit(body).then(result => {
+        paginationStudent(body).then(result => {
             if (!result){
                 setDisplayError(true)
             }else{
@@ -79,7 +79,7 @@ export default function EditStudent({ school_data,schoolID }) {
                     "info":window.localStorage.getItem("searchEditStudent")
                 }
                 
-                const result = await paginationStudentEdit(body)
+                const result = await paginationStudent(body)
                 
                 if (!result){
                     setDisplayError(true)
@@ -92,7 +92,7 @@ export default function EditStudent({ school_data,schoolID }) {
                             "info":window.localStorage.getItem("searchEditStudent")
                         }
                         
-                        const result_new = await paginationStudentEdit(body)
+                        const result_new = await paginationStudent(body)
                         
                         if (!result_new){
                             setDisplayError(true)
@@ -126,7 +126,7 @@ export default function EditStudent({ school_data,schoolID }) {
             "page":1
         }
         
-        const result = await paginationStudentEdit(body)
+        const result = await paginationStudent(body)
         
         if (!result){
             setDisplayError(true)
@@ -156,7 +156,7 @@ export default function EditStudent({ school_data,schoolID }) {
             }
         }
         
-        const result = await paginationStudentEdit(body)
+        const result = await paginationStudent(body)
         
         if (!result){
             setDisplayError(true)
@@ -219,7 +219,7 @@ export default function EditStudent({ school_data,schoolID }) {
         
         window.localStorage.setItem("pageEditStudent",page)
         
-        const result = await paginationStudentEdit(body)
+        const result = await paginationStudent(body)
         
         if (!result){
             setDisplayError(true)

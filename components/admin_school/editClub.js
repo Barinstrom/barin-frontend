@@ -6,9 +6,10 @@ import { useRef } from 'react';
 import axios from 'axios';
 import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClubEdit } from '../../utils/unauth';
+import { paginationClub,edit_club } from '../../utils/auth';
+import Cookies from 'universal-cookie';
 
-export default function EditStudent({ school_data,schoolID }) {
+export default function EditClub({ school_data,schoolID }) {
     const router = useRouter()
 
     const [data,setData] = useState(null)
@@ -16,10 +17,18 @@ export default function EditStudent({ school_data,schoolID }) {
     const [displayError,setDisplayError] = useState(false)
     const search = useRef()
 
-    const user = useRef()
-    const age = useRef()
-    const birthday = useRef()
-    const detail = useRef()
+    const clubName = useRef()
+    const clubInfo = useRef()
+    const groupID = useRef()
+    const category = useRef()
+    const limitStudent = useRef()
+    const schoolYear = useRef()
+    const scheduleStart = useRef()
+    const scheduleEnd = useRef()
+    
+    const cookie = new Cookies()
+    const token = cookie.get("token")
+    // console.log(token)
 
     useEffect(()=>{
         window.localStorage.removeItem("searchEditClub")
@@ -29,7 +38,10 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditClub",1)
         
-        paginationClubEdit(body).then(result => {
+        // console.log("Club ",token)
+        paginationClub(body, token, schoolID).then(result => {
+            console.log(result.data.docs)
+            
             if (!result){
                 setDisplayError(true)
             }else{
@@ -39,50 +51,56 @@ export default function EditStudent({ school_data,schoolID }) {
                 showPaginate(paginate_tmp)
             }
         })
-        console.log(school_data)
+        // console.log(school_data)
     },[])
 
     function detailInfo(item,ev){
 		//console.log(ev.target.getAttribute("data-bs-id"))
-        user.current.setAttribute("data-id",ev.target.getAttribute("data-bs-id"))
-        user.current.value = item.user
-        age.current.value = item.age
+        clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+        clubName.current.value = item.clubName
+        clubInfo.current.value = item.clubInfo
+        category.current.value = item.category
+        limitStudent.current.value = item.limit
+        schoolYear.current.value = item.schoolYear
+        groupID.current.value = item.groupID
         
-        const t = new Date(Date.parse(item.birthday))
-        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
-        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
-        const timer =  `${t.getFullYear()}-${m}-${d}`
-        
-        birthday.current.value = timer
-        detail.current.value = item.detail
-	}
+            
+        let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
+        let [ st ,en ] = schedule.split("-")
+        scheduleStart.current.value = st
+        scheduleEnd.current.value = en
+    }
 
     async function updateStudent(){
         const body = {
-            user:user.current.value,
-            age:age.current.value,
-            birthday:birthday.current.value,
-            detail:detail.current.value,
-            edit:user.current.getAttribute("data-id")
+            clubID: clubName.current.getAttribute("data-clubid"),
+            clubName:clubName.current.value,
+            clubInfo:clubInfo.current.value ,
+            category:category.current.value ,
+            limit: limitStudent.current.value ,
+            schoolYear: schoolYear.current.value ,
+            groupID: groupID.current.value,
+            schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ]
         }
-        //console.log(body)
-
+        
+        console.log(body)
         try{
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/edit/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify(body),
-                timeout:10000
-            })
+            // const result = await axios({
+            //     method:"post",
+            //     url:"http://localhost:8000/edit/db",
+            //     headers:{'Content-Type':'application/json'},
+            //     data:JSON.stringify(body),
+            //     timeout:10000
+            // })
+            const result = await edit_club(body,token,schoolID)
 
             if (result.status === 200){
                 const body = {
                     "page":window.localStorage.getItem("pageEditClub"),
-                    "info":window.localStorage.getItem("searchEditClub")
+                    "query":window.localStorage.getItem("searchEditClub")
                 }
                 
-                const result = await paginationClubEdit(body)
+                const result = await paginationClub(body,token,schoolID)
                 
                 if (!result){
                     setDisplayError(true)
@@ -92,7 +110,7 @@ export default function EditStudent({ school_data,schoolID }) {
                         
                         const body = {
                             "page":window.localStorage.getItem("pageEditClub"),
-                            "info":window.localStorage.getItem("searchEditClub")
+                            "query":window.localStorage.getItem("searchEditClub")
                         }
                         const result_new = await paginationClubEdit(body)
                         
@@ -128,7 +146,7 @@ export default function EditStudent({ school_data,schoolID }) {
             "page":1
         }
         
-        const result = await paginationClubEdit(body)
+        const result = await paginationClub(body,token,schoolID)
         
         if (!result){
             setDisplayError(true)
@@ -153,11 +171,11 @@ export default function EditStudent({ school_data,schoolID }) {
             window.localStorage.setItem("searchEditClub",parseInt(search.current.value))
             body = {
                 "page":1,
-                "info":window.localStorage.getItem("searchEditClub")
+                "query":window.localStorage.getItem("searchEditClub")
             }
         }
         
-        const result = await paginationClubEdit(body)
+        const result = await paginationClub(body,token,schoolID)
         
         if (!result){
             setDisplayError(true)
@@ -215,12 +233,12 @@ export default function EditStudent({ school_data,schoolID }) {
         
         const body = {
             "page":page,
-            "info":window.localStorage.getItem("searchEditClub")
+            "query":window.localStorage.getItem("searchEditClub")
         }
         
         window.localStorage.setItem("pageEditClub",page)
         
-        const result = await paginationClubEdit(body)
+        const result = await paginationClub(body,token,schoolID)
         
         if (!result){
             setDisplayError(true)
@@ -238,9 +256,8 @@ export default function EditStudent({ school_data,schoolID }) {
                 {result.map((item,index) => {
                     return (
                         <tr key={index}>
-                            <td>{item.user}</td>
-                            <td>{item.age}</td>
-                            <td>{changeDate(item.birthday)}</td>
+                            <td>{item.clubName}</td>
+                            <td>{item.groupID}</td>
                             <td>
                                 <button className='btn btn-warning'
                                     onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
@@ -252,8 +269,8 @@ export default function EditStudent({ school_data,schoolID }) {
                                     onClick={(ev) => detailInfo(item,ev)}
                                     data-bs-toggle="modal"
                                     data-bs-target="#editClubModal"
-                                    data-bs-id={item._id}
-                                    >รายละเอียด
+                                    data-bs-clubid={item._id}
+                                >แก้ไข
                                 </button>
                             </td>
                         </tr>
@@ -302,14 +319,13 @@ export default function EditStudent({ school_data,schoolID }) {
                                     <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            <table className='table table-bordered text-center'>
-                                <thead className='table-dark'>
+                            <table className='table table-striped text-center align-middle'>
+                                <thead>
                                     <tr>
-                                        <th>ชื่อชุมนุม</th>
-                                        <th>รหัสวิชา</th>
-                                        <th>จำนวนคนลงทะเบียน</th>
-                                        <th>รายชื่อนักเรียน</th>
-                                        <th>รายละเอียด</th>
+                                        <th width="25%">ชื่อชุมนุม</th>
+                                        <th width="25%">รหัสวิชา</th>
+                                        <th width="25%">รายชื่อนักเรียน</th>
+                                        <th width="25%">แก้ไข</th>
                                     </tr>
                                 </thead>
                                 {data}
@@ -328,22 +344,38 @@ export default function EditStudent({ school_data,schoolID }) {
                             </div>
                             <div className='modal-body'>
                                 <form className="row gy-2 gx-3">
-                                    <div className="col-12">
-                                        <label className="form-label">user</label>
-                                        <input type="text" className="form-control" name="user" ref={user}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">age</label>
-                                        <input type="text" className="form-control" name="age" ref={age}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">birthday</label>
-                                        <input type="text" className="form-control" name="birthday" ref={birthday}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label" >detail</label>
-                                        <textarea className='form-control' ref={detail}></textarea>
-                                    </div>
+                                <div className="col-12">
+									<label className="form-label">ชื่อคลับ</label>
+									<input type="text" className="form-control" ref={clubName}/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">รหัสวิชา</label>
+									<input type="text" className="form-control" ref={groupID}/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">category</label>
+                                    <input type="text" className='form-control' ref={category}/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">รายละเอียดคลับ</label>
+									<textarea className="form-control" rows="3" ref={clubInfo} />
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">จำนวนนักเรียนสูงสุด</label>
+									<input type="number" className="form-control" ref={limitStudent}/>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">ปีการศึกษา</label>
+									<input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">เวลาเริ่ม</label>
+                                    <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
+								</div>
+								<div className="col-sm-6">
+									<label className="form-label">เวลาจบ</label>
+                                    <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd }></input>
+								</div>
                                 </form>
                             </div>
                             <div className='modal-footer'>

@@ -56,9 +56,9 @@ export default function Admin({ schoolID,school_data }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token,schoolID)])
+		Promise.all([get_data(token)])
 			.then(result => {
-				// console.log(result[0].data.data_user.role)
+				console.log(result[0])
 				const data_tmp = result[0]
 				const role = result[0].data.data_user.role
 				if (role !== "admin") {

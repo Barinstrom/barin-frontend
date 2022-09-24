@@ -4,7 +4,7 @@ import ErrorPage from "next/error";
 import { add_club } from "../../utils/auth";
 import Cookies from "universal-cookie";
 
-export default function InsertTeacher({ school_data,schoolID }) {
+export default function InsertClub({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState("");
 
 	/* ส่วนของการแปลง string เป็น object */
@@ -156,12 +156,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 								</div>
 								<div className="col-12">
 									<label className="form-label">category</label>
-									<select className="form-select"  name="category" defaultValue={"none"}>
-										<option value="none">None</option>
-										<option value="1">One</option>
-										<option value="2">Two</option>
-										<option value="3">Three</option>
-									</select>
+									<input type="text" className="form-control" name="category"/>
 								</div>
 								<div className="col-12">
 									<label className="form-label">รายละเอียดคลับ</label>
