@@ -27,7 +27,8 @@ export default function Admin({ schoolID, school_data }) {
 	const [data_school,setData_school] = useState()
 	const [readyTime,setReadyTime] = useState(false)
 	const [countBtn,SetCountBtn] = useState(0)
-	const [chooseBtnStart,setchooseBtnStart] = useState(false)
+	const [chooseBtnStart, setchooseBtnStart] = useState(false)
+	const [ispaid, setIspaid] = useState("")
 
 	useEffect(() => {
 		if (chooseBtnStart){
@@ -64,7 +65,9 @@ export default function Admin({ schoolID, school_data }) {
 				if (role !== "admin") {
 					setDisplayFirst(false)
 				}
-				else */ if (data_tmp){
+				else */
+				if (data_tmp) {
+					setIspaid(data_tmp.paymentStatus)
 					setDisplayFirst(true)
 					setData_school(data_tmp)
 					setchooseBtnStart(true)
@@ -97,11 +100,13 @@ export default function Admin({ schoolID, school_data }) {
 			SetCountBtn(8)
 		}
 		
-		for (let i=0;i<=8;i++){
-			if (i === num){
-				optionBtn.current[i].classList.add("nowclick")
-			}else{
-				optionBtn.current[i].classList.remove("nowclick")
+		if (ispaid === "success") {
+			for (let i = 0; i <= 8; i++) {
+				if (i === num) {
+					optionBtn.current[i].classList.add("nowclick")
+				} else {
+					optionBtn.current[i].classList.remove("nowclick")
+				}
 			}
 		}
 		nav.current.classList.remove("active");
@@ -149,6 +154,133 @@ export default function Admin({ schoolID, school_data }) {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
+
+	const admin_page_unpaid = (
+		<>
+			<style jsx>{`
+				.nav_header {
+					min-height: 100vh;
+					position: fixed;
+					padding: 3px;
+					transform: translate(-5%, 80px);
+					transition: transform 0.3s ease;
+					z-index: 100;
+					background-color: transparent;
+				}
+
+				.button_hamberger{
+					width: 40px;
+					height: 40px;
+					border: none;
+					opacity: 1;
+					border-radius: 15px;
+					font-size: 1.4rem;
+					margin-right: 10px;
+					display: none;
+					background-color: transparent;
+				}
+
+				@media screen and (max-width: 1300px) {
+					.nav_header {
+						transform: translate(-100%, 80px);
+					}
+					.nav_header.active {
+						transform: translateY(80px);
+						background-color: white;
+					}
+					.button_hamberger{
+						display: block;
+					}
+					.button_hamberger.hamactive{
+						background-color: #e8e8e8;
+					}
+				}
+
+				.h2_alert,
+				.h2_alert {
+					font-size: 36px;
+				}
+
+				@media screen and (max-width: 1000px) {
+					.h2_alert {
+						font-size: 28px;
+					}
+				}
+				@media screen and (max-width: 800px) {
+					.h2_alert {
+						font-size: 20px;
+					}
+				}
+
+				.nav_left{
+					text-align: left;
+					border-radius: 10px;
+					padding: 6px 30px;
+					cursor: pointer;
+				}
+
+				.nav_left.nowclick{
+					background-color: #FFFFFF;
+					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
+				}
+			`}</style>
+
+			<header className={`${styles.head} navbar navbar-dark bg-white`}>
+				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
+					<div className={`${styles.header_item} ms-2 `}>
+						<button
+							className="button_hamberger"
+							onClick={clickHamberger}
+							ref={hamberger}
+						>
+							<i className="fa-solid fa-bars"></i>
+						</button>
+						<span className="ms-3">Dashboard</span>
+					</div>
+					<div className={`${styles.header_item}`}>
+						<div className={`${styles.time_alert} me-2`}>
+							<span ref={time}></span>
+						</div>
+						<div className={`me-2`}>
+							<span className={`${styles.logo_bell}`}>
+								<i className="fa-regular fa-bell"></i>
+							</span>
+							<span className={`${styles.user_name} ms-1`}>
+								{/* {data.data.userId} */}
+							</span>
+							<Link href="/">
+								<a className={`${styles.logo} ms-2`}>
+									<img src={"../../dora.jpg"} />
+								</a>
+							</Link>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<nav className="nav_header" ref={nav}>
+ 				<div className={styles.box_menu}>
+					<ul>
+ 						<li>
+							<div className={`nav_left`} 
+								onClick={() => changeComponent(0)}
+								ref={(el) => optionBtn.current[0] = el}
+							>
+								<i className="fa-solid fa-house me-2"></i>
+								<span>ข้อมูลโรงเรียน</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main className={styles.content}>
+				<section className="container">
+					{component}
+				</section>
+			</main>
+		</>
+	)
 
 	const admin_page = (
 		<>
@@ -355,7 +487,12 @@ export default function Admin({ schoolID, school_data }) {
 		return <Reload />
 	}
 	else if (displayFirst) {
-		return admin_page
+		if (ispaid === "success") {
+			return admin_page
+		}
+		else {
+			return admin_page_unpaid
+		}
 	}
 	else {
 		return <Error statusCode={404}/>
