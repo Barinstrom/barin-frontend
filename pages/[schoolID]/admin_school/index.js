@@ -1,22 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import styles from "../../styles/admin.module.css";
-import { get_data } from "../../utils/auth";
+import styles from "../../../styles/admin.module.css";
+import { get_data } from "../../../utils/auth";
 
-import EditStudent from "../../components/admin_school/editStudent";
-import EditTeacher from "../../components/admin_school/editTeacher";
-import EditClub from "../../components/admin_school/editClub";
-import EditOwnData from "../../components/admin_school/editOwnData";
-import InsertClub from "../../components/admin_school/insertClub";
-import InsertStudent from "../../components/admin_school/insertStudent";
-import InsertTeacher from "../../components/admin_school/insertTeacher";
-import SchoolData from "../../components/admin_school/schoolData";
-import TimeConfig from "../../components/admin_school/timeConfig";
-import Reload from "../../components/reload";
+import EditStudent from "../../../components/admin_school/editStudent";
+import EditTeacher from "../../../components/admin_school/editTeacher";
+import EditClub from "../../../components/admin_school/editClub";
+import EditOwnData from "../../../components/admin_school/editOwnData";
+import InsertClub from "../../../components/admin_school/insertClub";
+import InsertStudent from "../../../components/admin_school/insertStudent";
+import InsertTeacher from "../../../components/admin_school/insertTeacher";
+import SchoolData from "../../../components/admin_school/schoolData";
+import TimeConfig from "../../../components/admin_school/timeConfig";
+import Reload from "../../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
 
-export default function Admin({ schoolID,school_data }) {
+export default function Admin({ schoolID, school_data }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])

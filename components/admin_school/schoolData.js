@@ -2,15 +2,18 @@ import React from "react";
 import { useRef,useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-
+import Cookies from "universal-cookie";
+import { stripe } from "../../utils/payment";
 import CheckoutForm from "../Stripe_CheckoutForm";
 
 const stripePromise = loadStripe(
-	"pk_test_51Ld8YvDi0FRxBi9CzfQIWC0PWgoMfKxIUnGx3z5MRUoLQIkDxkEiQKhULFITQmlgcZXXcc9Aj8xOI0WCBOuryVhG00WtNTPOIK"
+	"pk_test_51LevDSHCloRRkXJqsQqsWQbkJowAnWVTJ5dUqbk25qSOCcPmGGAgtXcjPEEMKklf8jFduSSalNUu1qM5fpK62WUG00l9MCl6LT"
 );
 
-export default function SchoolData({ school_data,schoolID }) {
-	//console.log(school_data)
+export default function SchoolData({ school_data, schoolID }) {
+	const cookie = new Cookies()
+	const token = cookie.get("token")
+	// console.log(school_data)
 	const [clientSecret, setClientSecret] = useState("");
 	const [picture, setPicture] = useState("https://images.unsplash.com/photo-1663921801167-b522c11d6cf4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80");
 	const btnEdit = useRef();
@@ -83,19 +86,24 @@ export default function SchoolData({ school_data,schoolID }) {
 		window.location.reload();
 	}
 
+
+	
+
 	useEffect(() => {
-		//console.log("set Stripe");
+		console.log("set Stripe",token);
 		// Create PaymentIntent as soon as the page loads
-		fetch("/api/create-payment-intent", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
+		stripe(token).then((data) => {
+			if (data) {
+				setClientSecret(data.data.clientSecret)
+			}
+			else {
+				/* แวดงว่าเกิดข้อผิดพลาดในการดึงข้อมูล */
+			}
 		})
-			.then((res) => res.json())
-			.then((data) => setClientSecret(data.clientSecret));
+
 	}, []);
 
-	if (school_data.paymentStatus) {
+	if (school_data.paymentStatus == "success") {
 		return (
 			<div>
 				<style jsx>{`
@@ -184,7 +192,7 @@ export default function SchoolData({ school_data,schoolID }) {
 				
 			</div>
 		);
-	} else if (!school_data.paymentStatus) {
+	} else {
 		const appearance = {
 			theme: "stripe",
 		};
@@ -203,7 +211,7 @@ export default function SchoolData({ school_data,schoolID }) {
 					<div className="App">
 						{clientSecret && (
 							<Elements options={options} stripe={stripePromise}>
-								<CheckoutForm schoolID={schoolID} />
+								<CheckoutForm schoolID={schoolID} token={token} />
 							</Elements>
 						)}
 					</div>

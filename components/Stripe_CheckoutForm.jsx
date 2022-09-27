@@ -5,7 +5,7 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-export default function CheckoutForm({schoolID}) {
+export default function CheckoutForm({schoolID,token}) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -25,7 +25,10 @@ export default function CheckoutForm({schoolID}) {
       return;
     }
 
+    
+
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      // console.log(paymentIntent)
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
@@ -57,7 +60,7 @@ export default function CheckoutForm({schoolID}) {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: window.location.href
+        return_url: window.location.href + "/payment_status"
           // "http://localhost:3000/" + schoolID + "/admin_school",
       },
     });
