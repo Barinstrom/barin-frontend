@@ -4,6 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Cookies from "universal-cookie";
 import { stripe } from "../../utils/payment";
+import { edit_school_data } from "../../utils/auth"; 
 import CheckoutForm from "../Stripe_CheckoutForm";
 
 const stripePromise = loadStripe(
@@ -67,23 +68,24 @@ export default function SchoolData({ school_data, schoolID }) {
 	}
 
 	/* click confirm */
-	function taskConfirm(ev) {
+	async function taskConfirm(ev,token) {
 		ev.preventDefault();
+		
 		
 		if (!schoolNameInput.current.value){
 			alert("โปรดใส่ชื่อโรงเรียน")
 		}
 
-		const will_json = {
+		const data = {
 			schoolName: schoolNameInput.current.value,
 			urlLogo: picture,
 		};
-		console.log(will_json);
+		console.log(data);
 
 		/* api call */
-
+		const result = await edit_school_data(data,token,schoolID)
 		/* end api call */
-		window.location.reload();
+		// window.location.reload();
 	}
 
 
@@ -182,7 +184,7 @@ export default function SchoolData({ school_data, schoolID }) {
 							<button
 								className="btn btn-success d-none w-100 mt-2"
 								ref={btnConfirm}
-								onClick={(ev) => taskConfirm(ev)}
+								onClick={(ev) => taskConfirm(ev,token)}
 							>
 								ตกลง
 							</button>
@@ -217,7 +219,7 @@ export default function SchoolData({ school_data, schoolID }) {
 
 				`}</style>
 				<div className="alert alert-danger text-center" role="alert">
-					คุณยังไม่ได้ทำการชำระเงิน <br /> กรุณาทำการชำระเงิน
+					คุณยังไม่ได้ทำการชำระเงิน <br /> กรุณาทำการชำระเงิน เพื่อเปิดใช้งานระบบ
 				</div>
 				<div className="alert alert-danger text-center" role="alert">
 					<div className="stripe_pay">

@@ -1,61 +1,325 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
+import { get_approved } from '../../utils/system';
+import Cookies from "universal-cookie";
+import Swal from 'sweetalert2';
 
-export default function Approved() {
-	const data = [
-		{ teacher_name: "toto", role: "expert", school_name: "horwang" },
-		{ teacher_name: "tata", role: "expert", school_name: "kaset" },
-		{ teacher_name: "tete", role: "expert", school_name: "jula" },
-		{ teacher_name: "bundit", role: "expert", school_name: "tepsirin" },
-		{ teacher_name: "jitat", role: "expert", school_name: "prachanivet" },
-		{ teacher_name: "kana", role: "expert", school_name: "sangsom" },
-	];
 
-	function clickSearch(ev) {
-		ev.preventDefault();
-		/* ค้นหาโรงเรียน */
+export default function Aprroved() {
+	const [reloadTable, setReloadTable] = useState(false)
+	const [data, setData] = useState([])
+	const [paginate, setPaginate] = useState([])
+	const [displayError, setDisplayError] = useState(false)
+	const search = useRef()
+
+	const schoolName = useRef()
+	const schoolID = useRef()
+	const urlCertificateDocument = useRef()
+	// const urlLogo = useRef()
+	const headCertificateDocument = useRef()
+
+	useEffect(() => {
+		window.localStorage.removeItem("searchAprroved")
+		window.localStorage.removeItem("pageAprroved")
+
+		const body = {
+			"page": 1
+		}
+		window.localStorage.setItem("pageAprroved", 1)
+
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+
+		get_approved(body, token).then(result => {
+			console.log(result)
+			if (!result) {
+				setDisplayError(true)
+			} else {
+				const paginate_tmp = generate(result)
+				setDisplayError(false)
+				showData(result.docs)
+				showPaginate(paginate_tmp)
+			}
+		})
+	}, [])
+
+	const reload = (
+		<main style={{ height: "400px" }}>
+			<div className="d-flex justify-content-center h-100 align-items-center">
+				<div className="fs-4">loading ...</div>
+				<div className="spinner-border ms-3"></div>
+			</div>
+		</main>
+	)
+
+	async function clickReset(ev) {
+		ev.preventDefault()
+		window.localStorage.removeItem("searchAprroved")
+		search.current.value = ""
+
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+		const result = await get_approved({ "page": 1 }, token)
+
+		if (!result) {
+			setDisplayError(true)
+		} else {
+			const paginate_tmp = generate(result)
+			setDisplayError(false)
+			showData(result.docs)
+			showPaginate(paginate_tmp)
+		}
 	}
 
-	return (
-		<div>
-			<style jsx>{`
-				.btn-responsive {
-					width: 15%;
-				}
-				@media screen and (max-width: 1000px) {
-					.btn-responsive {
-						width: 40%;
-					}
-				}
-				@media screen and (max-width: 576px) {
-					.btn-responsive {
-						width: 100%;
-					}
-				}
-			`}</style>
+	async function clickAccept(ev) {
+		ev.preventDefault()
+		let body
 
-			<div className="text-center fs-1">Approved</div>
-			<form onClick={(ev) => clickSearch(ev)} className="mb-4 mt-2">
-				<div className="input-group">
-					<span className="input-group-text">ค้นหาโรงเรียน</span>
-					<input className="form-control" name="search" />
-					<button className="btn btn-danger">กด</button>
-				</div>
-			</form>
-			<ul className="list-group">
-				{data.map((e, i) => {
+		if (!search.current.value) {
+			window.localStorage.removeItem("searchAprroved")
+			body = { "page": 1 }
+		} else {
+			window.localStorage.setItem("searchAprroved", search.current.value)
+			body = {
+				"page": 1,
+				"query": window.localStorage.getItem("searchAprroved")
+			}
+		}
+
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+		const result = await get_approved(body, token)
+
+		if (!result) {
+			setDisplayError(true)
+		} else {
+			const paginate_tmp = generate(result)
+			setDisplayError(false)
+			showData(result.docs)
+			showPaginate(paginate_tmp)
+		}
+	}
+
+	function generate(result) {
+		const paginate_tmp = []
+		if (result.hasPrevPage && result.page - 5 >= 1) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 5))}><i className="fa-solid fa-angles-left"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+		}
+
+		if (result.hasPrevPage) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+		}
+
+		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+
+		if (result.hasNextPage) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+		}
+
+		if (result.hasNextPage && result.page + 5 <= result.totalPages) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 5))}><i className="fa-solid fa-angles-right"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+		}
+		return paginate_tmp
+	}
+
+
+	async function clickPage(page) {
+		const body = {
+			"page": page,
+			"query": window.localStorage.getItem("searchAprroved")
+		}
+		window.localStorage.setItem("pageAprroved", page)
+
+		const cookies = new Cookies();
+		const token = cookies.get("token");
+
+		setReloadTable(true)
+		const result = await get_approved(body, token)
+		setReloadTable(false)
+
+		if (!result) {
+			setDisplayError(true)
+		} else {
+			const paginate_tmp = generate(result)
+			setDisplayError(false)
+			showData(result.docs)
+			showPaginate(paginate_tmp)
+		}
+	}
+
+	function showData(result) {
+		const template = (
+			<>
+				<style jsx>{`
+					.certificate{
+						cursor: pointer;
+						color:#4794e1;
+					}
+					.certificate:hover{
+						text-decoration: underline;
+					}
+				`}</style>
+				
+				<table className='table table-striped align-middle'>
+					<thead>
+						<tr>
+							<th style={{ width: "100px" }}>schoolID</th>
+							<th style={{ width: "300px" }}>schoolName</th>
+							<th style={{ width: "300px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
+							<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>แก้ไขข้อมูล</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						{result.map((item, index) => {
+							console.log(item)
+							return (
+								<tr key={index}>
+									<td><span>{item.schoolID}</span></td>
+									<td><span>{item.schoolName}</span></td>
+									<td className="text-end">
+										<span className={`certificate`}
+											onClick={() => getUrlCertificateDocument(item)}
+											data-bs-toggle="modal"
+											data-bs-target="#urlCertificateDocument"
+										>กดเพื่อดู certificate</span>
+									</td>
+									<td className="text-end">
+										<button className='btn btn-sm btn-warning'
+											onClick={() => getDetails(item)}
+											data-bs-toggle="modal"
+											data-bs-target="#approveModal"
+										>
+											แก้ไขข้อมูล
+										</button>
+									</td>
+								</tr>
+							)
+						})}
+					</tbody>
+				</table>
+			</>
+		)
+		setData(template)
+	}
+
+	function showPaginate(paginate) {
+		const template = (
+			<ul className='pagination justify-content-center'>
+				{paginate.map((item, index) => {
 					return (
-						<li key={i} className="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-center">
-							<div className="d-flex flex-column w-100">
-								<h5 className="mb-1">{e.teacher_name}</h5>
-								<small>{e.role}</small>
-							</div>
-							<button className="btn btn-primary mt-3 mb-3 btn-responsive">
-								รายละเอียด
-							</button>
+						<li key={index} className="page-item">
+							{item}
 						</li>
-					);
+					)
 				})}
 			</ul>
-		</div>
-	);
+		)
+		setPaginate(template)
+	}
+
+	function getDetails(item) {
+		schoolName.current.value = item.schoolName
+		schoolID.current.value = item.schoolID
+	}
+
+	function getUrlCertificateDocument(item) {
+		urlCertificateDocument.current.src = item.urlCertificateDocument
+		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
+	}
+
+	if (displayError) {
+		return <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
+	} else {
+		return (
+			<>
+				<div>
+					<div className="text-center fs-1 mb-3">Approve</div>
+					<div className='row mb-4'>
+						<div className='col-12'>
+							<form className='mb-5'>
+								<div className='input-group'>
+									<span className="input-group-text">ค้นหา</span>
+									<input type="text" className='form-control' ref={search}></input>
+									<button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+								</div>
+							</form>
+							{reloadTable ? reload : data}
+						</div>
+					</div>
+					{paginate}
+				</div>
+
+				<div className="modal fade" id="approveModal">
+					<div className="modal-dialog">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title">รายละเอียดโรงเรียน</h3>
+								<button className='btn-close' data-bs-dismiss="modal"></button>
+							</div>
+							<div className='modal-body'>
+								<div className="row">
+									<div className="col-12">
+										<label className="form-label">School Name</label>
+										<input type="text" className='form-control' ref={schoolName} />
+									</div>
+									<div className="col-12 mt-2">
+										<label className="form-label">School ID</label>
+										<input type="text" className='form-control' ref={schoolID} />
+									</div>
+									{/* <div className="col-12">
+										<label className="form-label">UrL Logo</label>
+										<img ref={urlLogo} />
+									</div> */}
+
+								</div>
+							</div>
+							<div className='modal-footer'>
+								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+								{/* <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button> */}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="modal fade" id="urlCertificateDocument">
+					<div className="modal-dialog">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title" ref={headCertificateDocument}></h3>
+								<button className='btn-close' data-bs-dismiss="modal"></button>
+							</div>
+							<div className='modal-body'>
+								<div className="row">
+			
+									<div className="col-12">
+										<div className='d-flex flex-column align-items-center'>
+											<img className='img-fluid' ref={urlCertificateDocument} />
+										</div>
+									</div>
+									{/* <div className="col-12">
+										<label className="form-label">UrL Logo</label>
+										<img ref={urlLogo} />
+									</div> */}
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</>
+		)
+	}
+
 }

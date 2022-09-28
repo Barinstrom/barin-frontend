@@ -273,7 +273,7 @@ export async function paginationClub(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	
+	console.log(params)
 	try {
 		const result = await axios({
 			method:"get",
@@ -282,7 +282,6 @@ export async function paginationClub(data,token,schoolID) {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'
 			},
-			data:JSON.stringify(data),
 			timeout:10000
 		})
 		return result
@@ -355,6 +354,29 @@ export async function register_club(data,token,schoolID) {
 		return result
 	} catch (err) {
 		console.log(err.message)
+		return false
+	}
+};
+
+
+// แก้ไข club
+export async function edit_school_data(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/edit";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "patch",
+			data:JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
 		return false
 	}
 };

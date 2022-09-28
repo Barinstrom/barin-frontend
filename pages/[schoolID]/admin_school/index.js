@@ -16,7 +16,7 @@ import Reload from "../../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
 
-export default function Admin({ schoolID, school_data }) {
+export default function Admin({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -24,7 +24,7 @@ export default function Admin({ schoolID, school_data }) {
 	let timer;
 
 	const [displayFirst,setDisplayFirst] = useState("loading")
-	const [data_school,setData_school] = useState()
+	const [data_school,setData_school] = useState(false)
 	const [readyTime,setReadyTime] = useState(false)
 	const [countBtn,SetCountBtn] = useState(0)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
@@ -33,7 +33,7 @@ export default function Admin({ schoolID, school_data }) {
 	useEffect(() => {
 		if (chooseBtnStart){
 			optionBtn.current[0].classList.add("nowclick");
-			if (!school_data.paymentStatus) {
+			if (!data_school.paymentStatus) {
 				for (let i = 0; i < 9; i++) {
 					if (i !== 0) {
 						optionBtn.current[i].hidden = true
@@ -130,7 +130,7 @@ export default function Admin({ schoolID, school_data }) {
 	let component = null
 	if (countBtn === 0) {
 		component = <SchoolData school_data={data_school} schoolID={schoolID} />
-	}else if (!school_data.paymentStatus) {
+	}else if (!data_school.paymentStatus) {
 		component = <Error statusCode={404} />
 	}else if (countBtn === 1) {
 		component = <TimeConfig school_data={data_school} schoolID={schoolID} />
@@ -578,7 +578,7 @@ export async function getStaticProps(context) {
 			}]
 	}
 	return {
-		props: { schoolID,school_data },
+		props: { schoolID },
 		revalidate: 1,
 	};
 }

@@ -61,12 +61,10 @@ export default function EditClub({ school_data,schoolID }) {
                 showPaginate(paginate_tmp)
             }
         })
-        // console.log(school_data)
     },[])
 
     function detailInfo(item,ev){
-		//console.log(ev.target.getAttribute("data-bs-id"))
-        clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+		clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
         category.current.value = item.category
@@ -92,11 +90,10 @@ export default function EditClub({ school_data,schoolID }) {
             groupID: groupID.current.value,
             schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ]
         }
-        //console.log(body_update)
         
         try{
             const result_update = await edit_club(body_update,token,schoolID)
-            //console.log(result_update)
+            
             if (result_update.status === 200){
                 const body = {
                     "page":window.localStorage.getItem("pageEditClub"),
@@ -368,7 +365,7 @@ export default function EditClub({ school_data,schoolID }) {
 								</div>
 								<div className="col-sm-6">
 									<label className="form-label">เวลาจบ</label>
-                                    <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd }></input>
+                                    <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
 								</div>
                                 </form>
                             </div>
