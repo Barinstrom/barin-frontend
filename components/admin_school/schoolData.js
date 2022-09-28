@@ -203,12 +203,24 @@ export default function SchoolData({ school_data, schoolID }) {
 
 		return (
 			<main>
-				<style jsx>{``}</style>
+				<style jsx>{`
+				.stripe_pay {
+					width: 100%;
+				}
+
+				@media screen and (max-width: 768px) {
+						.stripe_pay {
+							display: flex;
+							justify-content: center;
+						}
+					}
+
+				`}</style>
 				<div className="alert alert-danger text-center" role="alert">
 					คุณยังไม่ได้ทำการชำระเงิน <br /> กรุณาทำการชำระเงิน
 				</div>
-				<div className="alert alert-danger" role="alert">
-					<div className="App">
+				<div className="alert alert-danger text-center" role="alert">
+					<div className="stripe_pay">
 						{clientSecret && (
 							<Elements options={options} stripe={stripePromise}>
 								<CheckoutForm schoolID={schoolID} token={token} />

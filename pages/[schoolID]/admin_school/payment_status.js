@@ -34,13 +34,34 @@ export default function Payment_Status() {
 			.then(result => {
 				console.log(result)
         if (result) {
+        //   get_data(token)
+        //     .then(checkstatus => {
+        //       console.log(checkstatus)
+        //       const data_tmp = checkstatus.data
+        //       const payment_st = data_tmp.paymentStatus
+        //       if (payment_st!="success") {
+        //         setDisplayFirst("fail")
+        //         setData(result.data.message)
+        //       }
+        //       else {
+        //         setDisplayFirst("success")
+        //         setData(result.data.message)
+        //       }
+        //     })
           if (result.data.success) {
-            setDisplayFirst("fail")
-            setData(result.data.message)
+            setDisplayFirst("success")
+            setData("Payment done.")
           }
           else {
-            setDisplayFirst("success")
-            setData(result.data.message)
+            if (result.data.message == "You had already paid."){
+              setDisplayFirst("success")
+              setData(result.data.message)
+            }
+            else {
+              setDisplayFirst("fail")
+              setData(result.data.message)
+            }
+            
           }
           
 				}else{
