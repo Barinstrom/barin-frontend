@@ -92,14 +92,14 @@ export default function SchoolData({ school_data, schoolID }) {
 	
 
 	useEffect(() => {
-		console.log("set Stripe",token);
+		//console.log("set Stripe",token);
 		// Create PaymentIntent as soon as the page loads
 		stripe(token).then((data) => {
 			if (data) {
 				setClientSecret(data.data.clientSecret)
 			}
 			else {
-				/* แวดงว่าเกิดข้อผิดพลาดในการดึงข้อมูล */
+				/* แสดงว่าเกิดข้อผิดพลาดในการดึงข้อมูล */
 			}
 		})
 

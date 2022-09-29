@@ -3,7 +3,6 @@ import { useRef,useState,useEffect } from "react";
 import ErrorPage from 'next/error'
 import { set_schedule } from "../../utils/auth";
 import Cookies from "universal-cookie";
-import NotTimeConfig from "../error_page/notTimeConfig"
 
 export default function TimeConfig({ school_data, schoolID }) {
 	// 2022-09-26T00:15:00.000+00:00
@@ -68,7 +67,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 
 	useEffect(() => {
-		console.log(school_data.nowSchoolYear)
+		//console.log(school_data.nowSchoolYear)
 		if (school_data.nowSchoolYear) {
 			setNowYear(have_nowYear)
 		}

@@ -12,7 +12,6 @@ export default function Login() {
   const spin = useRef()
   const email = useRef()
   const password = useRef()
-
   const router = useRouter()
   
   
@@ -99,52 +98,59 @@ export default function Login() {
     <main className={styles.register}>
 
       <style jsx>{`
-			.background-spinner{
-          background-color:rgb(0, 0, 0,0.3);
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 100;
-      }
-      
+        .background-spinner{
+            background-color:rgb(0, 0, 0,0.3);
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
       `}</style>
 			
       <div className='background-spinner d-none' ref={spin}>
         <div className="spinner-border text-primary"></div>
-        
       </div>
+      
       <section className={styles.block} >
-        {/* ชื่อเว็บไซต์ใส่ไปก่อนเฉยๆ */}
-        <div>
-          <p className={styles.logo}>Barin Storm</p>
-        </div>
-        
-        {/* อีเมลล์ */}
-        <div className='form-floating'>
-          <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
-          <label className='form-label'>อีเมลล์</label>
-        </div>
-        
-        {/* รหัสผ่าน */}
-        <div className='form-floating'>
-          <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.block2}`} ref={password} />
-          <label className='form-label'>รหัสผ่าน</label>
-        </div>
-
-        <div className='mt-5 d-flex flex-column justify-content-between align-items-center '>
-          <div className='d-flex flex-column align-items-center w-100'>
-            <button className='btn btn-success w-50 mt-2' onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
-            {/* ไปหน้า register */}
-            <Link href="/register"><button className='btn btn-info w-50 mt-2'>ลงทะเบียน</button></Link>
+        <aside className={styles.block_left}>
+          <div>
+            <div className={styles.barin_strom}>
+              <span>BARIN</span><br />
+              <span>STROM</span>
+            </div>
+            
           </div>
-          <Link href="/forgotPass"><a className='mt-2'>ลืมรหัสผ่าน</a></Link>
-        </div>
-      </section> 
+        </aside>
+          
+        <aside className={styles.block_right}>
+          <div className={styles.form}>
+            <div className='form-floating'>
+              <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
+              <label className='form-label'>อีเมลล์</label>
+            </div>
+          
+            <div className='form-floating mt-2'>
+              <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.block2}`} ref={password} />
+              <label className='form-label'>รหัสผ่าน</label>
+            </div>
+          </div>
+          
+          <div className='mt-3 d-flex flex-column align-items-center'>
+            <button className={styles.login_btn} onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
+            <Link href="/register"><button className={styles.register_btn}>สมัครสมาชิก</button></Link>
+            
+            <div className={styles.additional}>
+              
+              <Link href="/forgotPass"><a className={`mt-2 ${styles.forgotpass}`}>ลืมรหัสผ่าน</a></Link>
+            </div>
+          </div>
+        </aside> 
+      </section>
     </main>
   )
 }

@@ -474,14 +474,12 @@ export default function Admin({ schoolID }) {
 			</nav>
 
 			<main className={styles.content}>
-				<section className="container">
+				<section className="container border">
 					{component}
 				</section>
 			</main>
 		</>
 	)
-
-	console.log("re-render")
 
 	if (displayFirst === "loading") { 
 		return <Reload />
@@ -509,9 +507,6 @@ export async function getStaticPaths() {
 		}) */
 
 	let a = [
-		{ params: { schoolID: "1" } },
-		{ params: { schoolID: "2" } },
-		{ params: { schoolID: "3" } },
 		{ params: { schoolID: "stamp" } },
 		{ params: { schoolID: "teststamp" } },
 		{ params: { schoolID: "all" } },
@@ -525,12 +520,8 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-	//console.log(context);
-	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
-		const data = await response.json() */
-	// console.log("context", context);
 	const schoolID = context.params.schoolID
-	// "2020-09-02" = yyyy-mm-dd
+	
 	const school_data = {
 		schoolName: "Stamp Witnapat School",
 		Status: "active",

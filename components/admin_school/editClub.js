@@ -3,10 +3,9 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import axios from 'axios';
 import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClub,edit_club } from '../../utils/auth';
+import { paginationClub,update_club } from '../../utils/auth';
 import Cookies from 'universal-cookie';
 
 const reload = (
@@ -48,9 +47,9 @@ export default function EditClub({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditClub",1)
         
-        // console.log("Club ",token)
+        
         paginationClub(body, token, schoolID).then(result => {
-            console.log(result.data.docs)
+            console.log(result.data)
             
             if (!result){
                 setDisplayError(true)
@@ -74,9 +73,9 @@ export default function EditClub({ school_data,schoolID }) {
         
             
         let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
-        let [ st ,en ] = schedule.split("-")
-        scheduleStart.current.value = st
-        scheduleEnd.current.value = en
+        let [ startTime ,endTime ] = schedule.split("-")
+        scheduleStart.current.value = startTime
+        scheduleEnd.current.value = endTime
     }
 
     async function updateStudent(){
@@ -92,7 +91,7 @@ export default function EditClub({ school_data,schoolID }) {
         }
         
         try{
-            const result_update = await edit_club(body_update,token,schoolID)
+            const result_update = await update_club(body_update,token,schoolID)
             
             if (result_update.status === 200){
                 const body = {
@@ -243,29 +242,29 @@ export default function EditClub({ school_data,schoolID }) {
 
     function showData(result){
         const template = (
-            <table className='table table-striped text-center align-middle'>
+            <table className='table align-middle'>
                 <thead>
                     <tr>
-                        <th width="25%">ชื่อชุมนุม</th>
-                        <th width="25%">รหัสวิชา</th>
-                        <th width="25%">รายชื่อนักเรียน</th>
-                        <th width="25%">แก้ไข</th>
+                        <th style={{width:"100px"}}>รหัสวิชา</th>
+                        <th style={{width:"250px"}}>ชื่อชุมนุม</th>
+                        <th className='text-center text-sm-end' style={{width:"250px"}}>รายชื่อนักเรียน</th>
+                        <th className='text-center text-sm-end' style={{width:"100px"}}>แก้ไขข้อมูล</th>
                     </tr>
                 </thead>
                 <tbody>
                     {result.map((item,index) => {
                         return (
                             <tr key={index}>
-                                <td>{item.clubName}</td>
                                 <td>{item.groupID}</td>
-                                <td>
-                                    <button className='btn btn-warning'
+                                <td>{item.clubName}</td>
+                                <td className='text-center text-sm-end'>
+                                    <button className='btn btn-warning btn-sm me-0 me-sm-3'
                                         onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
-                                    >รายชื่อนักเรียน
+                                    >รายชื่อ
                                     </button>
                                 </td>
-                                <td>
-                                    <button className='btn btn-info' 
+                                <td className='text-center text-sm-end'>
+                                    <button className='btn btn-info btn-sm me-0 me-sm-2' 
                                         onClick={(ev) => detailInfo(item,ev)}
                                         data-bs-toggle="modal"
                                         data-bs-target="#editClubModal"
@@ -309,7 +308,7 @@ export default function EditClub({ school_data,schoolID }) {
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">EditClub</div>
+                    <div className="text-center fs-1 mb-3">แก้ไขข้อมูลคลับ</div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>

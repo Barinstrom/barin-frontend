@@ -1,0 +1,216 @@
+/* ตกแต่งไฟล์ index.js */
+.register{
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    /* border: 1px solid black; */
+  }
+  
+  .block{
+    max-width: 1400px;
+    width: 100%;
+    height: 710px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .block_left{
+    height: 100%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .block_right{
+    /* border: 1px solid black; */
+    height: 100%;
+    width: 50%;
+  }
+  
+  .logo{
+    display: flex;
+    justify-content: center;
+  }
+    
+  .logo img {
+    width: 200px;
+    object-fit: cover;
+  }
+
+  .barin_strom{
+    font-size: 6rem ;
+    text-align: center;
+    margin-bottom: 2rem;
+    margin: 10px 0;
+    padding: 0;
+    font-weight: bold;
+    line-height: 80%;
+  }
+  
+  .barin_strom span:nth-child(1){
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.5s ease;
+  }
+  
+  .block_right{
+    background-color: #f6f6f6;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .form{
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+  .login_btn{
+    font-size: 1.1rem;
+    border: none;
+    padding: 10px;
+    width: 300px;
+    background-color: #008719;
+    border-radius: 25px;
+    color: #fff;
+  }
+  
+  .register_btn{
+    font-size: 1.1rem;
+    border: none;
+    padding: 10px;
+    width: 300px;
+    background-color: #005ebd;
+    border-radius: 25px;
+    color: #fff;
+    margin-top: 5px;
+  }
+  
+  .additional{
+    margin-top: 10px;
+  }
+  
+  .additional a {
+    color: #9A9898;
+  }
+  
+  
+  .barin_strom span:nth-child(1):hover , .barin_strom span:last-child:hover{
+    font-size: 9rem;
+  }
+  
+  @media screen and (max-width:990px) {
+    .barin_strom{
+      font-size: 5rem;
+    }
+  
+    .block{
+      flex-direction: column;
+    }
+  
+    .block_left{
+      width: 100%;
+    }
+  
+    .block_right{
+      background-color: #fff;
+      width: 100%;
+      margin-top: 30px;
+      justify-content: flex-start;
+    }
+
+    .logo img {
+        width: 180px;
+        object-fit: cover;
+    }
+  
+    .form{
+      margin-top: 50px;
+    }
+  
+    .login_btn{
+      font-size: 1.5rem;
+      padding: 10px;
+      width: 400px;
+    }
+  
+    .register_btn{
+      font-size: 1.5rem;
+      padding: 10px;
+      width: 400px;
+    }
+  
+    .forgotpass{
+      font-size: 1.5rem;
+    }
+  
+    .form{
+      font-size: 1.7rem;
+      width: 450px;
+      margin: 0 auto;
+    }
+  
+    #block1{
+      height: 100px;
+      font-size: 1.7rem;
+    }
+  
+    #block2{
+      height: 100px;
+      font-size: 1.7rem;
+    }
+  }
+  
+  @media screen and (max-width:600px) {
+    .barin_strom{
+      font-size: 4rem;
+    }
+
+    .logo img {
+        width: 160px;
+        object-fit: cover;
+    }
+  
+    .login_btn{
+      font-size: 1.1rem;
+      padding: 10px;
+      width: 250px;
+    }
+  
+    .register_btn{
+      font-size: 1.1rem;
+      padding: 10px;
+      width: 250px;
+    }
+  
+    .forgotpass{
+      font-size: 1.1rem;
+    }
+  
+    .form{
+      font-size: 1.1rem;
+      width: 300px;
+      margin: 0 auto;
+    }
+  
+    #block1{
+      height: 60px;
+      font-size: 1.1rem;
+    }
+  
+    #block2{
+      height: 60px;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .barin_strom span:nth-child(1):hover , .barin_strom span:last-child:hover{
+    font-size: 6.0rem;
+  }
+  
+  
+  

@@ -160,6 +160,9 @@ export default function Pending() {
 					.certificate:hover{
 						text-decoration: underline;
 					}
+
+
+
 				`}</style>
 				
 				<table className='table table-striped align-middle'>
@@ -168,7 +171,7 @@ export default function Pending() {
 							<th style={{ width: "100px" }}>schoolID</th>
 							<th style={{ width: "300px" }}>schoolName</th>
 							<th style={{ width: "300px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-							<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>approve</span></th>
+							<th style={{ width: "300px" }} className="text-center text-md-end"><span className='me-0 me-md-3'>check and approve</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -186,11 +189,18 @@ export default function Pending() {
 										>กดเพื่อดู certificate</span>
 									</td>
 									<td className="text-end">
-										<button className='btn btn-sm btn-success'
-                                            onClick={() => approveSchool(item)}
-										>
-											approve
-										</button>
+										<div className='d-flex flex-column flex-md-row justify-content-end '>
+											<button className='btn btn-sm btn-success me-md-1'
+												onClick={() => approveSchool(item)}
+											>
+												approve
+											</button>
+											<button className='btn btn-sm btn-danger mt-1 mt-md-0 ms-md-1'
+												onClick={() => notApproveSchool(item)}
+											>
+												not approve
+											</button>
+										</div>
 									</td>
 								</tr>
 							)
@@ -231,6 +241,27 @@ export default function Pending() {
         //console.log(item)
         Swal.fire({
             title: 'คุณต้องการยืนยันว่า approve โรงเรียนนี้ใช่หรือไม่',
+            showConfirmButton: true,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: 'ยืนยัน',
+
+            showCancelButton: true,
+            cancelButtonText: "ยกเลิก",
+            cancelButtonColor: "#d93333",
+        }).then((result) => {
+            /* then(() => {
+                console.log(result)
+                if (result.isConfirmed) {
+                    Swal.fire('ทำรายการสำเร็จ', '', 'success')
+                }
+            }) */
+        })
+	}
+	
+	function notApproveSchool(item) {
+        //console.log(item)
+        Swal.fire({
+            title: 'คุณต้องการยืนยันว่า not approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
             confirmButtonColor: "#3085d6",
             confirmButtonText: 'ยืนยัน',

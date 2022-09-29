@@ -3,31 +3,46 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import axios from 'axios';
+import Swal from 'sweetalert2';
+import Cookies from 'universal-cookie';
 import ErrorPage from "next/error";
-import { paginationTeacher } from '../../utils/auth';
+import { paginationTeacher , update_teacher } from '../../utils/auth';
 
 export default function EditTeacher({ school_data,schoolID }) {
 
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError,setDisplayError] = useState(false)
+    const [reloadTable,setReloadTable] = useState(false)
     const search = useRef()
 
-    const user = useRef()
-    const age = useRef()
-    const birthday = useRef()
-    const detail = useRef()
+    const firstname = useRef()
+    const lastname = useRef()
+    //const email = useRef()
+    const tel = useRef()
+    
+    const cookie = new Cookies()
+    const token = cookie.get("token")
+    
+    const reload = (
+        <main style={{height:"400px"}}>
+            <div className="d-flex justify-content-center h-100 align-items-center">
+                <div className="fs-4">loading ...</div>
+                <div className="spinner-border ms-3"></div>
+            </div>
+        </main>
+    )
 
     useEffect(()=>{
         window.localStorage.removeItem("searchEditTeacher")
         window.localStorage.removeItem("pageEditTeacher")
         const body = {
-            "page":1
+            "page":1,
         }
         window.localStorage.setItem("pageEditTeacher",1)
         
-        paginationTeacher(body).then(result => {
+        paginationTeacher(body,token,schoolID).then(result => {
+            console.log(result)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -40,50 +55,49 @@ export default function EditTeacher({ school_data,schoolID }) {
     },[])
 
     function detailInfo(item,ev){
-		//console.log(ev.target.getAttribute("data-bs-id"))
-        user.current.setAttribute("data-id",ev.target.getAttribute("data-bs-id"))
-        user.current.value = item.user
-        age.current.value = item.age
-        
-        const t = new Date(Date.parse(item.birthday))
-        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
-        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
-        const timer =  `${t.getFullYear()}-${m}-${d}`
-        
-        birthday.current.value = timer
-        detail.current.value = item.detail
-	}
+		firstname.current.setAttribute("user-id",ev.target.getAttribute("data-bs-id"))
+        firstname.current.value = item.firstname
+        lastname.current.value = item.lastname
+        //email.current.value = item.email
+        tel.current.value = item.tel
+    }
 
-    async function updateStudent(){
+    async function updateTeacher(){
         const body = {
-            user:user.current.value,
-            age:age.current.value,
-            birthday:birthday.current.value,
-            detail:detail.current.value,
-            edit:user.current.getAttribute("data-id")
+            userID:firstname.current.getAttribute("user-id"),
+            firstname:firstname.current.value,
+            lastname:lastname.current.value,
+            tel:tel.current.value,
         }
-        //console.log(body)
-
+        
         try{
-            const result = await axios({
-                method:"post",
-                url:"http://localhost:8000/edit/db",
-                headers:{'Content-Type':'application/json'},
-                data:JSON.stringify(body),
-                timeout:10000
-            })
-
-            if (result.status === 200){
+            const result_update = await update_teacher(body,token,schoolID)
+            if (!result_update){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'แก้ไขข้อมูลไม่สำเร็จ',
+                    showConfirmButton:true,
+                    confirmButtonColor:"#ce0303"
+                })
+                return
+            }else if (result_update.status === 200){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'แก้ไขข้อมูลเสร็จสิ้น',
+                    showConfirmButton:true,
+                    confirmButtonColor:"#009431"
+                })
                 const body = {
                     "page":window.localStorage.getItem("pageEditTeacher"),
                     "info":window.localStorage.getItem("searchEditTeacher")
                 }
                 
-                const result = await paginationTeacher(body)
+                const result = await paginationTeacher(body,token,schoolID)
                 
                 if (!result){
                     setDisplayError(true)
                 }else{
+                    
                     if (result.data.docs.length === 0){
                         window.localStorage.setItem("pageEditTeacher",result.data.totalPages)
                         const body = {
@@ -91,7 +105,7 @@ export default function EditTeacher({ school_data,schoolID }) {
                             "info":window.localStorage.getItem("searchEditTeacher")
                         }
                         
-                        const result_new = await paginationTeacher(body)
+                        const result_new = await paginationTeacher(body,token,schoolID)
                         
                         if (!result_new){
                             setDisplayError(true)
@@ -125,7 +139,7 @@ export default function EditTeacher({ school_data,schoolID }) {
             "page":1
         }
         
-        const result = await paginationTeacher(body)
+        const result = await paginationTeacher(body,token,schoolID)
         
         if (!result){
             setDisplayError(true)
@@ -147,14 +161,15 @@ export default function EditTeacher({ school_data,schoolID }) {
             body = {"page":1}
         }else{
             window.localStorage.setItem("pageEditTeacher",1)
-            window.localStorage.setItem("searchEditTeacher",parseInt(search.current.value))
+            window.localStorage.setItem("searchEditTeacher",search.current.value)
+
             body = {
                 "page":1,
-                "info":window.localStorage.getItem("searchEditTeacher")
+                "query":window.localStorage.getItem("searchEditTeacher")
             }
         }
         
-        const result = await paginationTeacher(body)
+        const result = await paginationTeacher(body,token,schoolID)
         
         if (!result){
             setDisplayError(true)
@@ -166,27 +181,16 @@ export default function EditTeacher({ school_data,schoolID }) {
         }
     }
     
-    function changeDate(k){
-        const t = new Date(Date.parse(k))
-        const d = t.getDate() > 10 ? t.getDate(): '0'+t.getDate()
-        const m = t.getMonth()+1 > 10 ? t.getMonth()+1: '0'+(t.getMonth()+1)
-        return (
-            <>
-                {d}-{m}-{t.getFullYear()}
-            </>
-        )
-    }
-
     function generate(result){
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-5)}><i className="fa-solid fa-angles-left"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
         }
         
         if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-1)}><i className="fa-solid fa-angle-left"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
@@ -194,13 +198,13 @@ export default function EditTeacher({ school_data,schoolID }) {
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+1)}><i className="fa-solid fa-angle-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
         }
 
         if (result.hasNextPage && result.page + 5 <= result.totalPages){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+5))}><i className="fa-solid fa-angles-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+5)}><i className="fa-solid fa-angles-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
@@ -209,15 +213,16 @@ export default function EditTeacher({ school_data,schoolID }) {
 
     
     async function clickPage(page){
-        
         const body = {
             "page":page,
-            "info":window.localStorage.getItem("searchEditTeacher")
+            "query":window.localStorage.getItem("searchEditTeacher")
         }
         
         window.localStorage.setItem("pageEditTeacher",page)
         
-        const result = await paginationTeacher(body)
+        setReloadTable(true)
+        const result = await paginationTeacher(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -231,27 +236,33 @@ export default function EditTeacher({ school_data,schoolID }) {
 
     function showData(result){
         const template = (
-            <tbody>
-                {result.map((item,index) => {
-                    return (
-                        <tr key={index}>
-                            <td>{item.user}</td>
-                            <td>{item.age}</td>
-                            <td>{changeDate(item.birthday)}</td>
-                            <td>{item.detail}</td>
-                            <td>
-                                <button className='btn btn-info' 
-                                    onClick={(ev) => detailInfo(item,ev)}
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editStudentModal"
-                                    data-bs-id={item._id}
-                                    >รายละเอียด
-                                </button>
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
+            <table className='table align-middle'>
+                <thead>
+                    <tr>
+                        <th style={{width:"500px"}}>ชื่อ-นามสกุล</th>
+                        <th className='text-end' style={{width:"500px",marginRight:"10px"}}><span style={{marginRight:"3px"}}>รายละเอียด</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {result.map((item,index) => {
+                        return (
+                            <tr key={index}>
+                                <td>{item.firstname} {item.lastname}</td>
+                                <td className='text-end'>
+                                    <button className='btn btn-info btn-sm' 
+                                        onClick={(ev) => detailInfo(item,ev)}
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editTeacherModal"
+                                        data-bs-id={item.userID}
+                                        >รายละเอียด
+                                    </button>
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            
         )
         setData(template)
     }
@@ -274,16 +285,12 @@ export default function EditTeacher({ school_data,schoolID }) {
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){
-        return (
-            <>
-                <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
-            </>
-        )
+        return <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
     }else{
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">EditTeacher</div>
+                    <h3 className="text-center fs-1 mb-3">แก้ไขข้อมูลครู</h3>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
@@ -294,53 +301,44 @@ export default function EditTeacher({ school_data,schoolID }) {
                                     <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            <table className='table table-bordered text-center'>
-                                <thead className='table-dark'>
-                                    <tr>
-                                        <th>อีเมลล์</th>
-                                        <th>ชื่อ-นามสกุล</th>
-                                        <th>birthday</th>
-                                        <th>detail</th>
-                                        <th>รายละเอียด</th>
-                                    </tr>
-                                </thead>
-                                {data}
-                            </table> 
+                        </div>
+                        <div className='col-12'>
+                            {reloadTable ? reload : data}
                         </div>
                     </div>
                     {paginate}
                 </div>
     
-                <div className="modal fade" id="editStudentModal">
+                <div className="modal fade" id="editTeacherModal">
                     <div className="modal-dialog">
                         <div className='modal-content'>
                             <div className='modal-header'>
-                                <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+                                <h3 className="modal-title">แบบฟอร์มแก้ไขข้อมูลนักเรียน</h3>
                                 <button className='btn-close' data-bs-dismiss="modal"></button>
                             </div>
                             <div className='modal-body'>
                                 <form className="row gy-2 gx-3">
-                                    <div className="col-12">
-                                        <label className="form-label">user</label>
-                                        <input type="text" className="form-control" name="user" ref={user}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">age</label>
-                                        <input type="text" className="form-control" name="age" ref={age}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label">birthday</label>
-                                        <input type="text" className="form-control" name="birthday" ref={birthday}/>
-                                    </div>
-                                    <div className="col-12">
-                                        <label className="form-label" >detail</label>
-                                        <textarea className='form-control' ref={detail}></textarea>
-                                    </div>
+                                <div className="col-12">
+									<label className="form-label">ชื่อ</label>
+									<input type="text" className="form-control" ref={firstname}/>
+								</div>
+								<div className="col-12">
+									<label className="form-label">นามสกุล</label>
+									<input type="text" className="form-control" ref={lastname}/>
+								</div>
+								{/* <div className="col-12">
+									<label className="form-label">email</label>
+									<input type="email" className="form-control"  ref={email}/>
+								</div> */}
+								<div className="col-12">
+									<label className="form-label">โทรศัพท์มือถือ</label>
+									<input type="tel" className="form-control"  ref={tel}/>
+								</div>
                                 </form>
                             </div>
                             <div className='modal-footer'>
                                 <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateTeacher()}>ตกลง</button>
                             </div>
                         </div>
                     </div>

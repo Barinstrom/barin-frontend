@@ -95,172 +95,72 @@ export async function set_schedule(data, token, schoolID) {
 	}
 }
 
-// เพิ่มข้อมูลนักเรียน 1 คน role admin_school
-export async function add_student(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
-	// console.log("url =", apiUrl)
-	// console.log(JSON.stringify(data))
+// pagination Student
+export async function paginationStudent(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/student";
+	const params = new URLSearchParams()
+	
+	if (data.page){
+		params.append("page",data.page)
+	}
+	if (data.query){
+		params.append("query",data.query)
+	}
+
+	const params_success = apiUrl + `?${params}`
 	
 	try {
 		const result = await axios({
-			url: apiUrl,
+			method:"get",
+			url:params_success,
 			headers: {
 				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-			},
-			method: "POST",
-			data: JSON.stringify(data),
-			timeout: 10000
-		})
-		return result
-	} catch (err) {
-		console.log(err)
-		return false
-	}
-};
-
-
-// เพิ่มข้อมูลนักเรียนหลายคน admin_school
-export async function add_students(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-students";
-	
-	try {
-		const result = await axios({
-			url: apiUrl,
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-			},
-			method: "POST",
-			data: JSON.stringify(data),
-			timeout: 10000
-		})
-		return result
-	} catch (err) {
-		console.log(err)
-		return false
-	}
-};
-
-
-// เพิ่ม 1 คลับ
-export async function add_club(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-club";
-	
-		try {
-		const result = await axios({
-			url: apiUrl,
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json;charset=UTF-8",
-			},
-			method: "post",
-			data:JSON.stringify(data),
-			timeout: 10000
-		})
-		console.log("add_club res = ",result)
-		return result
-	} catch (err) {
-		console.log(err)
-		return false
-	}
-};
-
-
-// เพิ่ม 1 ครู
-export async function add_teacher(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-teacher";
-
-	try {
-		const result = await axios({
-			url: apiUrl,
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json;charset=UTF-8",
-			},
-			method: "post",
-			data:JSON.stringify(data),
-			timeout: 10000
-		})
-		return result
-	} catch (err) {
-		console.log(err)
-		return false
-	}
-
-};
-
-// เพิ่มครู หลายคน
-export async function add_teachers(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
-	//console.log("data = ",data)
-	try {
-		const result = await axios({
-			url: apiUrl,
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json;charset=UTF-8",
-			},
-			method: "post",
-			data:JSON.stringify(data),
-			timeout: 10000
-		})
-		return result
-	} catch (err) {
-
-		console.log(err)
-		return false
-	}
-};
-
-
-
-// pagination editStudent
-export async function paginationStudent(data) {
-	//const apiUrl = stagingUrl + String(schoolID) + "/....";
-	try {
-		const result = await axios({
-			method:"post",
-			url:"http://localhost:8000/paginate/db",
-			headers: {
-				/* Authorization: `Bearer ${token}`, */
 				'Content-Type': 'application/json'
 			},
-			data:JSON.stringify(data),
 			timeout:10000
 		})
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
-};
+}
 
-// pagination editTeacher
-export async function paginationTeacher(data,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/....";
+// pagination Teacher 
+export async function paginationTeacher(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/teacher";
+	const params = new URLSearchParams()
+	
+	if (data.page){
+		params.append("page",data.page)
+	}
+	if (data.query){
+		params.append("query",data.query)
+	}
+
+	const params_success = apiUrl + `?${params}`
+	
 	try {
 		const result = await axios({
-			method:"post",
-			url:"http://localhost:8000/paginate/db",
+			method:"get",
+			url:params_success,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'
 			},
-			data:JSON.stringify(data),
 			timeout:10000
 		})
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };
 
 
-// pagination editClub
+// pagination Club
 export async function paginationClub(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/clubs";
 	const params = new URLSearchParams()
@@ -273,7 +173,8 @@ export async function paginationClub(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	console.log(params)
+	//console.log(params)
+	
 	try {
 		const result = await axios({
 			method:"get",
@@ -292,8 +193,8 @@ export async function paginationClub(data,token,schoolID) {
 	}
 };
 
-// แก้ไข club
-export async function edit_club(data,token,schoolID) {
+// แก้ไขข้อมูล club
+export async function update_club(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/update-club";
 	
 	try {
@@ -314,6 +215,49 @@ export async function edit_club(data,token,schoolID) {
 	}
 };
 
+// แก้ไขข้อมูลนักเรียน
+export async function update_student(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/update-student";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "patch",
+			data:JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err.message)
+		return false
+	}
+};
+
+// แก้ไขข้อมูลครู
+export async function update_teacher(data,token,schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/update-teacher";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "patch",
+			data:JSON.stringify(data),
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err)
+		return false
+	}
+}
 
 // แสดง ownclub
 export async function get_student_ownclub(token,schoolID) {
