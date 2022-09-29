@@ -353,7 +353,7 @@ export async function register_club(data,token,schoolID) {
 		})
 		return result
 	} catch (err) {
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

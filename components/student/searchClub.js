@@ -47,7 +47,7 @@ export default function EditClub({schoolID }) {
         
         // console.log("Club ",token)
         paginationClub(body, token, schoolID).then(result => {
-            console.log(result)
+            //console.log(result)
             
             if (!result){
                 setDisplayError(true)
