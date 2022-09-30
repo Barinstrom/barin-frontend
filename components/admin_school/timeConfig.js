@@ -1,8 +1,8 @@
 import React from "react";
 import { useRef,useState,useEffect } from "react";
 import ErrorPage from 'next/error'
-import { set_schedule } from "../../utils/auth";
 import Cookies from "universal-cookie";
+import { set_schedule } from "../../utils/school_admin/edit_data";
 
 export default function TimeConfig({ school_data, schoolID }) {
 	// 2022-09-26T00:15:00.000+00:00

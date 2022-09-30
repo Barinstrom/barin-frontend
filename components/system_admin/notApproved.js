@@ -3,7 +3,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { get_not_approved } from '../../utils/system';
+import { get_not_approved } from '../../utils/system_admin/system';
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
 

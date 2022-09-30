@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect,useState } from "react";
-import { get_student_ownclub } from "../../utils/auth";
 import Cookies from "universal-cookie";
+import { get_student_ownclub } from "../../utils/student/student";
 
 export default function Nowclub({schoolID}) {
 	const [ displayOwnclub, setdisplayOwnclub ] = useState(null)

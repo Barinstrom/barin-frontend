@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Cookies from "universal-cookie";
 import { stripe } from "../../utils/payment";
-import { edit_school_data } from "../../utils/auth"; 
+import { edit_school_data } from "../../utils/school_admin/edit_data"; 
 import CheckoutForm from "../Stripe_CheckoutForm";
 
 const stripePromise = loadStripe(

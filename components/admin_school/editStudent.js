@@ -6,7 +6,8 @@ import { useRef } from 'react';
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 import ErrorPage from "next/error";
-import { paginationStudent , update_student } from '../../utils/auth';
+import { paginationStudent } from '../../utils/auth';
+import { update_student } from '../../utils/school_admin/edit_data';
 
 export default function EditStudent({ school_data,schoolID }) {
 

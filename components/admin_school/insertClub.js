@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react";
 import ErrorPage from "next/error";
-import { add_club,add_clubs } from "../../utils/add_data";
+import { add_club,add_clubs } from "../../utils/school_admin/add_data";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
 

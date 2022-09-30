@@ -6,7 +6,8 @@ import { useRef } from 'react';
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 import ErrorPage from "next/error";
-import { paginationTeacher , update_teacher } from '../../utils/auth';
+import { paginationTeacher } from '../../utils/auth';
+import { update_teacher } from '../../utils/school_admin/edit_data';
 
 export default function EditTeacher({ school_data,schoolID }) {
 

@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClub,update_club } from '../../utils/auth';
+import { paginationClub } from '../../utils/auth';
+import { update_club } from '../../utils/school_admin/edit_data';
 import Cookies from 'universal-cookie';
 
 const reload = (

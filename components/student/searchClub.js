@@ -3,7 +3,8 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { paginationClub,register_club } from '../../utils/auth';
+import { paginationClub } from '../../utils/auth';
+import { register_club } from '../../utils/student/student';
 import Cookies from 'universal-cookie';
 import Swal from 'sweetalert2';
 
