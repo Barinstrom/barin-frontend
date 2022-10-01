@@ -76,7 +76,7 @@ export async function get_school(token,schoolID) {
 
 // pagination Student
 export async function paginationStudent(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/student";
+	const apiUrl = stagingUrl + String(schoolID) + "/students";
 	const params = new URLSearchParams()
 	
 	if (data.page){
@@ -108,7 +108,7 @@ export async function paginationStudent(data,token,schoolID) {
 
 // pagination Teacher 
 export async function paginationTeacher(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/teacher";
+	const apiUrl = stagingUrl + String(schoolID) + "/teachers";
 	const params = new URLSearchParams()
 	
 	if (data.page){

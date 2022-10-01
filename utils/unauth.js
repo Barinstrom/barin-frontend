@@ -21,7 +21,7 @@ export async function register(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 3000
+			timeout: 10000
 		})
 		return [true,result]
 	}
@@ -73,7 +73,7 @@ export async function forget_password(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8"
 			},
-			timeout: 3000
+			timeout: 10000
 		})
 		return result
 	}
@@ -96,7 +96,29 @@ export async function reset_password(data,token) {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 3000
+			timeout: 10000
+		})
+		return result
+	}
+	catch(err){
+		console.log(err.message)
+		return false
+	}
+};
+
+
+// reset pass
+export async function get_all_schoolID() {
+	const apiUrl = stagingUrl + "/getAllSchoolID";
+	
+	try {
+		const result = await axios({
+			url: apiUrl,
+			method: "get",
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			timeout: 10000
 		})
 		return result
 	}

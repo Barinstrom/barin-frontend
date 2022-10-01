@@ -274,33 +274,20 @@ export default function Student({ schoolID}) {
 }
 
 export async function getStaticPaths() {
-	// เอาไว้ดึง api กำหนด path
-	/* const response = await fetch("http://127.0.0.1:8000/user")
-    const data = await response.json()
-    
-    const b = data.map((e) => {
-        return {params: {id : `${e.id}` }}
-    }) */
-
-	let a = [
-		{ params: { schoolID: "1" } },
-		{ params: { schoolID: "2" } },
-		{ params: { schoolID: "3" } },
-		{ params: { schoolID: "stamp" } },
-		{ params: { schoolID: "teststamp" } },
-	];
-
-	return {
-		paths: a,
+  const schoolPathAll = await get_all_schoolID();
+  
+  const schoolPathGenerate = schoolPathAll.data
+  const all_path = schoolPathGenerate.map((e) => {
+		return { params: e }
+	})
+  
+  return {
+		paths: all_path,
 		fallback: false,
 	};
 }
 
 export async function getStaticProps(context) {
-	//console.log(context);
-	/*  const response = await fetch(`http://127.0.0.1:8000/user/${context.params.id}`)
-    const data = await response.json() */
-	//console.log("context", context);
 	const schoolID = context.params.schoolID
 	const school_data = {
 		schoolName: "Stamp Witnapat School",

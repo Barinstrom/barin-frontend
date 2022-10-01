@@ -1,13 +1,36 @@
 import React from "react"
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import ErrorPage from "next/error";
 import { add_club,add_clubs } from "../../utils/school_admin/add_data";
+import {paginationTeacher} from '../../utils/auth'
+import AllowAddClub from "./allowAddClub";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
 
 export default function InsertClub({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState("");
-
+	const [allowRegisterClubTeacher,setAllowRegisterClubTeacher] = useState(true)
+	const [waiting,setWating] = useState(true)
+	
+	const cookie = new Cookies()
+	const cookie_teacher = cookie.get("token")
+	//console.log(cookie_teacher)
+	//console.log(schoolID)
+	
+	useEffect(() => {
+		setWating(true)
+		paginationTeacher({"page":1},cookie_teacher,schoolID).then(result => {
+			console.log(result)
+			if (result.data.docs.length >= 1){
+				setWating(false)
+				setAllowRegisterClubTeacher(true)
+			}else{
+				setWating(false)
+				setAllowRegisterClubTeacher(false)
+			}
+		})
+	},[])
+	
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
         const result = []
@@ -107,96 +130,99 @@ export default function InsertClub({ school_data,schoolID }) {
 			}
 		}
 		
-		if (!school_data.paymentStatus) {
-			return <ErrorPage statusCode={404} />;
-		}
-
-   	return (
-		<>
-			<div className="text-center fs-1">InsertClub</div>
-			<div className="card mt-5">
-				<div className="card-body">
-					<h5 className="card-title">เพิ่มข้อมูลของคลับหลายคลับ</h5>
-					<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-				</div>
-				<div className="card-footer">
-					<form>
-						<div className="input-group">
-							<input className="form-control" 
-								type='file'
-								accept='.csv'
-								onChange={(ev) => {setCsvFile(ev.target.files[0])
-							}}/>
-							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
-						</div>
-					</form>
-				</div>
-			</div>
-
-			<div className="card mt-5">
-				<div className="card-body">
-					<h5 className="card-title">เพิ่มข้อมูลของคลับ 1 คลับ</h5>
-					<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-				</div>
-				<div className="card-footer">
-					<div className="d-flex justify-content-end">
-						<button  className="btn btn-primary" data-bs-target="#mymodal" data-bs-toggle="modal">ใส่ข้อมูล</button>
+	if (!school_data.paymentStatus) {
+		return <ErrorPage statusCode={404} />;
+	}else if (waiting){
+		return null
+	}else if (allowRegisterClubTeacher){
+		return <AllowAddClub/>
+	}else{
+		return (
+			<>
+				<div className="text-center fs-1">InsertClub</div>
+				<div className="card mt-5">
+					<div className="card-body">
+						<h5 className="card-title">เพิ่มข้อมูลของคลับหลายคลับ</h5>
+						<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+					</div>
+					<div className="card-footer">
+						<form>
+							<div className="input-group">
+								<input className="form-control" 
+									type='file'
+									accept='.csv'
+									onChange={(ev) => {setCsvFile(ev.target.files[0])
+								}}/>
+								<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
+							</div>
+						</form>
 					</div>
 				</div>
-			</div>
-			
-			{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
-			<div className="modal fade" id="mymodal">
-				<div className="modal-dialog">
-					<div className="modal-content">
-						<div className="modal-header">
-							<div className="w-100 mt-1">
-								<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+	
+				<div className="card mt-5">
+					<div className="card-body">
+						<h5 className="card-title">เพิ่มข้อมูลของคลับ 1 คลับ</h5>
+						<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+					</div>
+					<div className="card-footer">
+						<div className="d-flex justify-content-end">
+							<button  className="btn btn-primary" data-bs-target="#mymodal" data-bs-toggle="modal">ใส่ข้อมูล</button>
+						</div>
+					</div>
+				</div>
+				
+				{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
+				<div className="modal fade" id="mymodal">
+					<div className="modal-dialog">
+						<div className="modal-content">
+							<div className="modal-header">
+								<div className="w-100 mt-1">
+									<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+								</div>
+							</div>
+							<div className="modal-body">
+								<form className="row gy-2 gx-3" onSubmit={(ev) => SubmitOneClub(ev)}>
+									<div className="col-12">
+										<label className="form-label">ชื่อคลับ</label>
+										<input type="text" className="form-control" name="clubName"/>
+									</div>
+									<div className="col-12">
+										<label className="form-label">รหัสวิชา</label>
+										<input type="text" className="form-control" name="groupID"/>
+									</div>
+									<div className="col-12">
+										<label className="form-label">category</label>
+										<input type="text" className="form-control" name="category"/>
+									</div>
+									<div className="col-12">
+										<label className="form-label">รายละเอียดคลับ</label>
+										<textarea className="form-control" rows="3" name="clubInfo"></textarea>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">จำนวนนักเรียนสูงสุด</label>
+										<input type="number" className="form-control" name="limit"/>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">ปีการศึกษา</label>
+										<input type="number" className="form-control" min={school_data.nowSchoolYear} name="schoolYear"/>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">เวลาเริ่ม</label>
+										<input type="time" className="form-control mt-3" name="startTime"></input>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">เวลาจบ</label>
+										<input type="time" className="form-control mt-3" name="endTime"></input>
+									</div>
+									<div className="col-12 mt-4 text-center">
+										<input type="submit" className="btn btn-success w-100" value="ตกลง"/>
+									</div>
+								</form>
 							</div>
 						</div>
-						<div className="modal-body">
-							<form className="row gy-2 gx-3" onSubmit={(ev) => SubmitOneClub(ev)}>
-								<div className="col-12">
-									<label className="form-label">ชื่อคลับ</label>
-									<input type="text" className="form-control" name="clubName"/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รหัสวิชา</label>
-									<input type="text" className="form-control" name="groupID"/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">category</label>
-									<input type="text" className="form-control" name="category"/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รายละเอียดคลับ</label>
-									<textarea className="form-control" rows="3" name="clubInfo"></textarea>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">จำนวนนักเรียนสูงสุด</label>
-									<input type="number" className="form-control" name="limit"/>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">ปีการศึกษา</label>
-									<input type="number" className="form-control" min={school_data.nowSchoolYear} name="schoolYear"/>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาเริ่ม</label>
-									<input type="time" className="form-control mt-3" name="startTime"></input>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาจบ</label>
-									<input type="time" className="form-control mt-3" name="endTime"></input>
-								</div>
-								<div className="col-12 mt-4 text-center">
-									<input type="submit" className="btn btn-success w-100" value="ตกลง"/>
-								</div>
-							</form>
-						</div>
 					</div>
 				</div>
-			</div>
-					
-		</>
-	);
+			</>
+		);
+	}
 }

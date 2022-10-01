@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../../styles/admin.module.css";
 import { get_data } from "../../../utils/auth";
+import { get_all_schoolID } from "../../../utils/unauth";
 
 import EditStudent from "../../../components/admin_school/editStudent";
 import EditTeacher from "../../../components/admin_school/editTeacher";
@@ -17,6 +18,7 @@ import Cookies from "universal-cookie";
 import Error from "next/error";
 
 export default function Admin({ schoolID }) {
+	// console.log(schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -474,7 +476,7 @@ export default function Admin({ schoolID }) {
 			</nav>
 
 			<main className={styles.content}>
-				<section className="container border">
+				<section className="container">
 					{component}
 				</section>
 			</main>
@@ -512,9 +514,16 @@ export async function getStaticPaths() {
 		{ params: { schoolID: "all" } },
 		{ params: { schoolID: "prachanivet" } },
 	];
-
+	
+	const path_a = await get_all_schoolID();
+  // console.log("path_a = ", path_a.data)
+  const aa = path_a.data
+  const all_path = aa.map((e) => {
+		return { params: e }
+	})
+  // console.log(all_path)
 	return {
-		paths: a,
+		paths: all_path,
 		fallback: false,
 	};
 }

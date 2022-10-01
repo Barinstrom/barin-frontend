@@ -3,7 +3,7 @@ import styles from '../../styles/index_school.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
-import { checkLogin } from "../../utils/unauth";
+import { checkLogin,get_all_schoolID } from "../../utils/unauth";
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 
@@ -157,15 +157,15 @@ export default function Login({schoolID}) {
 }
 
 export async function getStaticPaths() {
-	let a = [
-		{ params: { schoolID: "stamp" } },
-		{ params: { schoolID: "teststamp" } },
-		{ params: { schoolID: "all" } },
-		{ params: { schoolID: "prachanivet" } },
-	];
-
-	return {
-		paths: a,
+  const schoolPathAll = await get_all_schoolID();
+  
+  const schoolPathGenerate = schoolPathAll.data
+  const all_path = schoolPathGenerate.map((e) => {
+		return { params: e }
+	})
+  
+  return {
+		paths: all_path,
 		fallback: false,
 	};
 }

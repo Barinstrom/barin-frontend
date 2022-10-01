@@ -184,16 +184,15 @@ function showPaginate(paginate){
 }
 
 export async function getStaticPaths() {
-	let a = [
-		{ params: { schoolID: "1" } },
-		{ params: { schoolID: "2" } },
-		{ params: { schoolID: "3" } },
-		{ params: { schoolID: "stamp" } },
-		{ params: { schoolID: "teststamp" } },
-	];
-
-	return {
-		paths: a,
+  const schoolPathAll = await get_all_schoolID();
+  
+  const schoolPathGenerate = schoolPathAll.data
+  const all_path = schoolPathGenerate.map((e) => {
+		return { params: e }
+	})
+  
+  return {
+		paths: all_path,
 		fallback: false,
 	};
 }
