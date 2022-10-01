@@ -5,18 +5,9 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClub } from '../../utils/auth';
+import { paginationClub,get_teachers_inclub } from '../../utils/auth';
 import { update_club } from '../../utils/school_admin/edit_data';
 import Cookies from 'universal-cookie';
-
-const reload = (
-    <main style={{height:"400px"}}>
-        <div className="d-flex justify-content-center h-100 align-items-center">
-            <div className="fs-4">loading ...</div>
-            <div className="spinner-border ms-3"></div>
-        </div>
-    </main>
-)
 
 export default function EditClub({ school_data,schoolID }) {
     const router = useRouter()
@@ -35,10 +26,21 @@ export default function EditClub({ school_data,schoolID }) {
     const schoolYear = useRef()
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
+    const teacherLastName = useRef()
+    const teacherFirstName = useRef()
     
     const cookie = new Cookies()
     const token = cookie.get("token")
     // console.log(token)
+
+    const reload = (
+        <main style={{ height: "400px" }}>
+            <div className="d-flex justify-content-center h-100 align-items-center">
+                <div className="fs-4">loading ...</div>
+                <div className="spinner-border ms-3"></div>
+            </div>
+        </main>
+    )
 
     useEffect(()=>{
         window.localStorage.removeItem("searchEditClub")
@@ -50,7 +52,7 @@ export default function EditClub({ school_data,schoolID }) {
         
         
         paginationClub(body, token, schoolID).then(result => {
-            console.log(result.data)
+            // console.log(result.data)
             
             if (!result){
                 setDisplayError(true)
@@ -63,10 +65,26 @@ export default function EditClub({ school_data,schoolID }) {
         })
     },[])
 
-    function detailInfo(item,ev){
+    function detailInfo(item, ev) {
+        // console.log(item)
+        
+        teacherFirstName.current.value = "loading"
+        teacherLastName.current.value = "loading"
+        get_teachers_inclub(item, token, schoolID).then(result => {
+            // console.log(result)
+            if (result.data[0]) {
+                teacherFirstName.current.value = result.data[0].firstname
+                teacherLastName.current.value = result.data[0].lastname
+            }
+            else {
+                teacherFirstName.current.value = "None"
+                teacherLastName.current.value = "None"
+            }
+        })
 		clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
+        
         category.current.value = item.category
         limitStudent.current.value = item.limit
         schoolYear.current.value = item.schoolYear
@@ -79,7 +97,7 @@ export default function EditClub({ school_data,schoolID }) {
         scheduleEnd.current.value = endTime
     }
 
-    async function updateStudent(){
+    async function updateClub(){
         const body_update = {
             clubID: clubName.current.getAttribute("data-clubid"),
             clubName:clubName.current.value,
@@ -188,10 +206,11 @@ export default function EditClub({ school_data,schoolID }) {
     }
     
     function generate(result){
+        // console.log(result)
         const paginate_tmp = []
-        if (result.hasPrevPage && result.page - 5 >= 1){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
-        }else{
+        if (result.hasPrevPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((1))}><i className="fa-solid fa-angles-left"></i></button>)    
+        } else {
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
         }
         
@@ -209,9 +228,9 @@ export default function EditClub({ school_data,schoolID }) {
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
         }
 
-        if (result.hasNextPage && result.page + 5 <= result.totalPages){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+5))}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
+        if (result.hasNextPage){
+            paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}><i className="fa-solid fa-angles-right"></i></button>)    
+        } else {
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
         return paginate_tmp
@@ -230,7 +249,7 @@ export default function EditClub({ school_data,schoolID }) {
         setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
         setReloadTable(false)
-        
+        // console.log(result.data)
         if (!result){
             setDisplayError(true)
         }else{
@@ -260,7 +279,7 @@ export default function EditClub({ school_data,schoolID }) {
                                 <td>{item.clubName}</td>
                                 <td className='text-center text-sm-end'>
                                     <button className='btn btn-warning btn-sm me-0 me-sm-3'
-                                        onClick={()=> router.push(`/${schoolID}/admin/studentList`)}
+                                        onClick={()=> router.push(`/${schoolID}/admin_school/studentList`)}
                                     >รายชื่อ
                                     </button>
                                 </td>
@@ -342,7 +361,15 @@ export default function EditClub({ school_data,schoolID }) {
 								<div className="col-12">
 									<label className="form-label">รหัสวิชา</label>
 									<input type="text" className="form-control" ref={groupID}/>
-								</div>
+                                </div>
+                                <div className="col-6">
+                                    <label className="form-label">ชื่อ ครูผู้สอน</label>
+                                    <input type="text" className="form-control" ref={teacherFirstName} />
+                                </div>
+                                <div className="col-6">
+                                    <label className="form-label">นามสกุล ครูผู้สอน</label>
+                                    <input type="text" className="form-control" ref={teacherLastName} />
+                                </div>
 								<div className="col-12">
 									<label className="form-label">category</label>
                                     <input type="text" className='form-control' ref={category}/>
@@ -371,7 +398,7 @@ export default function EditClub({ school_data,schoolID }) {
                             </div>
                             <div className='modal-footer'>
                                 <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateClub()}>ตกลง</button>
                             </div>
                         </div>
                     </div>

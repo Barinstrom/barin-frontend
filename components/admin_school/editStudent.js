@@ -190,14 +190,14 @@ export default function EditStudent({ school_data,schoolID }) {
     
     function generate(result){
         const paginate_tmp = []
-        if (result.hasPrevPage && result.page - 5 >= 1){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-5)}><i className="fa-solid fa-angles-left"></i></button>)    
+        if (result.hasPrevPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
         }
         
         if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-1)}><i className="fa-solid fa-angle-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page-1)}><i className="fa-solid fa-angle-left"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
@@ -205,13 +205,13 @@ export default function EditStudent({ school_data,schoolID }) {
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+1)}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page+1)}><i className="fa-solid fa-angle-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
         }
 
-        if (result.hasNextPage && result.page + 5 <= result.totalPages){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+5)}><i className="fa-solid fa-angles-right"></i></button>)    
+        if (result.hasNextPage){
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }

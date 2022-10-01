@@ -9,12 +9,16 @@ import Cookies from "universal-cookie"
 import { get_data } from "../../utils/auth";
 import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
+import { useRouter } from "next/router";
+
 
 export default function Student({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
 	const hamberger = useRef()
+	const dropdown = useRef()
+	const router = useRouter()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
 	
@@ -30,19 +34,28 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				//console.log(result[0].data.data_user.role)
-				const data_tmp = result[0].data._doc
-				const role = result[0].data.role
-				if (role !== "student") {
-					setDisplayFirst(false)
+				// console.log(result[0][0].data)
+
+				if (result[0][1]) {
+					const data_tmp = result[0][0].data._doc
+					const role = result[0][0].data.role
+					if (role !== "student") {
+						setDisplayFirst(false)
+					}
+
+					else if (data_tmp) {
+						setDisplayFirst(true)
+						setData_school(data_tmp)
+						setchooseBtnStart(true)
+						setReadyTime(true)
+					} else {
+						setDisplayFirst(false)
+					}
 				}
-				else if (data_tmp){
-					setDisplayFirst(true)
-					setData_school(data_tmp)
-					setchooseBtnStart(true)
-					setReadyTime(true)
-				}else{
-					setDisplayFirst(false)
+				else {
+					if (result[0][0].response.status === 401) {
+						setDisplayFirst(false)
+					}
 				}
 			})
 	},[]);
@@ -105,6 +118,29 @@ export default function Student({ schoolID }) {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
+
+	/* แสดง dropdown */
+	const displayDropdown = (ev) => {
+		ev.stopPropagation()
+		dropdown.current.classList.toggle("d-none")
+	}
+
+	function logOut() {
+		const cookies = new Cookies();
+		console.log(cookies.get("token"))
+		cookies.remove("token", { path: `${schoolID}` })
+		cookies.remove("token", { path: "/" })
+
+		router.replace("/")
+	}
+
+	function forgetPassword() {
+		const cookies = new Cookies();
+		const token = cookies.get("token")
+
+		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
+		router.replace(`/forgotPass`)
+	}
 
 
 	let component = null 
@@ -206,19 +242,22 @@ export default function Student({ schoolID }) {
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}></span>
 						</div>
-						<div className={`me-2`}>
-							<span className={`${styles.logo_bell}`}>
-								<i className="fa-regular fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-							
-							</span>
-							<Link href="/">
-								<a className={`${styles.logo} ms-2`}>
-									<img src={"../../dora.jpg"} />
-								</a>
-							</Link>
-						</div>
+							<div className={`me-3 d-flex flex-row h-100`}>
+								<span className={`${styles.logo_bell}`}>
+									<i className="fa-regular fa-bell"></i>
+								</span>
+								<span className={`${styles.user_name} ms-1`}>
+									{/* {data.data.userId} */}
+								</span>
+
+								<div className={`${styles.logo}`}>
+									<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
+									<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
+										<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
+										<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+									</ul>
+								</div>
+							</div>
 					</div>
 				</div>
 			</header>

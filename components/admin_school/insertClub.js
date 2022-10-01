@@ -7,20 +7,21 @@ import AllowAddClub from "./allowAddClub";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
 
-export default function InsertClub({ school_data,schoolID }) {
+export default function InsertClub({ school_data, schoolID }) {
+	const [file, setfile] = useState();
 	const [csvFile, setCsvFile] = useState("");
 	const [allowRegisterClubTeacher,setAllowRegisterClubTeacher] = useState(true)
 	const [waiting,setWating] = useState(true)
 	
 	const cookie = new Cookies()
-	const cookie_teacher = cookie.get("token")
-	//console.log(cookie_teacher)
+	const token = cookie.get("token")
+	//console.log(token)
 	//console.log(schoolID)
 	
 	useEffect(() => {
 		setWating(true)
-		paginationTeacher({"page":1},cookie_teacher,schoolID).then(result => {
-			console.log(result)
+		paginationTeacher({"page":1},token,schoolID).then(result => {
+			// console.log(result)
 			if (result.data.docs.length < 1){
 				setWating(false)
 				setAllowRegisterClubTeacher(true)
@@ -29,7 +30,19 @@ export default function InsertClub({ school_data,schoolID }) {
 				setAllowRegisterClubTeacher(false)
 			}
 		})
-	},[])
+	}, [])
+	
+	/* img to base64 */
+	function encodeImageFileAsURL(ev) {
+		//console.log(ev);
+		var file = ev.target.files[0];
+		var reader = new FileReader();
+		reader.onloadend = function () {
+			// console.log("RESULT", reader.result);
+			setfile(reader.result);
+		};
+		reader.readAsDataURL(file);
+	}
 	
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
@@ -70,14 +83,17 @@ export default function InsertClub({ school_data,schoolID }) {
 
 			// เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
 			reader.onload = (ev) => {
-					const text = ev.target.result;
-					//console.log(text)
-					const result = stringtoObject(text)
-					if (result === "data is undefined"){
+					const text = ev.target.result + "\n";
+					// console.log(text)
+					const data = stringtoObject(text)
+					if (data === "data is undefined"){
 							alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
 							return
 					}else{
+						console.log(data)
+						add_clubs(data,token,schoolID).then(result => {
 							console.log(result)
+						})
 					}
 			}
 		}
@@ -104,7 +120,6 @@ export default function InsertClub({ school_data,schoolID }) {
 				return
 			}
 			else {
-				
 				formSuccess.schedule = [formSuccess.startTime + "-" + formSuccess.endTime]
 				console.log(formSuccess)
 				
@@ -190,6 +205,14 @@ export default function InsertClub({ school_data,schoolID }) {
 										<label className="form-label">รหัสวิชา</label>
 										<input type="text" className="form-control" name="groupID"/>
 									</div>
+									<div className="col-6">
+										<label className="form-label">ชื่อ ครูผู้สอน</label>
+										<input type="text" className="form-control" name="firstname" />
+									</div>
+									<div className="col-6">
+										<label className="form-label">นามสกุล ครูผู้สอน</label>
+										<input type="text" className="form-control" name="lastname" />
+									</div>
 									<div className="col-12">
 										<label className="form-label">category</label>
 										<input type="text" className="form-control" name="category"/>
@@ -213,6 +236,16 @@ export default function InsertClub({ school_data,schoolID }) {
 									<div className="col-sm-6">
 										<label className="form-label">เวลาจบ</label>
 										<input type="time" className="form-control mt-3" name="endTime"></input>
+									</div>
+									<div className="col-12">
+										<label className="form-label">รูปโปรโมทชุมนุม</label>
+										<br />
+										<input
+											className="form-control"
+											type="file"
+											id="formFile"
+											onChange={(ev) => encodeImageFileAsURL(ev)}
+										/>
 									</div>
 									<div className="col-12 mt-4 text-center">
 										<input type="submit" className="btn btn-success w-100" value="ตกลง"/>

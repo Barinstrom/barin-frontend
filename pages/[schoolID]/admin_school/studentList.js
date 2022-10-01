@@ -3,45 +3,88 @@ import { useRouter } from 'next/router'
 import { useEffect,useState} from 'react'
 import { get_data } from '../../../utils/auth'
 import Cookies from 'universal-cookie'
-import { paginationStudent } from '../../../utils/auth'
+import {get_students_inclub } from '../../../utils/auth'
 import Reload from '../../../components/reload'
 import { get_all_schoolID } from '../../../utils/unauth'
+import { get_name_clubs } from '../../../utils/school_admin/get_data'
 
-
-export default function StudentList() {
+export default function StudentList({schoolID}) {
   const router = useRouter()
   const [loading,setLoading] = useState(true)
   const [dropdown,setDropdown] = useState([])
   const [data,setData] = useState(null)
   const [paginate,setPaginate] = useState(null)
   const [displayError,setDisplayError] = useState(false)
+  const [reloadTable,setReloadTable] = useState(false)
+
+  const cookies = new Cookies();
+	const token = cookies.get("token");
+
+  const reload = (
+    <main style={{height:"400px"}}>
+        <div className="d-flex justify-content-center h-100 align-items-center">
+            <div className="fs-4">loading ...</div>
+            <div className="spinner-border ms-3"></div>
+        </div>
+    </main>
+  )
   
   useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-    
-    get_data(token)
+		get_name_clubs(token,schoolID)
     .then(result => {
-      const clubTest = ["บาสเกตบอล","ฟุตบอล","ปิงปอง","แบตมินตัน","ยิมนาสติก","หมากรุก","กอล์ฟ","ว่ายน้ำ","กระโดดเชือก","วิ่ง"]
+      // ชื่อคลับทั้งหมด
       console.log(result.data)
-      generateDropdown(clubTest)
-      fetchData()
-      setLoading(false)
+      
+      generateDropdown(result.data)
+      window.localStorage.removeItem("pageListStudent")
+      window.localStorage.removeItem("clubIDStudentList")
+      
+      const body = {"page":1,"clubID":"632eac7821f7cf592a4453e8"}
+      
+      window.localStorage.setItem("pageListStudent",1)
+      
+      get_students_inclub(body,token,schoolID).then(result => {
+        console.log(result)
+        if (!result){
+          setDisplayError(true)
+        }else{
+          const paginate_tmp = generate(result.data)
+          setDisplayError(false)
+          showData(result.data.docs)
+          showPaginate(paginate_tmp)
+          setLoading(false)
+        }
+      })
     })
 		
 	},[])
 
   // fetch ข้อมูลใหม่ตาม club
-  function  chooseFetchClub(ev){
-    console.log(ev.target.innerText)
+  function chooseFetchClub(clubID) {
+    //console.log(clubID)
+    const body = {"page":1,"clubID":clubID}
+    window.localStorage.setItem("clubIDStudentList",clubID)
+    
+    //setLoading(true)
+    get_students_inclub(body, token, schoolID).then(result => {
+      console.log(result)
+      if (!result) {
+        setDisplayError(true)
+      } else {
+        const paginate_tmp = generate(result.data)
+        setDisplayError(false)
+        showData(result.data.docs)
+        showPaginate(paginate_tmp)
+        setLoading(false)
+      }
+    })
   }
-
 
   function generateDropdown(clubs){
     const tmp = (
       <>
         {clubs.map((e,i) => {
-          return <li key={i} className=' dropdown-item' onClick={(ev) => chooseFetchClub(ev)}>{e}</li>
+          return <li key={i} className=' dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
         })}
       </>
     )
@@ -51,7 +94,7 @@ export default function StudentList() {
   function generate(result){
       const paginate_tmp = []
       if (result.hasPrevPage && result.page - 5 >= 1){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-5))}><i className="fa-solid fa-angles-left"></i></button>)    
+          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
       }else{
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
       }
@@ -71,7 +114,7 @@ export default function StudentList() {
       }
 
       if (result.hasNextPage && result.page + 5 <= result.totalPages){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+5))}><i className="fa-solid fa-angles-right"></i></button>)    
+          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages))}><i className="fa-solid fa-angles-right"></i></button>)    
       }else{
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
       }
@@ -79,32 +122,16 @@ export default function StudentList() {
   }
 
   async function clickPage(page){
-      const body = {
-        "page":page,
-    }
-    
-    window.localStorage.setItem("page",page)
-    
-    const result = await paginationStudent(body)
-    
-    if (!result){
-        setDisplayError(true)
-    }else{
-        const paginate_tmp = generate(result.data)
-        setDisplayError(false)
-        showData(result.data.docs)
-        showPaginate(paginate_tmp)
-    }
-  }
-
-  async function fetchData(){
     const body = {
-        "page":1,
+      "page":page,
+      "clubID":window.localStorage.getItem("clubIDStudentList")
     }
-    window.localStorage.setItem("page",1)
-    
+  
+    window.localStorage.setItem("pageListStudent",page)
+    setReloadTable(true)
     const result = await paginationStudent(body)
-
+    setReloadTable(false)
+    
     if (!result){
         setDisplayError(true)
     }else{
@@ -117,16 +144,25 @@ export default function StudentList() {
 
   function showData(result){
     const template = (
+      <table className='table text-center'>
+        <thead className='table-dark'>
+          <tr>
+            <th>ชื่อ</th>
+            <th>นามสกุล</th>
+          </tr>
+        </thead>
+
         <tbody>
-            {result.map((item,index) => {
-                return (
-                    <tr key={index}>
-                        <td>{item.user}</td>
-                        <td>{item.age}</td>
-                    </tr>
-                )
-            })}
+          {result.map((item,index) => {
+            return (
+              <tr key={index}>
+                  <td>{item.firstname}</td>
+                  <td>{item.lastname}</td>
+              </tr>
+            )
+          })}
         </tbody>
+      </table>
     )
     setData(template)
 }
@@ -167,15 +203,7 @@ function showPaginate(paginate){
         </div>
   
         <div className='mt-4'>
-          <table className='table text-center'>
-            <thead className='table-dark'>
-              <tr>
-                <th>ชื่อ</th>
-                <th>นามสกุล</th>
-              </tr>
-            </thead>
-            {data}
-          </table>
+          {reloadTable ? reload : data}
         </div>
         {paginate}
       </main>

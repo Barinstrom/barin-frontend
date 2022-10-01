@@ -190,6 +190,7 @@ export default function Admin({ schoolID }) {
 		const cookies = new Cookies();
 		console.log(cookies.get("token"))
 		cookies.remove("token",{path:`${schoolID}`})
+		cookies.remove("token",{path:"/"})
 
 		router.replace("/")
 	}
@@ -295,11 +296,13 @@ export default function Admin({ schoolID }) {
 							<span className={`${styles.user_name} ms-1`}>
 								{/* {data.data.userId} */}
 							</span>
-							<Link href="/">
-								<a className={`${styles.logo} ms-2`}>
-									<img src={"../../dora.jpg"} />
-								</a>
-							</Link>
+							<div className={`${styles.logo}`}>
+								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
+								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
+									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
+									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>

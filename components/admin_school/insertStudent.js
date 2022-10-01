@@ -46,7 +46,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 
         // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
         reader.onload = async (ev) => {
-            const text = ev.target.result;
+            const text = ev.target.result+ "\n";
             //console.log(text)
             const result = stringtoObject(text)
             if (result === "data is undefined"){

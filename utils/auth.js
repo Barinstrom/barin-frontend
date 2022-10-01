@@ -73,6 +73,66 @@ export async function get_school(token,schoolID) {
 	
 };
 
+
+// /club/teachers
+export async function get_teachers_inclub(data,token, schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/club/teachers";
+	const params = new URLSearchParams()
+
+	if (data._id) {
+		params.append("clubID", data._id)
+	}
+
+	const params_success = apiUrl + `?${params}`
+	console.log(params_success)
+	try {
+		const result = await axios({
+			url: params_success,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "get",
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err.message)
+		return false
+	}
+};
+
+// /club/students
+export async function get_students_inclub(data, token, schoolID) {
+	const apiUrl = stagingUrl + String(schoolID) + "/club/students";
+	const params = new URLSearchParams()
+console.log(data)
+	if (data.clubID) {
+		params.append("clubID", data.clubID)
+	}
+	if (data.page) {
+		params.append("page", data.page)
+	}
+	
+	const params_success = apiUrl + `?${params}`
+	console.log(params_success)
+	try {
+		const result = await axios({
+			url: params_success,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			method: "get",
+			timeout: 10000
+		})
+		return result
+	} catch (err) {
+		console.log(err.message)
+		return faFaceSmile
+	}
+};
+
 // pagination Student
 export async function paginationStudent(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/students";

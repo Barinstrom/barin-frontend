@@ -95,7 +95,7 @@ export async function add_clubs(data,token,schoolID) {
 			},
 			method: "post",
 			data:JSON.stringify(data),
-			timeout: 10000
+			timeout: 100000
 		})
 		console.log("add_club res = ",result)
 		return result
