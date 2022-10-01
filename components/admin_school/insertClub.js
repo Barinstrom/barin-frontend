@@ -21,7 +21,7 @@ export default function InsertClub({ school_data,schoolID }) {
 		setWating(true)
 		paginationTeacher({"page":1},cookie_teacher,schoolID).then(result => {
 			console.log(result)
-			if (result.data.docs.length >= 1){
+			if (result.data.docs.length < 1){
 				setWating(false)
 				setAllowRegisterClubTeacher(true)
 			}else{

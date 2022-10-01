@@ -10,7 +10,7 @@ import { get_data } from "../../utils/auth";
 import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 
-export default function Student({ schoolID}) {
+export default function Student({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -18,7 +18,7 @@ export default function Student({ schoolID}) {
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
 	
-	//const [data_school,setData_school] = useState()
+	const [data_school,setData_school] = useState()
 	const [displayFirst,setDisplayFirst] = useState("loading")
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime,setReadyTime] = useState(false)
@@ -31,14 +31,14 @@ export default function Student({ schoolID}) {
 		Promise.all([get_data(token)])
 			.then(result => {
 				//console.log(result[0].data.data_user.role)
-				const data_tmp = result[0].data
-				/*const role = result[0]
+				const data_tmp = result[0].data._doc
+				const role = result[0].data.role
 				if (role !== "student") {
 					setDisplayFirst(false)
 				}
-				else */ if (data_tmp){
+				else if (data_tmp){
 					setDisplayFirst(true)
-					//setData_school(data_tmp.data.data_school)
+					setData_school(data_tmp)
 					setchooseBtnStart(true)
 					setReadyTime(true)
 				}else{
@@ -290,13 +290,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
 	const schoolID = context.params.schoolID
-	const school_data = {
-		schoolName: "Stamp Witnapat School",
-		Status: "active",
-		paymentStatus: true, // จ่ายเงินหรือยัง
-	}
 	return {
-		props: {schoolID,school_data},
+		props: {schoolID},
 		revalidate: 5
 	};
 }

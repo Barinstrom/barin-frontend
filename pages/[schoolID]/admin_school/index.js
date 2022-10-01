@@ -16,6 +16,7 @@ import TimeConfig from "../../../components/admin_school/timeConfig";
 import Reload from "../../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
+import { useRouter } from "next/router";
 
 export default function Admin({ schoolID }) {
 	// console.log(schoolID)
@@ -23,6 +24,8 @@ export default function Admin({ schoolID }) {
 	const time = useRef();
 	const optionBtn = useRef([])
 	const hamberger = useRef()
+	const dropdown = useRef()
+	const router = useRouter()
 	let timer;
 
 	const [displayFirst,setDisplayFirst] = useState("loading")
@@ -49,8 +52,11 @@ export default function Admin({ schoolID }) {
 		if (readyTime){
 			controllTime("start");
 			
+			window.addEventListener("click",stopClickWindow)
+
 			return () => {
 				controllTime("cancell");
+				window.removeEventListener("click",stopClickWindow)
 			}
 		}
 	},[readyTime])
@@ -61,26 +67,48 @@ export default function Admin({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0].data)
-				const data_tmp = result[0].data
-				/* const role = result[0].data.data_user.role
-				if (role !== "admin") {
-					setDisplayFirst(false)
-				}
-				else */
-				if (data_tmp) {
-					setIspaid(data_tmp.paymentStatus)
-					setDisplayFirst(true)
-					setData_school(data_tmp)
-					setchooseBtnStart(true)
-					setReadyTime(true)
+				console.log(result[0][0])
+				console.log(result[0][1])
+
+				if (result[0][1]){
+					const data_tmp = result[0][0].data._doc
+					const role = result[0][0].data.role
+					
+					if (role !== "admin") {
+						setDisplayFirst(false)
+					}
+					else {
+						if (data_tmp) {
+							setIspaid(data_tmp.paymentStatus)
+							setDisplayFirst(true)
+							setData_school(data_tmp)
+							setchooseBtnStart(true)
+							setReadyTime(true)
+						} else {
+							setDisplayFirst(false)
+						}
+					}
 				}else{
-					setDisplayFirst(false)
+					if (result[0][0].response.status === 401){
+						setDisplayFirst(false)
+					}
 				}
-		})
+			})
 	},[])
 
+	/* เมื่อกดตรงไหนบนหน้าจอนอกจาก doraemon ให้ปิด dropdown */
+	function stopClickWindow(){
+		if (!dropdown.current.classList.contains("d-none")){
+			dropdown.current.classList.add("d-none")
+		}
+	}
 
+	/* แสดง dropdown */
+	const displayDropdown = (ev) => {
+		ev.stopPropagation()
+		dropdown.current.classList.toggle("d-none")
+	}
+	
 	function changeComponent(num) {
 		if (num == 0) {
 			SetCountBtn(0)
@@ -156,6 +184,23 @@ export default function Admin({ schoolID }) {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
+
+
+	function logOut(){
+		const cookies = new Cookies();
+		console.log(cookies.get("token"))
+		cookies.remove("token",{path:`${schoolID}`})
+
+		router.replace("/")
+	}
+
+	function forgetPassword(){
+		const cookies = new Cookies();
+		const token = cookies.get("token")
+		
+		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
+		router.replace(`/forgotPass`)
+	}
 
 	const admin_page_unpaid = (
 		<>
@@ -370,18 +415,22 @@ export default function Admin({ schoolID }) {
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}></span>
 						</div>
-						<div className={`me-2`}>
+
+						<div className={`me-3 d-flex flex-row h-100`}>
 							<span className={`${styles.logo_bell}`}>
 								<i className="fa-regular fa-bell"></i>
 							</span>
 							<span className={`${styles.user_name} ms-1`}>
 								{/* {data.data.userId} */}
 							</span>
-							<Link href="/">
-								<a className={`${styles.logo} ms-2`}>
-									<img src={"../../dora.jpg"} />
-								</a>
-							</Link>
+							
+							<div className={`${styles.logo}`}>
+								<div className={`${styles.img_background}`} onClick={(ev)=>displayDropdown(ev)}></div>
+								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
+									<li style={{cursor:"pointer"}} onClick={logOut}><span className="dropdown-item">logout</span></li>
+									<li style={{cursor:"pointer"}} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -500,21 +549,7 @@ export default function Admin({ schoolID }) {
 }
 
 export async function getStaticPaths() {
-	// เอาไว้ดึง api กำหนด path
-	/* const response = await fetch("http://127.0.0.1:8000/user")
-		const data = await response.json()
-	  
-		const b = data.map((e) => {
-				return {params: {id : `${e.id}` }}
-		}) */
 
-	let a = [
-		{ params: { schoolID: "stamp" } },
-		{ params: { schoolID: "teststamp" } },
-		{ params: { schoolID: "all" } },
-		{ params: { schoolID: "prachanivet" } },
-	];
-	
 	const path_a = await get_all_schoolID();
   // console.log("path_a = ", path_a.data)
   const aa = path_a.data
@@ -530,53 +565,6 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
 	const schoolID = context.params.schoolID
-	
-	const school_data = {
-		schoolName: "Stamp Witnapat School",
-		Status: "active",
-		paymentStatus: true, // จ่ายเงินหรือยัง
-		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
-		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
-		schoolID: context.params.schoolID,
-		nowSchoolYear: "2021",
-		schedule:[
-			// {
-			// 	// nowSchoolYear:true,
-			// 	schoolYear: "2022",
-			// 	registerDate: "",
-			// 	registerTime: "",
-			// 	endOfRegisterDate: "",
-			// 	endOfRegisterTime: "",
-			// 	endOfSchoolYear: "",
-			// },
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2021",
-				registerDate: "2021-05-01",
-				registerTime: "10:00:00",
-				endOfRegisterDate: "2021-05-10",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2021-10-13",
-			},
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2020",
-				registerDate: "2020-05-01",
-				registerTime: "09:00:00",
-				endOfRegisterDate: "2020-05-10",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2020-10-15",
-			},
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2019",
-				registerDate: "2019-05-01",
-				registerTime: "10:00:00",
-				endOfRegisterDate: "2019-05-12",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2019-10-12",
-			}]
-	}
 	return {
 		props: { schoolID },
 		revalidate: 1,

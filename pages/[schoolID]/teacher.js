@@ -9,7 +9,7 @@ import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 import Reload from '../../components/reload'
 
-export default function Student({ schoolID,school_data }) {
+export default function Student({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -27,7 +27,7 @@ export default function Student({ schoolID,school_data }) {
 	useEffect(() => {
 		if (chooseBtnStart){
 			optionBtn.current[0].classList.add("nowclick");
-			if (!school_data.paymentStatus) {
+			if (!data_school.paymentStatus) {
 				for (let i = 0; i < 2; i++) {
 					optionBtn.current[i].hidden = true
 				}
@@ -51,16 +51,16 @@ export default function Student({ schoolID,school_data }) {
 
 		Promise.all([get_data(token,schoolID)])
 			.then(result => {
-				// console.log(result)
-				const data_tmp = result[0].data
-				/* const role = result[0].data.data_user.role
+				console.log(result)
+				const data_tmp = result[0].data._doc
+				const role = result[0].data.role
 				if (role !== "teacher") {
 					setDisplayFirst(false)
 				}
 				
-				else */ if (data_tmp){
+				else if (data_tmp){
 					setDisplayFirst(true)
-					setData_school(data_tmp.data)
+					setData_school(data_tmp)
 					setchooseBtnStart(true)
 					setReadyTime(true)
 				}else{
@@ -103,7 +103,10 @@ export default function Student({ schoolID,school_data }) {
 	}
 
 	let component = null
-	if (!school_data.paymentStatus) {
+	if (!data_school) {
+		component = <Error statusCode={404} />
+	}
+	else if (!data_school.paymentStatus) {
 		component = <Error statusCode={404} />
 	}
 	else if (countBtn === 0){
@@ -289,55 +292,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
 	const schoolID = context.params.schoolID
-	// "2020-09-02" = yyyy-mm-dd
-	const school_data = {
-		schoolName: "Stamp Witnapat School",
-		Status: "active",
-		paymentStatus: true, // จ่ายเงินหรือยัง
-		urlLogo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Prommanusorn.png",
-		urlDocument: "https://image.shutterstock.com/image-vector/vector-logo-school-260nw-427910128.jpg",
-		schoolID: context.params.schoolID,
-		nowSchoolYear: "2021",
-		schedule:[
-			// {
-			// 	// nowSchoolYear:true,
-			// 	schoolYear: "2022",
-			// 	registerDate: "",
-			// 	registerTime: "",
-			// 	endOfRegisterDate: "",
-			// 	endOfRegisterTime: "",
-			// 	endOfSchoolYear: "",
-			// },
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2021",
-				registerDate: "2021-05-01",
-				registerTime: "10:00:00",
-				endOfRegisterDate: "2021-05-10",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2021-10-13",
-			},
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2020",
-				registerDate: "2020-05-01",
-				registerTime: "09:00:00",
-				endOfRegisterDate: "2020-05-10",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2020-10-15",
-			},
-			{
-				// nowSchoolYear:false,
-				schoolYear: "2019",
-				registerDate: "2019-05-01",
-				registerTime: "10:00:00",
-				endOfRegisterDate: "2019-05-12",
-				endOfRegisterTime: "16:00:00",
-				endOfSchoolYear: "2019-10-12",
-			}]
-	}
 	return {
-		props: { schoolID,school_data },
+		props: { schoolID },
 		revalidate: 1,
 	};
 }

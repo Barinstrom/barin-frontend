@@ -52,9 +52,7 @@ export default function Login({schoolID}) {
 				})
         return
       } else {
-        
-        
-        if (result.data.role === "host"){
+        if (result.data.role === "teacher" || result.data.role ===  "student"){
           const cookie = new Cookies()
 		      cookie.set("token",result.data.token)
           Swal.fire(
@@ -66,25 +64,25 @@ export default function Login({schoolID}) {
 					}
         )
           
-          router.push("/" +"system_admin")
+          router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
         } 
 
-        else if((result.data.role === "teacher" || result.data.role ===  "student")){
+        else if((result.data.role ===  "admin_school" || result.data.role ===  "host")){
           Swal.fire({
-					icon: 'warning',
-					title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง', 
-					showConfirmButton:true,
-					confirmButtonColor:"#e3c21c"
-				})
-          router.push("/" + String(result.data.schoolID))
+            icon: 'warning',
+            title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง', 
+            showConfirmButton:true,
+            confirmButtonColor:"#e3c21c"
+				  })
+          router.push("/")
         }
-        
+
         else {
           const cookie = new Cookies()
 		      cookie.set("token",result.data.token)
           Swal.fire({
 						icon: 'success',
-						title: 'เข้าสุ่ระบบสำเร็จ',
+						title: 'เข้าสู่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
 					})

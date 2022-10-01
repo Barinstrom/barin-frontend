@@ -24,10 +24,9 @@ export async function get_data(token) {
 			},
 			timeout: 10000
 		})
-		return result
+		return [result,true]
 	} catch (err) {
-		console.log(err)
-		return false
+		return [err,false]
 	}
 	
 };
