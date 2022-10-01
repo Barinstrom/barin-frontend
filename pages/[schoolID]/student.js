@@ -7,6 +7,7 @@ import Searchclub from "../../components/student/searchClub"
 import Reload from '../../components/reload'
 import Cookies from "universal-cookie"
 import { get_data } from "../../utils/auth";
+import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 
 export default function Student({ schoolID}) {

@@ -5,6 +5,7 @@ import OwnClub from "../../components/teacher/ownClub"
 import StdList from "../../components/teacher/stdList"
 import Cookies from "universal-cookie"
 import { get_data } from "../../utils/auth";
+import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 import Reload from '../../components/reload'
 

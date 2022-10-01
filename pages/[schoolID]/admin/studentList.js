@@ -5,6 +5,7 @@ import { get_data } from '../../../utils/auth'
 import Cookies from 'universal-cookie'
 import { paginationStudent } from '../../../utils/auth'
 import Reload from '../../../components/reload'
+import { get_all_schoolID } from '../../../utils/unauth'
 
 
 export default function StudentList() {
