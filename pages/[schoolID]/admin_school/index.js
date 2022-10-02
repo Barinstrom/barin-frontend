@@ -78,11 +78,17 @@ export default function Admin({ schoolID }) {
 					}
 					else {
 						if (data_tmp) {
-							setIspaid(data_tmp.paymentStatus)
-							setDisplayFirst(true)
-							setData_school(data_tmp)
-							setchooseBtnStart(true)
-							setReadyTime(true)
+							if (data_tmp.schoolID != schoolID) {
+								setDisplayFirst(false)
+							}
+							else {
+								setIspaid(data_tmp.paymentStatus)
+								setDisplayFirst(true)
+								setData_school(data_tmp)
+								setchooseBtnStart(true)
+								setReadyTime(true)
+							}
+							
 						} else {
 							setDisplayFirst(false)
 						}
@@ -416,7 +422,6 @@ export default function Admin({ schoolID }) {
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}></span>
 						</div>
-
 						<div className={`me-3 d-flex flex-row h-100`}>
 							<span className={`${styles.logo_bell}`}>
 								<i className="fa-regular fa-bell"></i>
@@ -424,12 +429,12 @@ export default function Admin({ schoolID }) {
 							<span className={`${styles.user_name} ms-1`}>
 								{/* {data.data.userId} */}
 							</span>
-							
+
 							<div className={`${styles.logo}`}>
-								<div className={`${styles.img_background}`} onClick={(ev)=>displayDropdown(ev)}></div>
+								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
-									<li style={{cursor:"pointer"}} onClick={logOut}><span className="dropdown-item">logout</span></li>
-									<li style={{cursor:"pointer"}} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
+									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
 								</ul>
 							</div>
 						</div>
@@ -537,7 +542,8 @@ export default function Admin({ schoolID }) {
 		return <Reload />
 	}
 	else if (displayFirst) {
-		if ("fail" === "success") {
+		if (ispaid === "success") {
+		// if ("fail" === "success") {
 			return admin_page
 		}
 		else {

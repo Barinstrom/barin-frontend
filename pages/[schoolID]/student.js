@@ -44,10 +44,15 @@ export default function Student({ schoolID }) {
 					}
 
 					else if (data_tmp) {
-						setDisplayFirst(true)
-						//setData_school(data_tmp)
-						setchooseBtnStart(true)
-						setReadyTime(true)
+						if (data_tmp.schoolID != schoolID) {
+							setDisplayFirst(false)
+						}
+						else {
+							setDisplayFirst(true)
+							//setData_school(data_tmp)
+							setchooseBtnStart(true)
+							setReadyTime(true)
+						}
 					} else {
 						setDisplayFirst(false)
 					}

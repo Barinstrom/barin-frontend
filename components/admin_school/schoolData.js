@@ -14,9 +14,9 @@ const stripePromise = loadStripe(
 export default function SchoolData({ school_data, schoolID }) {
 	const cookie = new Cookies()
 	const token = cookie.get("token")
-	// console.log(school_data)
+	console.log(school_data)
 	const [clientSecret, setClientSecret] = useState("");
-	const [picture, setPicture] = useState("https://images.unsplash.com/photo-1663921801167-b522c11d6cf4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80");
+	const [picture, setPicture] = useState(school_data.urlLogo);
 	const btnEdit = useRef();
 	const btnCancel = useRef();
 	const btnConfirm = useRef();
@@ -71,6 +71,7 @@ export default function SchoolData({ school_data, schoolID }) {
 	async function taskConfirm(ev,token) {
 		ev.preventDefault();
 		
+		console.log("school_data",school_data)
 		
 		if (!schoolNameInput.current.value){
 			alert("โปรดใส่ชื่อโรงเรียน")
@@ -78,8 +79,16 @@ export default function SchoolData({ school_data, schoolID }) {
 
 		const data = {
 			schoolName: schoolNameInput.current.value,
-			urlLogo: picture,
+			urlLogo: "https://res.cloudinary.com/tawanchai/image/upload/v1662800159/certificate_doc/barinschool%40hotmail.com.png"
 		};
+
+		/*
+		"schoolID":"xxxx",
+				"schoolName":"xxxd",
+		"urlCertificateDocument":"https://res.cloudinary.com/tawanchai/image/upload/v1662800159/certificate_doc/barinschool%40hotmail.com.png",
+				"paymentStatus":"pending",
+				"status":"pending"
+		*/
 		console.log(data);
 
 		/* api call */
