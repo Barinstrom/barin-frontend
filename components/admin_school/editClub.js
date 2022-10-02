@@ -50,7 +50,6 @@ export default function EditClub({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditClub",1)
         
-        
         paginationClub(body, token, schoolID).then(result => {
             // console.log(result.data)
             
@@ -67,21 +66,7 @@ export default function EditClub({ school_data,schoolID }) {
 
     function detailInfo(item, ev) {
         // console.log(item)
-        
-        teacherFirstName.current.value = "loading"
-        teacherLastName.current.value = "loading"
-        get_teachers_inclub(item, token, schoolID).then(result => {
-            // console.log(result)
-            if (result.data[0]) {
-                teacherFirstName.current.value = result.data[0].firstname
-                teacherLastName.current.value = result.data[0].lastname
-            }
-            else {
-                teacherFirstName.current.value = "None"
-                teacherLastName.current.value = "None"
-            }
-        })
-		clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+        clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
         
@@ -90,11 +75,26 @@ export default function EditClub({ school_data,schoolID }) {
         schoolYear.current.value = item.schoolYear
         groupID.current.value = item.groupID
         
-            
         let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
         let [ startTime ,endTime ] = schedule.split("-")
         scheduleStart.current.value = startTime
         scheduleEnd.current.value = endTime
+
+        teacherFirstName.current.value = "--------"
+        teacherLastName.current.value = "---------"
+        get_teachers_inclub(item, token, schoolID).then(result => {
+            if (!result){
+                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+            }else if (result.data.length >= 1) {
+                teacherFirstName.current.value = result.data[0].firstname
+                teacherLastName.current.value = result.data[0].lastname
+            }else {
+                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+            }
+        })
+		
     }
 
     async function updateClub(){
@@ -106,7 +106,10 @@ export default function EditClub({ school_data,schoolID }) {
             limit: limitStudent.current.value ,
             schoolYear: schoolYear.current.value ,
             groupID: groupID.current.value,
-            schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ]
+            schedule: [ String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ],
+            // รอฝั่ง backend 
+            // firstname:teacherFirstName.current.value,
+            // lastname:teacherLastName.current.value
         }
         
         try{
@@ -183,10 +186,11 @@ export default function EditClub({ school_data,schoolID }) {
         
         if (!search.current.value){
             window.localStorage.removeItem("searchEditClub")
+            window.localStorage.setItem("pageEditClub",1)
             body = {"page":1}
         }else{
             window.localStorage.setItem("pageEditClub",1)
-            window.localStorage.setItem("searchEditClub",parseInt(search.current.value))
+            window.localStorage.setItem("searchEditClub",search.current.value)
             body = {
                 "page":1,
                 "query":window.localStorage.getItem("searchEditClub")
@@ -206,7 +210,6 @@ export default function EditClub({ school_data,schoolID }) {
     }
     
     function generate(result){
-        // console.log(result)
         const paginate_tmp = []
         if (result.hasPrevPage){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((1))}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -260,6 +263,12 @@ export default function EditClub({ school_data,schoolID }) {
         }
     }
 
+    function goStudentList(item,ev){
+        const params_clubID = String(item._id)
+        //console.log(item.clubName)
+        router.push(`/${schoolID}/admin_school/studentList/?clubID=${params_clubID}&clubName=${item.clubName}`)
+    }
+
     function showData(result){
         const template = (
             <table className='table align-middle'>
@@ -279,7 +288,8 @@ export default function EditClub({ school_data,schoolID }) {
                                 <td>{item.clubName}</td>
                                 <td className='text-center text-sm-end'>
                                     <button className='btn btn-warning btn-sm me-0 me-sm-3'
-                                        onClick={()=> router.push(`/${schoolID}/admin_school/studentList`)}
+                                        onClick={(ev)=> goStudentList(item,ev)}
+
                                     >รายชื่อ
                                     </button>
                                 </td>

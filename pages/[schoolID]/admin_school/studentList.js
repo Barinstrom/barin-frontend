@@ -1,7 +1,6 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { useEffect,useState} from 'react'
-import { get_data } from '../../../utils/auth'
 import Cookies from 'universal-cookie'
 import {get_students_inclub } from '../../../utils/auth'
 import Reload from '../../../components/reload'
@@ -16,6 +15,7 @@ export default function StudentList({schoolID}) {
   const [paginate,setPaginate] = useState(null)
   const [displayError,setDisplayError] = useState(false)
   const [reloadTable,setReloadTable] = useState(false)
+  const [clubName,setClubName] = useState(null)
 
   const cookies = new Cookies();
 	const token = cookies.get("token");
@@ -30,51 +30,63 @@ export default function StudentList({schoolID}) {
   )
   
   useEffect(() => {
-		get_name_clubs(token,schoolID)
+    window.localStorage.removeItem("pageListStudent")
+    window.localStorage.removeItem("clubIDStudentList")
+    
+    //console.log(router.query)
+    window.localStorage.setItem("pageListStudent",1)
+    window.localStorage.setItem("clubIDStudentList",router.query.clubID)
+    const body = {
+      "page":1,
+      "clubID":String(window.localStorage.getItem("clubIDStudentList"))
+    }
+    
+    Promise.all([get_name_clubs(token,schoolID),get_students_inclub(body,token,schoolID)])
     .then(result => {
-      // ชื่อคลับทั้งหมด
-      console.log(result.data)
+      generateDropdown(result[0].data)
+      //console.log(result[1])
       
-      generateDropdown(result.data)
-      window.localStorage.removeItem("pageListStudent")
-      window.localStorage.removeItem("clubIDStudentList")
-      
-      const body = {"page":1,"clubID":"632eac7821f7cf592a4453e8"}
-      
-      window.localStorage.setItem("pageListStudent",1)
-      
-      get_students_inclub(body,token,schoolID).then(result => {
-        console.log(result)
-        if (!result){
-          setDisplayError(true)
-        }else{
-          const paginate_tmp = generate(result.data)
-          setDisplayError(false)
-          showData(result.data.docs)
-          showPaginate(paginate_tmp)
-          setLoading(false)
-        }
-      })
+      if (!result[1]){
+        setDisplayError(true)
+        setLoading(false)
+      }else{
+        const paginate_tmp = generate(result[1].data)
+        setDisplayError(false)
+        showData(result[1].data.docs)
+        showPaginate(paginate_tmp)
+        setClubName(router.query.clubName)
+        setLoading(false)
+      }
     })
-		
-	},[])
+  },[])
 
   // fetch ข้อมูลใหม่ตาม club
   function chooseFetchClub(clubID) {
     //console.log(clubID)
     const body = {"page":1,"clubID":clubID}
+    
+    window.localStorage.setItem("pageListStudent",1)
     window.localStorage.setItem("clubIDStudentList",clubID)
     
-    //setLoading(true)
-    get_students_inclub(body, token, schoolID).then(result => {
-      console.log(result)
-      if (!result) {
+    setLoading(true)
+    Promise.all([get_name_clubs(token,schoolID),get_students_inclub(body,token,schoolID)])
+    .then(result => {
+      
+      if (!result[1]){
         setDisplayError(true)
-      } else {
-        const paginate_tmp = generate(result.data)
+        setLoading(false)
+      }else{
+        const paginate_tmp = generate(result[1].data)
         setDisplayError(false)
-        showData(result.data.docs)
+        showData(result[1].data.docs)
         showPaginate(paginate_tmp)
+
+        for (e of result[0].data){
+          if (clubID === e.clubID){
+            setClubName(e.clubName)
+            break
+          }
+        }
         setLoading(false)
       }
     })
@@ -82,11 +94,11 @@ export default function StudentList({schoolID}) {
 
   function generateDropdown(clubs){
     const tmp = (
-      <>
+      <div>
         {clubs.map((e,i) => {
-          return <li key={i} className=' dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
+          return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
         })}
-      </>
+      </div>
     )
     setDropdown(tmp)
   }
@@ -126,7 +138,7 @@ export default function StudentList({schoolID}) {
       "page":page,
       "clubID":window.localStorage.getItem("clubIDStudentList")
     }
-  
+    
     window.localStorage.setItem("pageListStudent",page)
     setReloadTable(true)
     const result = await paginationStudent(body)
@@ -134,11 +146,13 @@ export default function StudentList({schoolID}) {
     
     if (!result){
         setDisplayError(true)
+        setLoading(false)
     }else{
         const paginate_tmp = generate(result.data)
         setDisplayError(false)
         showData(result.data.docs)
         showPaginate(paginate_tmp)
+        setLoading(false)
     }
   }
 
@@ -189,11 +203,11 @@ function showPaginate(paginate){
       <main className='container p-3'>
           <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
       </main>
-  )
+    )
   }else{
     return (
       <main className='container p-3'>
-        <h3 className='text-center'>ดูรายชื่อนักเรียน</h3>
+        <h3 className='text-center'>ดูรายชื่อนักเรียนของชุมนุม {clubName}</h3>
         <div className='btn-group dropdown'>
           <button className='btn btn-secondary'>ชุมนุม</button>
           <button className='btn btn-secondary dropdown-toggle dropdown-toggle-split' data-bs-toggle="dropdown"></button>

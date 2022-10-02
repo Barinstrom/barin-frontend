@@ -22,20 +22,20 @@ export default function Student({ schoolID }) {
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
 	
-	const [data_school,setData_school] = useState()
+	//const [data_school,setData_school] = useState()
 	const [displayFirst,setDisplayFirst] = useState("loading")
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime,setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
 
+	
 	useEffect(() => {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				// console.log(result[0][0].data)
-
+				
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
@@ -45,7 +45,7 @@ export default function Student({ schoolID }) {
 
 					else if (data_tmp) {
 						setDisplayFirst(true)
-						setData_school(data_tmp)
+						//setData_school(data_tmp)
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
@@ -64,15 +64,14 @@ export default function Student({ schoolID }) {
 	useEffect(() => {
 		if (readyTime){
 			controllTime("start");
+			window.addEventListener("click",stopClickWindow)
+
 			return () => {
 				controllTime("cancell");
+				window.removeEventListener("click",stopClickWindow)
 			}
 		}
-
-		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
-		}
-	},[readyTime,chooseBtnStart]);
+	},[readyTime]);
 
 	useEffect(() => {
 		if (chooseBtnStart){
@@ -114,6 +113,13 @@ export default function Student({ schoolID }) {
 		}
 	}
 
+	/* เมื่อกดตรงไหนบนหน้าจอนอกจาก doraemon ให้ปิด dropdown */
+	function stopClickWindow(){
+		if (!dropdown.current.classList.contains("d-none")){
+			dropdown.current.classList.add("d-none")
+		}
+	}
+
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
@@ -127,7 +133,7 @@ export default function Student({ schoolID }) {
 
 	function logOut() {
 		const cookies = new Cookies();
-		console.log(cookies.get("token"))
+		//console.log(cookies.get("token"))
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 

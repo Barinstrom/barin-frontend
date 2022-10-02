@@ -84,7 +84,7 @@ export async function get_teachers_inclub(data,token, schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	console.log(params_success)
+	//console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
@@ -106,7 +106,7 @@ export async function get_teachers_inclub(data,token, schoolID) {
 export async function get_students_inclub(data, token, schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/club/students";
 	const params = new URLSearchParams()
-console.log(data)
+	
 	if (data.clubID) {
 		params.append("clubID", data.clubID)
 	}
@@ -129,7 +129,7 @@ console.log(data)
 		return result
 	} catch (err) {
 		console.log(err.message)
-		return faFaceSmile
+		return false
 	}
 };
 

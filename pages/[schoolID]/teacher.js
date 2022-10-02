@@ -43,8 +43,11 @@ export default function Student({ schoolID }) {
 		if (readyTime){
 			controllTime("start");
 			
+			window.addEventListener("click",stopClickWindow)
+
 			return () => {
 				controllTime("cancell");
+				window.removeEventListener("click",stopClickWindow)
 			}
 		}
 	},[readyTime])
@@ -55,10 +58,10 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token,schoolID)])
 			.then(result => {
-				// console.log(result[0][0].data)
-
+				
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
+					console.log(result[0][0])
 					const role = result[0][0].data.role
 					if (role !== "teacher") {
 						setDisplayFirst(false)
@@ -134,9 +137,16 @@ export default function Student({ schoolID }) {
 		dropdown.current.classList.toggle("d-none")
 	}
 
+	/* เมื่อกดตรงไหนบนหน้าจอนอกจาก doraemon ให้ปิด dropdown */
+	function stopClickWindow(){
+		if (!dropdown.current.classList.contains("d-none")){
+			dropdown.current.classList.add("d-none")
+		}
+	}
+
 	function logOut() {
 		const cookies = new Cookies();
-		console.log(cookies.get("token"))
+		//console.log(cookies.get("token"))
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
@@ -147,7 +157,6 @@ export default function Student({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token")
 
-		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
 		router.replace(`/forgotPass`)
 	}
 	

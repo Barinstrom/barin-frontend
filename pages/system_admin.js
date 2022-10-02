@@ -63,21 +63,29 @@ export default function Student({ schoolID }) {
 	useEffect(() => {
 		if (readyTime) {
 			controllTime("start");
+			
+			window.addEventListener("click",stopClickWindow)
+
 			return () => {
 				controllTime("cancell");
+				window.removeEventListener("click",stopClickWindow)
 			}
 		}
 
-		if (chooseBtnStart) {
-			optionBtn.current[0].classList.add("nowclick");
-		}
-	}, [readyTime, chooseBtnStart]);
+	}, [readyTime]);
 
 	useEffect(() => {
 		if (chooseBtnStart) {
 			optionBtn.current[0].classList.add("nowclick");
 		}
 	}, [chooseBtnStart]);
+
+	/* เมื่อกดตรงไหนบนหน้าจอนอกจาก doraemon ให้ปิด dropdown */
+	function stopClickWindow(){
+		if (!dropdown.current.classList.contains("d-none")){
+			dropdown.current.classList.add("d-none")
+		}
+	}
 
 	function changeComponent(num) {
 		if (num == 0) {

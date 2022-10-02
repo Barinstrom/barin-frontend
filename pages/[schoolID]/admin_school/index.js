@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import styles from "../../../styles/admin.module.css";
 import { get_data } from "../../../utils/auth";
 import { get_all_schoolID } from "../../../utils/unauth";
@@ -38,13 +37,13 @@ export default function Admin({ schoolID }) {
 	useEffect(() => {
 		if (chooseBtnStart){
 			optionBtn.current[0].classList.add("nowclick");
-			if (!data_school.paymentStatus) {
-				for (let i = 0; i < 9; i++) {
-					if (i !== 0) {
-						optionBtn.current[i].hidden = true
-					}
-				}
-			} 
+			// if (!data_school.paymentStatus) {
+			// 	for (let i = 0; i < 9; i++) {
+			// 		if (i !== 0) {
+			// 			optionBtn.current[i].hidden = true
+			// 		}
+			// 	}
+			// } 
 		}
 	},[chooseBtnStart])
 
@@ -67,8 +66,8 @@ export default function Admin({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0][0])
-				console.log(result[0][1])
+				//console.log(result[0][0])
+				//console.log(result[0][1])
 
 				if (result[0][1]){
 					const data_tmp = result[0][0].data._doc
@@ -199,7 +198,6 @@ export default function Admin({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token")
 		
-		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
 		router.replace(`/forgotPass`)
 	}
 
@@ -539,7 +537,7 @@ export default function Admin({ schoolID }) {
 		return <Reload />
 	}
 	else if (displayFirst) {
-		if (ispaid === "success") {
+		if ("fail" === "success") {
 			return admin_page
 		}
 		else {

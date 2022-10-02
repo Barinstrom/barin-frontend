@@ -47,7 +47,7 @@ export async function update_club(data, token, schoolID) {
     })
     return result
   } catch (err) {
-    console.log(err.message)
+    console.log(err)
     return false
   }
 };
