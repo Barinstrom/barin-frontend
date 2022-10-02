@@ -53,4 +53,25 @@ export async function register_club(data, token, schoolID) {
   }
 };
 
+// drop club
+export async function drop_club(data, token, schoolID) {
+  const apiUrl = stagingUrl + String(schoolID) + "/drop-club";
+
+  try {
+    const result = await axios({
+      url: apiUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      method: "post",
+      data: JSON.stringify(data),
+      timeout: 10000
+    })
+    return result
+  } catch (err) {
+    console.log(err)
+    return false
+  }
+};
 

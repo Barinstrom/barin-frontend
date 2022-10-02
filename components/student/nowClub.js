@@ -11,9 +11,9 @@ export default function Nowclub({schoolID}) {
 		const token = cookie.get("token")
 		
 		get_student_ownclub(token,schoolID).then(result => {
-			console.log(result)
+			console.log(result.data.clubs)
 
-			let clubs
+			let clubs;
 			if (!result){
 				clubs = (
 					<div  className="alert alert-info mt-2">
@@ -31,15 +31,21 @@ export default function Nowclub({schoolID}) {
 				)
 			}
 			else {
-				clubs = (
-					result.data.clubs.map((e,i) => {
-						<div key={i} className="alert alert-info mt-2">
-							<p className="alert-heading fs-3">Club Name ...</p>
-							<p>....</p>
-							<p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut rem magnam id aperiam eaque adipisci error. Temporibus perspiciatis explicabo totam quidem, provident, voluptatibus magnam error nulla laudantium inventore odio non?</p>
-						</div>
+				// result.data.clubs.map((e, i) => {
+				// 	console.log(i)
+				// })
+				// console.log("have")
+				const data_club = result.data.clubs
+				clubs = result.data.clubs.map((e, i) => {
+						return (
+							<div key={i} className="alert alert-info mt-2">
+								<p className="alert-heading fs-3">{e.clubName }</p>
+								<p>เวลาเรียน: {e.schedule }</p>
+								<p>{e.clubInfo}</p>
+							</div>
+						)
 					})
-				)
+				console.log(clubs)
 			}
 			setdisplayOwnclub(clubs)
 		})

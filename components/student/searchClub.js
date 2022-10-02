@@ -4,25 +4,16 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { paginationClub } from '../../utils/auth';
-import { register_club } from '../../utils/student/student';
+import { register_club,get_student_ownclub,drop_club } from '../../utils/student/student';
 import Cookies from 'universal-cookie';
 import Swal from 'sweetalert2';
-
-
-const reload = (
-    <main style={{height:"400px"}}>
-        <div className="d-flex justify-content-center h-100 align-items-center">
-            <div className="fs-4">loading ...</div>
-            <div className="spinner-border ms-3"></div>
-        </div>
-    </main>
-)
 
 export default function EditClub({schoolID }) {
     const [reloadTable,setReloadTable] = useState(false)
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
-    const [displayError,setDisplayError] = useState(false)
+    const [displayError, setDisplayError] = useState(false)
+    const [haveClubs, setHaveClubs] = useState(false)
     const search = useRef()
 
     const clubName = useRef()
@@ -38,6 +29,16 @@ export default function EditClub({schoolID }) {
     const token = cookie.get("token")
     // console.log(token)
 
+
+    const reload = (
+        <main style={{ height: "400px" }}>
+            <div className="d-flex justify-content-center h-100 align-items-center">
+                <div className="fs-4">loading ...</div>
+                <div className="spinner-border ms-3"></div>
+            </div>
+        </main>
+    )
+
     useEffect(()=>{
         window.localStorage.removeItem("studentSearchClub")
         window.localStorage.removeItem("studentPageClub")
@@ -45,20 +46,27 @@ export default function EditClub({schoolID }) {
             "page":1,
         }
         window.localStorage.setItem("studentPageClub",1)
-        
-        // console.log("Club ",token)
-        paginationClub(body, token, schoolID).then(result => {
-            //console.log(result)
-            
-            if (!result){
-                setDisplayError(true)
-            }else{
-                const paginate_tmp = generate(result.data)
-                setDisplayError(false)
-                showData(result.data.docs)
-                showPaginate(paginate_tmp)
-            }
-        })
+
+        Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(token, schoolID)])
+            .then(result => {
+                console.log(result)
+                
+                if (result[1].data.clubs.length) {
+                    setDisplayError(false)
+                    setHaveClubs(true)
+                    showData(result[1].data.clubs)
+                }
+                else if (!result[0]){
+                    setDisplayError(true)
+                    setHaveClubs(false)
+                }else{
+                    const paginate_tmp = generate(result[0].data)
+                    setDisplayError(false)
+                    setHaveClubs(false)
+                    showData(result[0].data.docs)
+                    showPaginate(paginate_tmp)
+                }
+            })
     },[])
 
     function detailInfo(item,ev){
@@ -100,11 +108,46 @@ export default function EditClub({schoolID }) {
                 'success',
             )
         }
+        window.location.reload();
+    }
+
+    async function dropClub() {
+        console.log(clubName.current.getAttribute("data-clubid"))
+        const body = {
+            "clubID": clubName.current.getAttribute("data-clubid")
+        }
+
+        const result = await drop_club(body, token, schoolID)
+
+        if (!result) {
+            Swal.fire(
+                'drop ไม่สำเร็จ!',
+                '',
+                'warning',
+            )
+        } else {
+            Swal.fire(
+                'drop เสร็จสิ้น',
+                '',
+                'success',
+            )
+            window.location.reload();
+        }
 
     }
 
     async function clickReset(ev){
         ev.preventDefault()
+
+        if (haveClubs) {
+            Swal.fire(
+                'ไม่สามารถดำเนินการได้ เนื่องจากคุณมีคลับแล้ว',
+                '',
+                'warning',
+            )
+            return;
+        }
+
         window.localStorage.removeItem("studentSearchClub")
         window.localStorage.setItem("studentPageClub",1)
 
@@ -129,6 +172,16 @@ export default function EditClub({schoolID }) {
     /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
+
+        if (haveClubs) {
+            Swal.fire(
+                'ไม่สามารถดำเนินการได้ เนื่องจากคุณมีคลับแล้ว',
+                '',
+                'warning',
+            )
+            return;
+        }
+
         let body
         
         if (!search.current.value){
@@ -258,6 +311,17 @@ export default function EditClub({schoolID }) {
         setPaginate(template)
     }
 
+    const applyBtn = (
+        <>
+            <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+            <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button>
+        </>
+    )
+
+    const dropBtn = (
+        <button className='btn btn-warning' data-bs-dismiss="modal" onClick={() => dropClub()}>ยกเลิกการสมัครชุมนุม</button>
+    )
+
     if (displayError){
         return (
             <>
@@ -337,8 +401,7 @@ export default function EditClub({schoolID }) {
                                 </div>
                             </div>
                             <div className='modal-footer'>
-                                <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> applyClub()}>สมัครชุมนุม</button>
+                                { haveClubs ? dropBtn : applyBtn}
                             </div>
                         </div>
                     </div>
