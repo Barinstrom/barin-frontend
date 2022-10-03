@@ -22,9 +22,9 @@ export default function Payment_Status() {
     get_data(token).then(result => {
       console.log(result)
       if (result.data){
-        router.replace( "http://localhost:3000/" + result.data.schoolID + "/admin_school")
+        window.location.replace( "/"+ result.data.schoolID + "/admin_school")
       } else {
-        router.replace("http://localhost:3000/")
+        router.replace("/")
       }
     })
   }
