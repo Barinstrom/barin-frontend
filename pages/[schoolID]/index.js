@@ -174,7 +174,10 @@ export async function getStaticProps(context) {
   const schoolID = context.params.schoolID
   const schoolPathAll = await get_all_schoolID();
   const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID);
-  const urlLogo = school_path_data.urlLogo
+  let urlLogo = school_path_data.urlLogo
+  if (!urlLogo) {
+    urlLogo = "https://avatars.githubusercontent.com/u/110318724?s=400&u=15f3c5171c91235be816a7838ebb5288bf3ae7e0&v=4"
+  }
   // console.log("urlLogo =", urlLogo)
   return {
     props: { schoolID, urlLogo },
