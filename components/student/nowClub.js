@@ -1,11 +1,61 @@
 import React from "react";
 import { useEffect,useState } from "react";
 import Cookies from "universal-cookie";
-import { get_student_ownclub } from "../../utils/student/student";
+import { get_student_ownclub, drop_club } from "../../utils/student/student";
+import Swal from "sweetalert2";
 
 export default function Nowclub({schoolID}) {
 	const [ displayOwnclub, setdisplayOwnclub ] = useState(null)
 	
+	const cookie = new Cookies()
+	const token = cookie.get("token")
+    // console.log(token)
+	
+	async function dropClub(clubID) {
+		console.log(clubID)
+		const body = {
+			"clubID": clubID
+		}
+
+		Swal.fire({
+			title: 'คุณต้องการ drop club นี้ใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#3085d6",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then(async(result) => {
+			if (result.isConfirmed) {
+				const result = await drop_club(body, token, schoolID)
+
+				if (!result) {
+					Swal.fire(
+						'drop ไม่สำเร็จ!',
+						'',
+						'warning',
+					).then(res => {
+						window.location.reload();
+					})
+				} else {
+					Swal.fire(
+						'drop เสร็จสิ้น',
+						'',
+						'success',
+					).then(res => {
+						window.location.reload();
+					})
+
+				}
+
+			}
+			
+		})
+
+		
+	}
+
 	useEffect(() => {
 		const  cookie = new Cookies()
 		const token = cookie.get("token")
@@ -42,6 +92,7 @@ export default function Nowclub({schoolID}) {
 								<p className="alert-heading fs-3">{e.clubName }</p>
 								<p>เวลาเรียน: {e.schedule }</p>
 								<p>{e.clubInfo}</p>
+								<button className='btn btn-warning' onClick={(ev) => dropClub(e._id)}>ยกเลิกการสมัครชุมนุม</button>
 							</div>
 						)
 					})

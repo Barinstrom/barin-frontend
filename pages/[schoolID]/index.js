@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 
 
-export default function Login({schoolID}) {
+export default function Login({ schoolID, urlLogo }) {
   const spin = useRef()
   const email = useRef()
   const password = useRef()
@@ -118,7 +118,7 @@ export default function Login({schoolID}) {
         <aside className={styles.block_left}>
           <div>
             <div className={styles.logo}>
-              <img src="https://www.horwang.ac.th/logo_horwang.png"></img>
+              <img src={urlLogo}></img>
             </div>
             <div className={styles.barin_strom}>
               <span>{schoolID}</span>
@@ -158,10 +158,12 @@ export async function getStaticPaths() {
   const schoolPathAll = await get_all_schoolID();
   
   const schoolPathGenerate = schoolPathAll.data
-  const all_path = schoolPathGenerate.map((e) => {
-		return { params: e }
-	})
-  
+  // console.log(schoolPathGenerate)
+  const all_path = schoolPathGenerate.map(e => ({
+      params: e,
+    })
+  )
+  // console.log("all_path =",all_path)
   return {
 		paths: all_path,
 		fallback: false,
@@ -169,10 +171,13 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-	const schoolID = context.params.schoolID
-	
+  const schoolID = context.params.schoolID
+  const schoolPathAll = await get_all_schoolID();
+  const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID);
+  const urlLogo = school_path_data.urlLogo
+  // console.log("urlLogo =", urlLogo)
   return {
-		props: { schoolID },
+    props: { schoolID, urlLogo },
 	}
 }
 

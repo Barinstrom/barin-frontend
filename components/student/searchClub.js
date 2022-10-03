@@ -54,7 +54,8 @@ export default function EditClub({schoolID }) {
                 if (result[1].data.clubs.length) {
                     setDisplayError(false)
                     setHaveClubs(true)
-                    showData(result[1].data.clubs)
+                    showData(result[0].data.docs)
+                    // showData(result[1].data.clubs)
                 }
                 else if (!result[0]){
                     setDisplayError(true)
@@ -100,15 +101,18 @@ export default function EditClub({schoolID }) {
                 'สมัครไม่สำเร็จ!',
                 '',
                 'warning',
-            )
+            ).then(res => {
+                window.location.reload();
+            })
         }else{
             Swal.fire(
                 'สมัครเสร็จสิ้น',
                 '',
                 'success',
-            )
+            ).then(res => {
+                window.location.reload();
+            })
         }
-        window.location.reload();
     }
 
     async function dropClub() {
@@ -124,14 +128,18 @@ export default function EditClub({schoolID }) {
                 'drop ไม่สำเร็จ!',
                 '',
                 'warning',
-            )
+            ).then(res => {
+                window.location.reload();
+            })
         } else {
             Swal.fire(
                 'drop เสร็จสิ้น',
                 '',
                 'success',
-            )
-            window.location.reload();
+            ).then(res => {
+                window.location.reload();
+            })
+            
         }
 
     }
@@ -313,13 +321,19 @@ export default function EditClub({schoolID }) {
 
     const applyBtn = (
         <>
-            <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-            <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button>
+            <div className='modal-footer'>
+                <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button>
+            </div>
         </>
     )
 
-    const dropBtn = (
-        <button className='btn btn-warning' data-bs-dismiss="modal" onClick={() => dropClub()}>ยกเลิกการสมัครชุมนุม</button>
+    // const dropBtn = (
+    //     <button className='btn btn-warning' data-bs-dismiss="modal" onClick={() => dropClub()}>ยกเลิกการสมัครชุมนุม</button>
+    // )
+
+    const notBtn = (
+        <>
+        </>
     )
 
     if (displayError){
@@ -400,9 +414,7 @@ export default function EditClub({schoolID }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className='modal-footer'>
-                                { haveClubs ? dropBtn : applyBtn}
-                            </div>
+                            {haveClubs ? notBtn : applyBtn}
                         </div>
                     </div>
                 </div>

@@ -99,8 +99,8 @@ export async function update_teacher(data, token, schoolID) {
 
 // แก้ไข school_data
 export async function edit_school_data(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/edit";
-
+  const apiUrl = stagingUrl + String(schoolID) + "/update-school";
+  console.log("/update-school")
   try {
     const result = await axios({
       url: apiUrl,
@@ -112,9 +112,10 @@ export async function edit_school_data(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    // console.log(result)
+    return [result,true]
   } catch (err) {
-    console.log(err)
-    return false
+    // console.log(err)
+    return [err,false]
   }
 };

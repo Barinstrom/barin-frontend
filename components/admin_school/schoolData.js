@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 import { stripe } from "../../utils/payment";
 import { edit_school_data } from "../../utils/school_admin/edit_data"; 
 import CheckoutForm from "../Stripe_CheckoutForm";
+import Swal from "sweetalert2";
 
 const stripePromise = loadStripe(
 	"pk_test_51LevDSHCloRRkXJqsQqsWQbkJowAnWVTJ5dUqbk25qSOCcPmGGAgtXcjPEEMKklf8jFduSSalNUu1qM5fpK62WUG00l9MCl6LT"
@@ -71,7 +72,7 @@ export default function SchoolData({ school_data, schoolID }) {
 	async function taskConfirm(ev,token) {
 		ev.preventDefault();
 		
-		console.log("school_data",school_data)
+		// console.log("school_data",school_data)
 		
 		if (!schoolNameInput.current.value){
 			alert("โปรดใส่ชื่อโรงเรียน")
@@ -79,7 +80,7 @@ export default function SchoolData({ school_data, schoolID }) {
 
 		const data = {
 			schoolName: schoolNameInput.current.value,
-			urlLogo: "https://res.cloudinary.com/tawanchai/image/upload/v1662800159/certificate_doc/barinschool%40hotmail.com.png"
+			logo: picture
 		};
 
 		/*
@@ -92,7 +93,29 @@ export default function SchoolData({ school_data, schoolID }) {
 		console.log(data);
 
 		/* api call */
-		const result = await edit_school_data(data,token,schoolID)
+		const result = await edit_school_data(data, token, schoolID)
+		if (result[1]) {
+			Swal.fire({
+				icon: 'success',
+				title: 'แก้ไขข้อมูลสำเร็จ',
+				showConfirmButton: true,
+				confirmButtonColor: "#009431",
+				confirmButtonText: 'ปิด',
+			}).then((res) => {
+				window.location.reload();
+			})
+		}
+		else {
+			Swal.fire({
+				icon: 'error',
+				title: 'แก้ไขข้อมูลไม่สำเร็จ',
+				showConfirmButton: true,
+				confirmButtonColor: "#ce0303",
+				confirmButtonText: 'ปิด',
+			}).then((res) => {
+				window.location.reload();
+			})
+		}
 		/* end api call */
 		// window.location.reload();
 	}
