@@ -537,7 +537,7 @@ export default function Admin({ schoolID }) {
 		return <Reload />
 	}
 	else if (displayFirst) {
-		if ("fail" === "success") {
+		if (ispaid === "success") {
 			return admin_page
 		}
 		else {
