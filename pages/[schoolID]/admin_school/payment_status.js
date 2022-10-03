@@ -20,11 +20,11 @@ export default function Payment_Status() {
     ev.preventDefault();
     setDisplayFirst("loading")
     get_data(token).then(result => {
-      console.log(result)
-      if (result.data){
-        router.replace( "http://localhost:3000/" + result.data.schoolID + "/admin_school")
+      console.log("return = ",result)
+      if (result[1]){
+        window.location.replace( "/"+ result[0].data._doc.schoolID + "/admin_school")
       } else {
-        router.replace("http://localhost:3000/")
+        router.replace("/")
       }
     })
   }

@@ -5,7 +5,7 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-export default function CheckoutForm({schoolID,token}) {
+export default function CheckoutForm({schoolID,token,email}) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -214,7 +214,7 @@ export default function CheckoutForm({schoolID,token}) {
 				}
 			`}</style>
       <form id="payment-form" onSubmit={handleSubmit}>
-        <PaymentElement id="payment-element" options={{ defaultValues: {billingDetails: {email: 'user_email@gmail.com',},},}} />
+        <PaymentElement id="payment-element" options={{ defaultValues: {billingDetails: {email: email,},},}} />
         <button disabled={isLoading || !stripe || !elements} id="submit" className="mt-3">
           <span id="button-text">
             {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}

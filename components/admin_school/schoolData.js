@@ -234,7 +234,7 @@ export default function SchoolData({ school_data, schoolID }) {
 					<div className="stripe_pay">
 						{clientSecret && (
 							<Elements options={options} stripe={stripePromise}>
-								<CheckoutForm schoolID={schoolID} token={token} />
+								<CheckoutForm schoolID={schoolID} token={token} email={school_data.email} />
 							</Elements>
 						)}
 					</div>

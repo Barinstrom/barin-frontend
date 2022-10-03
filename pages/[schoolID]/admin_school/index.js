@@ -66,7 +66,7 @@ export default function Admin({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				//console.log(result[0][0])
+				console.log(result[0][0])
 				//console.log(result[0][1])
 
 				if (result[0][1]){
@@ -293,13 +293,14 @@ export default function Admin({ schoolID }) {
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}></span>
 						</div>
-						<div className={`me-2`}>
+						<div className={`me-3 d-flex flex-row h-100`}>
 							<span className={`${styles.logo_bell}`}>
 								<i className="fa-regular fa-bell"></i>
 							</span>
 							<span className={`${styles.user_name} ms-1`}>
 								{/* {data.data.userId} */}
 							</span>
+
 							<div className={`${styles.logo}`}>
 								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
@@ -543,7 +544,6 @@ export default function Admin({ schoolID }) {
 	}
 	else if (displayFirst) {
 		if (ispaid === "success") {
-		// if ("fail" === "success") {
 			return admin_page
 		}
 		else {
