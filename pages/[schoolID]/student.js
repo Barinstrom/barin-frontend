@@ -142,7 +142,7 @@ export default function Student({ schoolID }) {
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
-		router.replace("/")
+		router.replace(`/${schoolID}`)
 	}
 
 	function forgetPassword() {
