@@ -14,7 +14,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
         const tmp = text.split("\n")
         const heads = tmp[0].split(",")
         
-        for (let i=1;i<tmp.length-1;i++){
+        for (let i=1;i<tmp.length;i++){
             const line = tmp[i].split(",")
             const object = {}
             for (let j=0;j<heads.length;j++){
@@ -46,7 +46,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 
         // เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
         reader.onload = async (ev) => {
-            const text = ev.target.result+ "\n";
+						const text = ev.target.result;
             //console.log(text)
             const result = stringtoObject(text)
             if (result === "data is undefined"){

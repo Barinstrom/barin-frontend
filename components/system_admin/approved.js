@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import { get_approved } from '../../utils/system_admin/system';
 import Cookies from "universal-cookie";
+import Link from 'next/link';
 import Swal from 'sweetalert2';
 
 
@@ -38,6 +39,7 @@ export default function Aprroved() {
 			if (!result) {
 				setDisplayError(true)
 			} else {
+				console.log(result.docs)
 				const paginate_tmp = generate(result)
 				setDisplayError(false)
 				showData(result.docs)
@@ -105,15 +107,11 @@ export default function Aprroved() {
 
 	function generate(result) {
 		const paginate_tmp = []
-		if (result.hasPrevPage ) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-		}
-
 		if (result.hasPrevPage) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
 		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
 			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
 		}
 
@@ -121,13 +119,9 @@ export default function Aprroved() {
 
 		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-		}
-
-		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
 		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
 			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
 		}
 		return paginate_tmp
@@ -171,43 +165,54 @@ export default function Aprroved() {
 					}
 				`}</style>
 				
-				<table className='table table-striped align-middle'>
-					<thead>
-						<tr>
-							<th style={{ width: "100px" }}>schoolID</th>
-							<th style={{ width: "300px" }}>schoolName</th>
-							<th style={{ width: "300px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-							<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>แก้ไขข้อมูล</span></th>
-						</tr>
-					</thead>
-					<tbody>
-						{result.map((item, index) => {
-							console.log(item)
-							return (
-								<tr key={index}>
-									<td><span>{item.schoolID}</span></td>
-									<td><span>{item.schoolName}</span></td>
-									<td className="text-end">
-										<span className={`certificate`}
-											onClick={() => getUrlCertificateDocument(item)}
-											data-bs-toggle="modal"
-											data-bs-target="#urlCertificateDocument"
-										>กดเพื่อดู certificate</span>
-									</td>
-									<td className="text-end">
-										<button className='btn btn-sm btn-warning'
-											onClick={() => getDetails(item)}
-											data-bs-toggle="modal"
-											data-bs-target="#approveModal"
-										>
-											แก้ไขข้อมูล
-										</button>
-									</td>
-								</tr>
-							)
-						})}
-					</tbody>
-				</table>
+				<div className='table-responsive'>
+					<table className='table table-sm table-striped align-middle  border '>
+						<thead>
+							<tr>
+								<th style={{ width: "200px" }}>schoolID</th>
+								<th style={{ width: "200px" }}>schoolName</th>
+								<th style={{ width: "200px" }} className="text-center">สวมลอย</th>
+								<th style={{ width: "200px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
+								<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>แก้ไขข้อมูล</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{result.map((item, index) => {
+								console.log(item)
+								return (
+									<tr key={index}>
+										<td><span>{item.schoolID}</span></td>
+										<td><span>{item.schoolName}</span></td>
+										<td className="text-center">
+											<Link href={{
+												pathname: `/system_admin/${item.schoolID}`,
+											}}>
+											<a className='btn btn-sm btn-secondary'>สวมรอย</a>
+											</Link>
+										</td>
+										<td className="text-end">
+											<span className={`certificate`}
+												onClick={() => getUrlCertificateDocument(item)}
+												data-bs-toggle="modal"
+												data-bs-target="#urlCertificateDocument"
+											>กดเพื่อดู certificate</span>
+										</td>
+										<td className="text-end">
+											<button className='btn btn-sm btn-warning'
+												onClick={() => getDetails(item)}
+												data-bs-toggle="modal"
+												data-bs-target="#approveModal"
+											>
+												แก้ไขข้อมูล
+											</button>
+										</td>
+									</tr>
+								)
+							})}
+						</tbody>
+					</table>
+				</div>
+				
 			</>
 		)
 		setData(template)

@@ -99,32 +99,24 @@ export default function NotApproved() {
     
     function generate(result){
         const paginate_tmp = []
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-        }
-        
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-        }
-        
-        paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-        
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-        }
+        if (result.hasPrevPage) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+		}
 
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
-        }
-        return paginate_tmp
+		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+
+		if (result.hasNextPage) {
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+		}
+		return paginate_tmp
     }
 
     
@@ -155,6 +147,7 @@ export default function NotApproved() {
     function showData(result){
         const template = (
             <>
+                <div className='table-responsive'>
                 <table className='table table-striped align-middle'>
                 <thead>
                     <tr>
@@ -179,7 +172,8 @@ export default function NotApproved() {
                         )
                     })}
                 </tbody>
-            </table> 
+                    </table> 
+                    </div>
             </>
         )
         setData(template)

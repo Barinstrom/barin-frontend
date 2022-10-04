@@ -25,9 +25,7 @@ export default function Pending() {
 		window.localStorage.removeItem("searchPending")
 		window.localStorage.removeItem("pagePending")
 
-		const body = {
-			"page": 1
-		}
+		const body = {"page": 1}
 		window.localStorage.setItem("pagePending", 1)
 
 		const cookies = new Cookies();
@@ -98,13 +96,9 @@ export default function Pending() {
 		const paginate_tmp = []
 		if (result.hasPrevPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-		}
-
-		if (result.hasPrevPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
 		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
 			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
 		}
 
@@ -112,13 +106,9 @@ export default function Pending() {
 
 		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-		}
-
-		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
 		} else {
+			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
 			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
 		}
 		return paginate_tmp
@@ -160,12 +150,10 @@ export default function Pending() {
 					.certificate:hover{
 						text-decoration: underline;
 					}
-
-
-
 				`}</style>
 				
-				<table className='table table-striped align-middle'>
+				<div className='table-responsive'>
+					<table className='table table-striped align-middle'>
 					<thead>
 						<tr>
 							<th style={{ width: "100px" }}>schoolID</th>
@@ -176,7 +164,7 @@ export default function Pending() {
 					</thead>
 					<tbody>
 						{result.map((item, index) => {
-							console.log(item)
+							//console.log(item)
 							return (
 								<tr key={index}>
 									<td><span>{item.schoolID}</span></td>
@@ -207,6 +195,8 @@ export default function Pending() {
 						})}
 					</tbody>
 				</table>
+				</div>
+				
 			</>
 		)
 		setData(template)
@@ -217,9 +207,7 @@ export default function Pending() {
 			<ul className='pagination justify-content-center'>
 				{paginate.map((item, index) => {
 					return (
-						<li key={index} className="page-item">
-							{item}
-						</li>
+						<li key={index} className="page-item">{item}</li>
 					)
 				})}
 			</ul>
@@ -240,28 +228,23 @@ export default function Pending() {
     function approveSchool(item) {
         //console.log(item)
         Swal.fire({
-            title: 'คุณต้องการยืนยันว่า approve โรงเรียนนี้ใช่หรือไม่',
+            title: 'คุณต้องการยืนยันว่า Approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
             confirmButtonColor: "#3085d6",
             confirmButtonText: 'ยืนยัน',
 
             showCancelButton: true,
-            cancelButtonText: "ยกเลิก",
+            cancelButtonText: "cancel",
             cancelButtonColor: "#d93333",
-        }).then((result) => {
-            /* then(() => {
-                console.log(result)
-                if (result.isConfirmed) {
-                    Swal.fire('ทำรายการสำเร็จ', '', 'success')
-                }
-            }) */
-        })
+		}).then((result) => {
+			//console.log(result)
+		})
 	}
 	
 	function notApproveSchool(item) {
         //console.log(item)
         Swal.fire({
-            title: 'คุณต้องการยืนยันว่า not approve โรงเรียนนี้ใช่หรือไม่',
+            title: 'คุณต้องการยืนยันว่า Not approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
             confirmButtonColor: "#3085d6",
             confirmButtonText: 'ยืนยัน',
@@ -270,12 +253,12 @@ export default function Pending() {
             cancelButtonText: "ยกเลิก",
             cancelButtonColor: "#d93333",
         }).then((result) => {
-            /* then(() => {
-                console.log(result)
-                if (result.isConfirmed) {
-                    Swal.fire('ทำรายการสำเร็จ', '', 'success')
-                }
-            }) */
+            // then(() => {
+            //     console.log(result)
+            //     if (result.isConfirmed) {
+            //         Swal.fire('ทำรายการสำเร็จ', '', 'success')
+            //     }
+            // })
         })
     }
 
@@ -337,7 +320,6 @@ export default function Pending() {
 							</div>
 							<div className='modal-footer'>
 								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-								{/* <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button> */}
 							</div>
 						</div>
 					</div>
@@ -352,17 +334,11 @@ export default function Pending() {
 							</div>
 							<div className='modal-body'>
 								<div className="row">
-			
 									<div className="col-12">
 										<div className='d-flex flex-column align-items-center'>
 											<img className='img-fluid' ref={urlCertificateDocument} />
 										</div>
 									</div>
-									{/* <div className="col-12">
-										<label className="form-label">UrL Logo</label>
-										<img ref={urlLogo} />
-									</div> */}
-
 								</div>
 							</div>
 						</div>

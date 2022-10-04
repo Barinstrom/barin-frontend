@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import styles from "../styles/admin.module.css";
-import Approved from "../components/system_admin/approved";
-import NotApproved from "../components/system_admin/notApproved";
-import Pending from "../components/system_admin/pending";
+import styles from "../../styles/admin.module.css";
+import Approved from "../../components/system_admin/approved";
+import NotApproved from "../../components/system_admin/notApproved";
+import Pending from "../../components/system_admin/pending";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
-import { get_data } from "../utils/auth";
-import Reload from '../components/reload'
+import { get_data } from "../../utils/auth";
+import Reload from '../../components/reload'
 import Error from "next/error";
 
 
@@ -21,7 +21,7 @@ export default function Student({ schoolID }) {
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
 
-	const [data_school, setData_school] = useState()
+	//const [data_school, setData_school] = useState()
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [countBtn, SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
@@ -33,18 +33,14 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0][0].data)
-
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
 					if (role !== "host") {
 						setDisplayFirst(false)
-					}
-
-					else if (data_tmp) {
+					}else if (data_tmp) {
 						setDisplayFirst(true)
-						setData_school(data_tmp)
+						//setData_school(data_tmp)
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
@@ -134,7 +130,7 @@ export default function Student({ schoolID }) {
 
 	function logOut() {
 		const cookies = new Cookies();
-		console.log(cookies.get("token"))
+		//console.log(cookies.get("token"))
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
@@ -142,21 +138,17 @@ export default function Student({ schoolID }) {
 	}
 
 	function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
-
-		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
 		router.replace(`/forgotPass`)
 	}
 
 
 	let component = null
 	if (countBtn === 0) {
-		component = <Pending schoolID={schoolID} />
+		component = <Pending/>
 	} else if (countBtn === 1) {
-		component = <Approved schoolID={schoolID} />
+		component = <Approved/>
 	} else {
-		component = <NotApproved schoolID={schoolID} />
+		component = <NotApproved/>
 	}
 
 	if (displayFirst === "loading") {
@@ -231,8 +223,6 @@ export default function Student({ schoolID }) {
 					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
 				}
 			`}</style>
-
-
 				<header className={`${styles.head} navbar navbar-dark bg-white`}>
 					<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
 						<div className={`${styles.header_item} ms-2 `}>
@@ -309,7 +299,7 @@ export default function Student({ schoolID }) {
 
 				{/* ส่วน component มาแสดงผล */}
 				<main className={styles.content}>
-					<div className="container">
+					<div className="container border">
 						{component}
 					</div>
 				</main>

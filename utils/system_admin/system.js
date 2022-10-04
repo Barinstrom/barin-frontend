@@ -7,6 +7,27 @@ import axios from "axios";
 const Url = "https://barinapi.tawanchai.com";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com"
 
+
+// data school
+export async function get_school_data(schoolID,token) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/data";
+	try {
+		
+		const result = await axios({
+			url:apiUrl,
+			method:"get",
+			headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+			timeout:10000
+		})
+		//console.log(response)
+		return [result,true]
+	}
+	catch(err){
+		console.log(err)
+		return [err,false]
+	}
+};
+
 // pending school
 export async function get_pending(data,token) {
 	const apiUrl = stagingUrl + "/schools/pending";
@@ -34,7 +55,7 @@ export async function get_pending(data,token) {
 		return response.data
 		
 	} catch(err) {
-		console.log(err.message);
+		console.log(err);
 		return false;
 	}
 };

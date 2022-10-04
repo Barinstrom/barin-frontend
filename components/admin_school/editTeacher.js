@@ -237,6 +237,7 @@ export default function EditTeacher({ school_data,schoolID }) {
 
     function showData(result){
         const template = (
+            <div className='table-responsive'>
             <table className='table align-middle'>
                 <thead>
                     <tr>
@@ -263,7 +264,7 @@ export default function EditTeacher({ school_data,schoolID }) {
                     })}
                 </tbody>
             </table>
-            
+            </div>
         )
         setData(template)
     }

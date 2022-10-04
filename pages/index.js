@@ -38,7 +38,6 @@ export default function Login() {
       
       // เรียกฟังชันก์จาก unauth
       const result = await checkLogin(body);
-      console.log(result)
       
       spin.current.classList.add("d-none");
       
@@ -51,9 +50,7 @@ export default function Login() {
 						confirmButtonColor:"#ce0303"
 				})
         return
-      } else {
-        
-        
+      }else {
         if (result.data.role === "host"){
           const cookie = new Cookies()
 		      cookie.set("token",result.data.token)
@@ -65,11 +62,9 @@ export default function Login() {
 						confirmButtonColor:"#009431"
 					}
           )
-          
           router.push("/" +"system_admin")
-        } 
-
-        else if((result.data.role === "teacher" || result.data.role ===  "student")){
+        
+        }else if ((result.data.role === "teacher" || result.data.role ===  "student")){
           Swal.fire({
 					icon: 'warning',
 					title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง', 
@@ -77,9 +72,7 @@ export default function Login() {
 					confirmButtonColor:"#e3c21c"
 				})
           router.push("/" + String(result.data.schoolID))
-        }
-        
-        else {
+        }else {
           const cookie = new Cookies()
 		      cookie.set("token",result.data.token)
           Swal.fire({
@@ -123,7 +116,6 @@ export default function Login() {
               <span>BARIN</span><br />
               <span>STROM</span>
             </div>
-            
           </div>
         </aside>
           
@@ -143,9 +135,7 @@ export default function Login() {
           <div className='mt-3 d-flex flex-column align-items-center'>
             <button className={styles.login_btn} onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
             <Link href="/register"><button className={styles.register_btn}>สมัครสมาชิก</button></Link>
-            
             <div className={styles.additional}>
-              
               <Link href="/forgotPass"><a className={`mt-2 ${styles.forgotpass}`}>ลืมรหัสผ่าน</a></Link>
             </div>
           </div>
