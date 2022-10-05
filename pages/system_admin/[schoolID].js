@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from "../../../styles/admin.module.css";
-import { get_data } from "../../../utils/auth";
-import { get_all_schoolID } from "../../../utils/unauth";
+import styles from "../../styles/admin.module.css";
+import { get_all_schoolID } from "../../utils/unauth";
+import { get_school_data } from "../../utils/system_admin/system";
 
-import EditStudent from "../../../components/admin_school/editStudent";
-import EditTeacher from "../../../components/admin_school/editTeacher";
-import EditClub from "../../../components/admin_school/editClub";
-import EditOwnData from "../../../components/admin_school/editOwnData";
-import InsertClub from "../../../components/admin_school/insertClub";
-import InsertStudent from "../../../components/admin_school/insertStudent";
-import InsertTeacher from "../../../components/admin_school/insertTeacher";
-import SchoolData from "../../../components/admin_school/schoolData";
-import TimeConfig from "../../../components/admin_school/timeConfig";
-import Reload from "../../../components/reload";
+import EditStudent from "../../components/admin_school/editStudent";
+import EditTeacher from "../../components/admin_school/editTeacher";
+import EditClub from "../../components/admin_school/editClub";
+import EditOwnData from "../../components/admin_school/editOwnData";
+import InsertClub from "../../components/admin_school/insertClub";
+import InsertStudent from "../../components/admin_school/insertStudent";
+import InsertTeacher from "../../components/admin_school/insertTeacher";
+import SchoolData from "../../components/admin_school/schoolData";
+import TimeConfig from "../../components/admin_school/timeConfig";
+import Reload from "../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
 import { useRouter } from "next/router";
@@ -57,35 +57,30 @@ export default function Admin({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token)])
+		Promise.all([get_school_data(schoolID,token)])
 			.then(result => {
-				console.log(result[0][0])
-				//console.log(result[0][1])
+				console.log(result)
+				
 
 				if (result[0][1]){
-					const data_tmp = result[0][0].data._doc
-					const role = result[0][0].data.role
-					
-					if (role !== "admin") {
+					const data_tmp = result[0][0].data.data_school
+					// const now_user = result[0][0].data.data_user
+					if (data_tmp) {
+						// if (data_tmp.paymentStatus != "success") {
+						// 	setDisplayFirst(false)
+						// }
+						// else {
+							setIspaid(data_tmp.paymentStatus)
+							setDisplayFirst(true)
+							setData_school(data_tmp)
+							setchooseBtnStart(true)
+							setReadyTime(true)
+						// }
+						
+					} else {
 						setDisplayFirst(false)
 					}
-					else {
-						if (data_tmp) {
-							if (data_tmp.schoolID != schoolID) {
-								setDisplayFirst(false)
-							}
-							else {
-								setIspaid(data_tmp.paymentStatus)
-								setDisplayFirst(true)
-								setData_school(data_tmp)
-								setchooseBtnStart(true)
-								setReadyTime(true)
-							}
-							
-						} else {
-							setDisplayFirst(false)
-						}
-					}
+				
 				}else{
 					if (result[0][0].response.status === 401){
 						setDisplayFirst(false)
@@ -183,7 +178,6 @@ export default function Admin({ schoolID }) {
 		nav.current.classList.toggle("active");
 	};
 
-
 	function logOut(){
 		const cookies = new Cookies();
 		console.log(cookies.get("token"))
@@ -200,135 +194,9 @@ export default function Admin({ schoolID }) {
 		router.replace(`/forgotPass`)
 	}
 
-	const admin_page_unpaid = (
-		<>
-			<style jsx>{`
-				.nav_header {
-					min-height: 100vh;
-					position: fixed;
-					padding: 3px;
-					transform: translate(-5%, 80px);
-					transition: transform 0.3s ease;
-					z-index: 100;
-					background-color: transparent;
-				}
-
-				.button_hamberger{
-					width: 40px;
-					height: 40px;
-					border: none;
-					opacity: 1;
-					border-radius: 15px;
-					font-size: 1.4rem;
-					margin-right: 10px;
-					display: none;
-					background-color: transparent;
-				}
-
-				@media screen and (max-width: 1300px) {
-					.nav_header {
-						transform: translate(-100%, 80px);
-					}
-					.nav_header.active {
-						transform: translateY(80px);
-						background-color: white;
-					}
-					.button_hamberger{
-						display: block;
-					}
-					.button_hamberger.hamactive{
-						background-color: #e8e8e8;
-					}
-				}
-
-				.h2_alert,
-				.h2_alert {
-					font-size: 36px;
-				}
-
-				@media screen and (max-width: 1000px) {
-					.h2_alert {
-						font-size: 28px;
-					}
-				}
-				@media screen and (max-width: 800px) {
-					.h2_alert {
-						font-size: 20px;
-					}
-				}
-
-				.nav_left{
-					text-align: left;
-					border-radius: 10px;
-					padding: 6px 30px;
-					cursor: pointer;
-				}
-
-				.nav_left.nowclick{
-					background-color: #FFFFFF;
-					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
-				}
-			`}</style>
-
-			<header className={`${styles.head} navbar navbar-dark bg-white`}>
-				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
-					<div className={`${styles.header_item} ms-2 `}>
-						<button
-							className="button_hamberger"
-							onClick={clickHamberger}
-							ref={hamberger}
-						>
-							<i className="fa-solid fa-bars"></i>
-						</button>
-						<span className="ms-3">Dashboard</span>
-					</div>
-					<div className={`${styles.header_item}`}>
-						<div className={`${styles.time_alert} me-2`}>
-							<span ref={time}></span>
-						</div>
-						<div className={`me-3 d-flex flex-row h-100`}>
-							<span className={`${styles.logo_bell}`}>
-								<i className="fa-regular fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
-							</span>
-
-							<div className={`${styles.logo}`}>
-								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
-								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
-									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
-									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</header>
-
-			<nav className="nav_header" ref={nav}>
- 				<div className={styles.box_menu}>
-					<ul>
- 						<li>
-							<div className={`nav_left`} 
-								onClick={() => changeComponent(0)}
-								ref={(el) => optionBtn.current[0] = el}
-							>
-								<i className="fa-solid fa-house me-2"></i>
-								<span>ข้อมูลโรงเรียน</span>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</nav>
-
-			<main className={styles.content}>
-				<section className="container">
-					{component}
-				</section>
-			</main>
-		</>
-	)
+	function OutRoleAdmin(){
+		router.replace(`/system_admin`)
+	}
 
 	const admin_page = (
 		<>
@@ -429,6 +297,7 @@ export default function Admin({ schoolID }) {
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
 									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
 									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+									<li style={{ cursor: "pointer" }} onClick={OutRoleAdmin}><span className="dropdown-item">ออกจากการสวมรอย</span></li>
 								</ul>
 							</div>
 						</div>
@@ -540,7 +409,7 @@ export default function Admin({ schoolID }) {
 			return admin_page
 		}
 		else {
-			return admin_page_unpaid
+			return <Error statusCode={404}/>
 		}
 	}
 	else {

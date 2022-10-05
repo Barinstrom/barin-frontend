@@ -272,6 +272,7 @@ export default function EditClub({schoolID }) {
 
     function showData(result){
         const template = (
+            <div className='table-responsive'>
             <table className='table table-striped align-middle'>
                 <thead>
                     <tr>
@@ -300,6 +301,7 @@ export default function EditClub({schoolID }) {
                     })}
                 </tbody>
             </table> 
+            </div>
         )
         setData(template)
     }

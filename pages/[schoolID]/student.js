@@ -7,10 +7,10 @@ import Searchclub from "../../components/student/searchClub"
 import Reload from '../../components/reload'
 import Cookies from "universal-cookie"
 import { get_data } from "../../utils/auth";
-import { get_all_schoolID } from "../../utils/unauth"
+import { get_all_schoolID,forget_password } from "../../utils/unauth"
 import Error from "next/error";
 import { useRouter } from "next/router";
-
+import Swal from "sweetalert2"
 
 export default function Student({ schoolID }) {
 	const nav = useRef();
@@ -22,12 +22,11 @@ export default function Student({ schoolID }) {
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
 	
-	//const [data_school,setData_school] = useState()
 	const [displayFirst,setDisplayFirst] = useState("loading")
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime,setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
-
+	const [userEmail,setUserEmail] = useState("")
 	
 	useEffect(() => {
 		const cookies = new Cookies();
@@ -35,10 +34,12 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				
+				console.log(result[0][0])
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
+					const email = result[0][0].data.email
+					// console.log(email)
 					if (role !== "student") {
 						setDisplayFirst(false)
 					}
@@ -49,7 +50,7 @@ export default function Student({ schoolID }) {
 						}
 						else {
 							setDisplayFirst(true)
-							//setData_school(data_tmp)
+							setUserEmail(email)
 							setchooseBtnStart(true)
 							setReadyTime(true)
 						}
@@ -145,13 +146,50 @@ export default function Student({ schoolID }) {
 		router.replace(`/${schoolID}`)
 	}
 
-	function forgetPassword() {
+	async function forgetPassword() {
 		const cookies = new Cookies();
 		const token = cookies.get("token")
 
-		// ตรงนี้ติดไว้แบบนี้ก่อนละกัน รอแตมป์มาช่วย
-		router.replace(`/forgotPass`)
-	}
+		if (!userEmail) {
+			Swal.fire(
+			'ไม่พบอีเมลล์ของท่าน',
+			'กรุณาลอง login ใหม่อีกครั้ง',
+			'warning'
+      		)
+     		return
+		}
+		
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#3085d6",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+			
+			const body = {"email" : userEmail}
+			forget_password(body).then((result) => {
+				if (!result) {
+					Swal.fire({
+					  icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+					  title: result,  
+					  showConfirmButton:true,
+					  confirmButtonColor:"#ce0303",
+					})
+				  }else {
+					Swal.fire({
+					  icon: 'success',
+					  title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email'+'\n'+'กรุณาตรวจสอบ email',
+					  showConfirmButton:true,
+					  confirmButtonColor:"#009431"
+					})
+				  }
+			})
+		})
+    }
 
 
 	let component = null 

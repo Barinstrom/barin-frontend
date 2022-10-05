@@ -142,21 +142,19 @@ export default function SchoolData({ school_data, schoolID }) {
 			<div>
 				<style jsx>{`
 					.img-size {
-						max-height: 400px;
-						max-width: 250px;
+						height: 15rem;
+						width: 15rem;
+						border-radius: 10%;
+						object-fit: cover;
 					}
-					@media screen and (max-width: 768px) {
-						.img-size {
-							max-width: 60vw;
-						}
-					}
+					
 				`}</style>
 
 				
 				<form className="d-flex flex-column flex-md-row justiy-centent-center align-items-center">
-					<div className="">
+					<div className="me-md-4">
 						<img 
-							className="img-size p-2 round-md"
+							className="img-size"
 							src={picture}
 							alt="Card image cap"
 						/>
@@ -182,13 +180,12 @@ export default function SchoolData({ school_data, schoolID }) {
 						</h5>
 
 						<h5 className="card-text mt-2">
-							Payment Status :
-							{school_data.paymentStatus ? "Paid" : "Unpaid"}
+							Payment Status : {school_data.paymentStatus ? "Paid" : "Unpaid"}
 						</h5>
 						
 						<div className="d-none mt-2" ref={schoolLogo}>
 							<div className="card-text">
-								เลือกรูปภาพที่จะเปลี่ยน(ถ้าต้องการแก้ไข):
+								เลือกรูปภาพที่จะเปลี่ยน(ถ้าต้องการแก้ไข) :
 							</div>
 							<input
 								className="form-control"

@@ -54,7 +54,7 @@ export async function checkLogin(data){
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 }
@@ -84,7 +84,7 @@ export async function forget_password(data) {
 };
 
 // reset pass
-export async function reset_password(data,token) {
+export async function reset_password(data) {
 	const apiUrl = stagingUrl + "/updatepassword";
 	
 	try {
@@ -93,16 +93,15 @@ export async function reset_password(data,token) {
 			method: "post",
 			data: JSON.stringify(data),
 			headers: {
-				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 			timeout: 10000
 		})
-		return result
+		return [result,true]
 	}
 	catch(err){
-		console.log(err.message)
-		return false
+		console.log(err)
+		return [err,false]
 	}
 };
 

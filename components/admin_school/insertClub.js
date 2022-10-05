@@ -21,7 +21,7 @@ export default function InsertClub({ school_data, schoolID }) {
 	useEffect(() => {
 		setWating(true)
 		paginationTeacher({"page":1},token,schoolID).then(result => {
-			// console.log(result)
+			//console.log(result)
 			if (result.data.docs.length < 1){
 				setWating(false)
 				setAllowRegisterClubTeacher(true)
@@ -48,12 +48,12 @@ export default function InsertClub({ school_data, schoolID }) {
     const stringtoObject = (text) => {
         const result = []
         const tmp = text.split("\n")
-        const heads = tmp[0].split(",")
+		const heads = tmp[0].split(",")
         
-        for (let i=1;i<tmp.length-1;i++){
+        for (let i=1;i<tmp.length;i++){
             const line = tmp[i].split(",")
             const object = {}
-            for (let j=0;j<heads.length;j++){
+			for (let j=0;j<heads.length;j++){
                 if (line[j] === ""){
                     return "data is undefined"
                 }else{
@@ -62,6 +62,7 @@ export default function InsertClub({ school_data, schoolID }) {
             }
             result.push(object)
         }
+		console.log(result)
         return result
     }
     
@@ -83,18 +84,19 @@ export default function InsertClub({ school_data, schoolID }) {
 
 			// เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
 			reader.onload = (ev) => {
-					const text = ev.target.result + "\n";
-					// console.log(text)
+					const text = ev.target.result;
+					console.log(text)
+
 					const data = stringtoObject(text)
-					if (data === "data is undefined"){
-							alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
-							return
-					}else{
-						console.log(data)
-						add_clubs(data,token,schoolID).then(result => {
-							console.log(result)
-						})
-					}
+					// if (data === "data is undefined"){
+					// 		alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
+					// 		return
+					// }else{
+					// 	console.log(data)
+					// 	add_clubs(data,token,schoolID).then(result => {
+					// 		console.log(result)
+					// 	})
+					// }
 			}
 		}
 	
