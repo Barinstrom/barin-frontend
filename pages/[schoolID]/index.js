@@ -17,7 +17,7 @@ export default function Login({ schoolID, urlLogo }) {
   useEffect(() => {
     const cookie = new Cookies()
     cookie.remove("token")
-  },[])
+  },[schoolID])
   
   async function clickLogin(ev){
     ev.preventDefault();
