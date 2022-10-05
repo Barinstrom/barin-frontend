@@ -43,18 +43,17 @@ export default function ForgotPass() {
       token:router.query.token
     })
     
-    //console.log(body)
     spin.current.classList.remove("d-none");
 
-    const response = await reset_password(body);
+    const result = await reset_password(body);
 
     spin.current.classList.add("d-none");
-    //console.log(response)
+    //console.log(result[1])
     
-    if (!response) {
+    if (!result[1]) {
       Swal.fire({
-						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-						title: response,  
+						icon: 'error',
+						title: "เปลี่ยนรหัสผ่านไม่สำเร็จ",  
 						showConfirmButton:true,
 						confirmButtonColor:"#ce0303"
 				})

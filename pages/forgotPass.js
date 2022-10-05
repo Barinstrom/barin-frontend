@@ -14,7 +14,7 @@ export default function ForgotPass() {
   const spin = useRef()
   const email = useRef()
   const router = useRouter()
-  console.log(router.query)
+  //console.log(router.query)
 
   async function clickForm(ev){
     ev.preventDefault()
@@ -28,10 +28,13 @@ export default function ForgotPass() {
       return
     }
 
-    const form = new FormData(ev.target)
-    const body = Object.fromEntries(form.entries())
+    //const form = new FormData(ev.target)
+    //const body = Object.fromEntries(form.entries())
     //console.log(body)
-    
+    const body = {
+      "email":email.current.value
+    }
+
     spin.current.classList.remove("d-none");
 
     const response = await forget_password(body);
@@ -93,7 +96,7 @@ export default function ForgotPass() {
         <aside className={styles.block_right}>
           <div className={styles.form}>
             <div className='form-floating'>
-              <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
+              <input type="text" className={`form-control`} placeholder="อีเมลล์" ref={email}/>
               <label className='form-label'>อีเมลล์</label>
             </div>
           </div>
