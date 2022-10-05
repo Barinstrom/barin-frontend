@@ -2,7 +2,7 @@ import React from 'react';
 import styles from '../../styles/index_school.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useRef } from 'react';
+import { useRef,useEffect } from 'react';
 import { checkLogin,get_all_schoolID } from "../../utils/unauth";
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
@@ -13,7 +13,11 @@ export default function Login({ schoolID, urlLogo }) {
   const email = useRef()
   const password = useRef()
   const router = useRouter()
-  console.log(schoolID)
+
+  useEffect(() => {
+    const cookie = new Cookies()
+    cookie.remove("token")
+  },[])
   
   async function clickLogin(ev){
     ev.preventDefault();

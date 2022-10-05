@@ -2,11 +2,10 @@ import React from 'react';
 import styles from '../styles/index.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useRef } from 'react';
+import { useRef,useEffect } from 'react';
 import { checkLogin } from "../utils/unauth";
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
-
 
 export default function Login() {
   const spin = useRef()
@@ -14,7 +13,12 @@ export default function Login() {
   const password = useRef()
   const router = useRouter()
   
-  
+  useEffect(() => {
+    const cookie = new Cookies()
+    cookie.remove("token")
+  },[])
+
+
   async function clickLogin(ev){
     ev.preventDefault();
     
