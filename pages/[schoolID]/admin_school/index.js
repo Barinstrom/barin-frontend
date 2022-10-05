@@ -550,23 +550,45 @@ export default function Admin({ schoolID }) {
 
 export async function getStaticPaths() {
 
-	const path_a = await get_all_schoolID();
-  // console.log("path_a = ", path_a.data)
-  const aa = path_a.data
-  const all_path = aa.map((e) => {
-		return { params: e }
-	})
-  // console.log(all_path)
+	// const path_a = await get_all_schoolID();
+  // // console.log("path_a = ", path_a.data)
+  // const aa = path_a.data
+  // const all_path = aa.map((e) => {
+	// 	return { params: e }
+	// })
+  // // console.log(all_path)
+	// return {
+	// 	paths: all_path,
+	// 	fallback: false,
+	// };
 	return {
-		paths: all_path,
-		fallback: false,
+		// paths: all_path,
+		paths: [],
+		fallback: true,
 	};
 }
 
 export async function getStaticProps(context) {
-	const schoolID = context.params.schoolID
-	return {
-		props: { schoolID },
-		revalidate: 1,
-	};
+	// const schoolID = context.params.schoolID
+	// return {
+	// 	props: { schoolID },
+	// 	revalidate: 1,
+	// };
+	const schoolID_param = context.params.schoolID
+	const schoolPathAll = await get_all_schoolID();
+	// console.log(schoolID_param)
+	const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
+	if (school_path_data) {
+		let schoolID = school_path_data.schoolID
+		return {
+			props: { schoolID },
+			revalidate: 1,
+		}
+	}
+	else {
+		return {
+			notFound: true,
+			revalidate: 1,
+		}
+	}
 }

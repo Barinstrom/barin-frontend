@@ -80,8 +80,9 @@ export default function Login({ schoolID, urlLogo }) {
       }
 		}
   }
-  
-  return (
+
+  if (schoolID) {
+    return (
     <main className={styles.register}>
 
       <style jsx>{`
@@ -139,36 +140,52 @@ export default function Login({ schoolID, urlLogo }) {
       </section>
     </main>
   )
+  }
+  
+  
 }
 
 export async function getStaticPaths() {
-  const schoolPathAll = await get_all_schoolID();
+  // const schoolPathAll = await get_all_schoolID();
   
-  const schoolPathGenerate = schoolPathAll.data
-  // console.log(schoolPathGenerate)
-  const all_path = schoolPathGenerate.map(e => ({
-      params: e,
-    })
-  )
+  // const schoolPathGenerate = schoolPathAll.data
+  // // console.log(schoolPathGenerate)
+  // const all_path = schoolPathGenerate.map(e => ({
+  //     params: e,
+  //   })
+  // )
   // console.log("all_path =",all_path)
   return {
-		paths: all_path,
-		fallback: false,
+		// paths: all_path,
+    paths: [],
+		fallback: true,
 	};
 }
 
 export async function getStaticProps(context) {
-  const schoolID = context.params.schoolID
+  const schoolID_param = context.params.schoolID
   const schoolPathAll = await get_all_schoolID();
-  const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID);
-  let urlLogo = school_path_data.urlLogo
-  if (!urlLogo) {
-    urlLogo = "https://files.tawanchai.com/pic/spt.png"
+  // console.log(schoolID_param)
+  const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
+  if (school_path_data) {
+    let urlLogo = school_path_data.urlLogo
+    let schoolID = school_path_data.schoolID
+    if (!urlLogo) {
+      urlLogo = "https://files.tawanchai.com/pic/spt.png"
+    }
+    // console.log("urlLogo =", urlLogo)
+    return {
+      props: { schoolID, urlLogo },
+      revalidate: 1,
+    }
   }
-  // console.log("urlLogo =", urlLogo)
-  return {
-    props: { schoolID, urlLogo },
-    revalidate: 1,
-	}
+  else {
+    return {
+      notFound: true,
+      revalidate: 1,
+    }
+  }
+
+  
 }
 
