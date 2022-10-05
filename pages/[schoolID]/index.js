@@ -168,6 +168,7 @@ export async function getStaticProps(context) {
   // console.log("urlLogo =", urlLogo)
   return {
     props: { schoolID, urlLogo },
+    revalidate: 1,
 	}
 }
 
