@@ -64,10 +64,10 @@ export default function Login() {
 						title: 'เข้าสู่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
-            }.then(res => {
+            }).then(res => {
               router.push("/" + "system_admin")
             })
-          )
+          
           
         
         }else if ((result.data.role === "teacher" || result.data.role ===  "student")){

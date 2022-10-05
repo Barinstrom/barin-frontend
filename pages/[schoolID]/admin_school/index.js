@@ -18,7 +18,7 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 
 export default function Admin({ schoolID }) {
-	console.log(schoolID)
+	// console.log(schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -33,6 +33,7 @@ export default function Admin({ schoolID }) {
 	const [countBtn,SetCountBtn] = useState(0)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
 	const [ispaid, setIspaid] = useState("")
+	const [saveEmail, setSaveEmail] = useState("")
 
 	useEffect(() => {
 		if (chooseBtnStart){
@@ -65,7 +66,7 @@ export default function Admin({ schoolID }) {
 				if (result[0][1]){
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
-					
+					const user_email = result[0][0].data.email
 					if (role !== "admin") {
 						setDisplayFirst(false)
 					}
@@ -80,6 +81,7 @@ export default function Admin({ schoolID }) {
 								setData_school(data_tmp)
 								setchooseBtnStart(true)
 								setReadyTime(true)
+								setSaveEmail(user_email)
 							}
 							
 						} else {
@@ -157,7 +159,7 @@ export default function Admin({ schoolID }) {
 
 	let component = null
 	if (countBtn === 0) {
-		component = <SchoolData school_data={data_school} schoolID={schoolID} />
+		component = <SchoolData school_data={data_school} schoolID={schoolID} email={saveEmail} />
 	}else if (!data_school.paymentStatus) {
 		component = <Error statusCode={404} />
 	}else if (countBtn === 1) {

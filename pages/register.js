@@ -61,6 +61,7 @@ export default function Register() {
 				certificate_doc: String(file),
 				password: password,
 				confirmPassword: confirmPassword,
+				tel: tel,
 				role: "admin",
 			};
 			console.log("gogo");

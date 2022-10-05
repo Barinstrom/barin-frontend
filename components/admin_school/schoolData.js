@@ -12,7 +12,7 @@ const stripePromise = loadStripe(
 	"pk_test_51LevDSHCloRRkXJqsQqsWQbkJowAnWVTJ5dUqbk25qSOCcPmGGAgtXcjPEEMKklf8jFduSSalNUu1qM5fpK62WUG00l9MCl6LT"
 );
 
-export default function SchoolData({ school_data, schoolID }) {
+export default function SchoolData({ school_data, schoolID, email }) {
 	const cookie = new Cookies()
 	const token = cookie.get("token")
 	console.log(school_data)
@@ -254,7 +254,7 @@ export default function SchoolData({ school_data, schoolID }) {
 					<div className="stripe_pay">
 						{clientSecret && (
 							<Elements options={options} stripe={stripePromise}>
-								<CheckoutForm schoolID={schoolID} token={token} email={school_data.email} />
+								<CheckoutForm schoolID={schoolID} token={token} email={email} />
 							</Elements>
 						)}
 					</div>
