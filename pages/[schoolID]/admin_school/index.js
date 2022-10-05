@@ -18,7 +18,7 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 
 export default function Admin({ schoolID }) {
-	// console.log(schoolID)
+	console.log(schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
