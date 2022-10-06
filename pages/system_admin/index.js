@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import styles from "../../styles/admin.module.css";
 import Approved from "../../components/system_admin/approved";
 import NotApproved from "../../components/system_admin/notApproved";
@@ -11,7 +10,7 @@ import Reload from '../../components/reload'
 import Error from "next/error";
 
 
-export default function Student({ schoolID }) {
+export default function System({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -144,11 +143,11 @@ export default function Student({ schoolID }) {
 
 	let component = null
 	if (countBtn === 0) {
-		component = <Pending/>
+		component = <Pending  />
 	} else if (countBtn === 1) {
-		component = <Approved/>
+		component = <Approved />
 	} else {
-		component = <NotApproved/>
+		component = <NotApproved />
 	}
 
 	if (displayFirst === "loading") {

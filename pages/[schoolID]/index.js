@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 
 
-export default function Login({ schoolID, urlLogo }) {
+export default function Login({ schoolID, urlLogo, schoolName }) {
   const spin = useRef()
   const email = useRef()
   const password = useRef()
@@ -111,7 +111,7 @@ export default function Login({ schoolID, urlLogo }) {
               <img src={urlLogo}></img>
             </div>
             <div className={styles.barin_strom}>
-              <span>{schoolID}</span>
+              <span>{schoolName}</span>
             </div>
           </div>
         </aside>
@@ -170,12 +170,13 @@ export async function getStaticProps(context) {
   if (school_path_data) {
     let urlLogo = school_path_data.urlLogo
     let schoolID = school_path_data.schoolID
+    let schoolName = school_path_data.schoolName
     if (!urlLogo) {
       urlLogo = "https://files.tawanchai.com/pic/spt.png"
     }
     // console.log("urlLogo =", urlLogo)
     return {
-      props: { schoolID, urlLogo },
+      props: { schoolID, urlLogo, schoolName },
       revalidate: 1,
     }
   }

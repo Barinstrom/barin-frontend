@@ -125,3 +125,26 @@ export async function get_not_approved(data,token) {
 };
 
 
+// check approve submit
+export async function sys_edit_school(token,data) {
+	const apiUrl = stagingUrl + "/edit_school";
+	// console.log(apiUrl)
+	console.log(data)
+	try {
+		const response = await axios({
+			method:"patch",
+			url:apiUrl,
+			headers:{"Content-Type":"application/json","Authorization": `Bearer ${token}`},
+			timeout:10000,
+			data:data
+		})
+		console.log(response)
+		return true
+	} catch(err) {
+		console.log(err);
+		return false;
+	}
+};
+
+
+

@@ -51,7 +51,7 @@ export default function EditClub({schoolID }) {
             .then(result => {
                 console.log(result)
                 
-                if (result[1].data.clubs.length) {
+                if (result[1].data.clubs) {
                     setDisplayError(false)
                     setHaveClubs(true)
                     showData(result[0].data.docs)

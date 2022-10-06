@@ -79,7 +79,7 @@ export default function Register() {
 						title: result,  
 						showConfirmButton:true,
 						confirmButtonColor:"#ce0303"
-				})
+					})
 				}
 				else {
 					Swal.fire({

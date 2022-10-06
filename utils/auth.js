@@ -115,7 +115,7 @@ export async function get_students_inclub(data, token, schoolID) {
 	}
 	
 	const params_success = apiUrl + `?${params}`
-	console.log(params_success)
+	//console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
