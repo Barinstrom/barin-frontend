@@ -47,15 +47,16 @@ export default function TimeConfig({ school_data, schoolID }) {
 		if (timeDateDefault){
 			school_data.schedule.forEach((e) => {
 				if (school_data.nowSchoolYear == e.schoolYear) {
+					console.log(e)
 					const [dateEndOfShoolYear, timeEndOfShoolYear] = e.endOfSchoolYear.split("T")
 					const [dateEndOfRegister, timeEndOfRegister] = e.endOfRegisterDate.split("T")
-					//const [dateRegister, timeRegister] = e.registerDate.split("T")
+					const [dateRegister, timeRegister] = e.registerDate.split("T")
 					
 					
-			schoolYear.current.value = JSON.stringify(e)
+					schoolYear.current.value = JSON.stringify(e)
 					endOfSchoolYear.current.defaultValue = dateEndOfShoolYear
-					registerDate.current.defaultValue = dateEndOfRegister
-					registerTime.current.defaultValue = timeEndOfRegister.substring(0,5)
+					registerDate.current.defaultValue = dateRegister
+					registerTime.current.defaultValue = timeRegister.substring(0,5)
 					endOfRegisterDate.current.defaultValue = dateEndOfRegister
 					endOfRegisterTime.current.defaultValue = timeEndOfRegister.substring(0,5)
 
@@ -92,7 +93,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 		ev.preventDefault();
 
 		const schedule = JSON.parse(ev.target.value);
-
+		console.log(schedule)
 
 		if (schedule.schoolYear == school_data.nowSchoolYear) {
 			alert_now.current.classList.remove("d-none")
@@ -174,11 +175,11 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 		async function set_schedule_async() {
 			console.log("sent_data",sent_data)
-			const result = await set_schedule(sent_data, token, "teststamp")
+			const result = await set_schedule(sent_data, token, schoolID)
 			console.log(result)
 			if (result.data.success) {
 				console.log("success")
-				// window.location.href = "/" + schoolID +"/admin_school"
+				// window.location.replace("/" + schoolID +"/admin_school")
 			}
 		}
 	
@@ -225,11 +226,11 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 		async function set_schedule_async() {
 			
-			const result = await set_schedule(sent_data, token, "teststamp")
+			const result = await set_schedule(sent_data, token, schoolID)
 			// console.log(result)
 			if (result.data.success) {
 				console.log("success")
-				// window.location.href = "/" + schoolID +"/admin_school"
+				// window.location.replace("/" + schoolID + "/admin_school")
 			}
 		}
 		

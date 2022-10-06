@@ -1,20 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import Star from "../../components/test/star";
-// import StarRating from "../../components/test/starrating";
-import {
-  getComments as getCommentsApi,
-  updateComment as updateCommentApi,
-  deleteComment as deleteCommentApi,
-} from "../../components/test/comments/testapi";
+import axios from "axios";
 import Cookies from "universal-cookie";
+import { get_review, post_review } from "../../utils/student/student";
 
 
-export default function Review() {
-  ///* 1.เหลือแก้ให้ starrating reset เพื่อเลือกใหม่ */
-  ///* 2.แก้ Overall ให้ตาม database */
-  ///* 3.แก้ ชื่อ clubname ตรงกับที่เลือก */
-  ///* 4.pagination */
-  ///* 5.linkข้อมูลกับ database */
+
+export default function Review({ item, schoolID }) {
+  const cookies = new Cookies();
+  const token = cookies.get("token");
 
   //Testing เลือก myuserId 1 แบบ
   //@@@@ For Testing
@@ -23,7 +17,6 @@ export default function Review() {
   //สำหรับเช็คidที่ซ้ำกับที่ไม่มี
   const myuserId = "1234";
   //
-
   const [backendComments, setBackendComments] = useState([]);
   const [starRated, setStarRated] = useState(0);
   const own_comment = useRef();
@@ -34,61 +27,39 @@ export default function Review() {
   const btn_confirm = useRef();
   const btn_delete = useRef();
 
+  const clubNameInModal = useRef()
 
-  const cookies = new Cookies();
-	const token = cookies.get("token");
-  async function post_review(data, token, schoolID) {
-    // schoolID = "teststamp"
-    const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-review";
-    // console.log("url =", apiUrl)
-    // console.log(JSON.stringify(data))
-    
-    try {
-      const response = await fetch(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-        method: "POST",
-        body: JSON.stringify(data),
-      })
-      console.log(response)
-      // res200 ok 400 ผิดรูป 401 tokenผิด 404 ผิดmethod/path
-      /* ข้อมูลของ user ที่ return กลับมา */
-      const status = await response.json();
-      //console.log(user_info)
-      
-      if (response.ok) {
-        return status;
-      } else {
-        return false;
-      }
-    } catch(err) {
-      console.log(err.message);
-      return false;
-    }
-  };
-
-
-  function clickModal(ev) {
-
+  function clickModal(item,ev) {
     ev.preventDefault();
     // get api --- paginate
-    getCommentsApi().then((data) => {
-      setBackendComments(data);
-      data.map((e, i) => {
-        if (e.userId == myuserId) {
-          /* set comment value */
-          own_comment.current.value = e.body;
-          own_comment.current.disabled = true;
-          setStarRated(e.star);
-          p_starRating.current.classList.add("d-none");
-          p_Star.current.classList.remove("d-none");
-          btn_review.current.classList.add("d-none");
-          btn_edit.current.classList.remove("d-none");
-          btn_delete.current.classList.remove("d-none");
-        }
-      });
+    // console.log(item.clubName)
+    // console.log(ev.target)
+    // console.log(clubNameInModal)
+    clubNameInModal.current.innerText = item.clubName
+    
+    const body = {
+      schoolYear: 2022,
+      page: 1,
+      clubID : item._id
+    }
+
+    console.log(body)
+    get_review(body,token, schoolID).then((data) => {
+      console.log(data);
+        // setBackendComments(data);
+        // data.map((e, i) => {
+        //   if (e.userId == myuserId) {
+        //     /* set comment value */
+        //     own_comment.current.value = e.body;
+        //     own_comment.current.disabled = true;
+        //     setStarRated(e.star);
+        //     p_starRating.current.classList.add("d-none");
+        //     p_Star.current.classList.remove("d-none");
+        //     btn_review.current.classList.add("d-none");
+        //     btn_edit.current.classList.remove("d-none");
+        //     btn_delete.current.classList.remove("d-none");
+        //   }
+        // });
     });
   }
 
@@ -105,26 +76,23 @@ export default function Review() {
       star: parseInt(rating),
       createdAt: new Date(),
     };
+    //
+    //
     const data = {
-      clubID: "12wewe3",
-      studentID: "55wew5",
-      // textReview: "this is so good"
-
-    }
-    const schoolID = teststamp
-    post_review(data, token, schoolID)
-    console.log("send")
-    //
-    //
-
+      clubID: "dwqdqw",
+      studentID: "weqe123213",
+      textReview: "soo goooooddd",
+    };
+    const schoolID = "teststamp";
+    post_review(data, token, schoolID);
     ev.preventDefault();
-    if (!rating) {
-      alert("please rating");
-      return;
-    } else if (!comment) {
-      alert("please comment");
-      return;
-    }
+    // if (!rating) {
+    //   alert("please rating");
+    //   return;
+    // } else if (!comment) {
+    //   alert("please comment");
+    //   return;
+    // }
     // {
     //   /* api สำหรับ add comment */
     // }
@@ -132,17 +100,17 @@ export default function Review() {
     // {
     //   /* usestage เพิ่มคอมเม้น */
     // }
-    else {
-      localStorage.removeItem("star");
-      setBackendComments((current) => [temp, ...current]);
-      own_comment.current.disabled = true;
-      setStarRated(temp.star);
-      p_starRating.current.classList.add("d-none");
-      p_Star.current.classList.remove("d-none");
-      btn_review.current.classList.add("d-none");
-      btn_edit.current.classList.remove("d-none");
-      btn_delete.current.classList.remove("d-none");
-    }
+    // else {
+    //   localStorage.removeItem("star");
+    //   setBackendComments((current) => [temp, ...current]);
+    //   own_comment.current.disabled = true;
+    //   setStarRated(temp.star);
+    //   p_starRating.current.classList.add("d-none");
+    //   p_Star.current.classList.remove("d-none");
+    //   btn_review.current.classList.add("d-none");
+    //   btn_edit.current.classList.remove("d-none");
+    //   btn_delete.current.classList.remove("d-none");
+    // }
   }
 
   function handleEdit(ev) {
@@ -183,7 +151,7 @@ export default function Review() {
       };
       //
       //
-      updateComment(temp, myuserId);
+      // updateComment(temp, myuserId);
     }
   }
   function handleDelete(ev) {
@@ -204,23 +172,6 @@ export default function Review() {
       btn_delete.current.classList.add("d-none");
     }
   }
-  //อัพเดทเวลาที่ edit
-  const updateComment = (text, currentUserID) => {
-    updateCommentApi(text, currentUserID).then(() => {
-      const updatedBackendComments = backendComments.map((backendComment) => {
-        if (backendComment.userId === currentUserID) {
-          return {
-            ...backendComment,
-            body: text.body,
-            star: text.star,
-            createdAt: text.createdAt,
-          };
-        }
-        return backendComment;
-      });
-      setBackendComments(updatedBackendComments);
-    });
-  };
   //starrating
   function StartRating() {
     const [rating, setRating] = useState(null);
@@ -233,7 +184,7 @@ export default function Review() {
             setRating(ratingValue);
             localStorage.setItem("star", ratingValue);
           }
-  
+
           return (
             <label key={i}>
               <input
@@ -245,9 +196,8 @@ export default function Review() {
               <i
                 className="fa-solid fa-star fa-lg star"
                 style={
-                  (ratingValue) > (hover || rating)
-                    ? 
-                    { color: "#e4e5e9" }
+                  ratingValue > (hover || rating)
+                    ? { color: "#e4e5e9" }
                     : { color: "#ffc107" }
                 }
                 onMouseEnter={() => setHover(ratingValue)}
@@ -256,8 +206,7 @@ export default function Review() {
             </label>
           );
         })}
-  
-  
+
         <style jsx>{`
           .star {
             cursor: pointer;
@@ -269,30 +218,68 @@ export default function Review() {
   }
   return (
     <>
-      <main className="container vh-100 d-flex justify-content-center align-items-center modal-xl">
-        <div className="modal" id="modal">
+        <div className="modal" id={`${item.clubName}`}>
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
-              <div className=" modal-header">
-                <div className="modal-title h2">
-                  <span className="pe-4">
-                    Review Football club
-                    <span className="border border-2 rounded-2  p-1 ms-5 align-items-center">
+              <div className=" modal-header d-flex justify-content-between h2">
+                <div className="modal-title d-flex text-lg">
+                  <div className="d-flex">
+                    <span ref={clubNameInModal}></span>
+                    <div className="border border-1 rounded-2  ms-5 align-items-center">
                       Overall:
                       <Star TotalRating={3} />
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </div>
-                <button className="btn-close" data-bs-dismiss="modal"></button>
+                <div>
+                  <button className="btn-close m-0 " data-bs-dismiss="modal"></button>
+                </div>
               </div>
               <div className=" modal-body">
-                <p className="" ref={p_starRating}>
-                  <span>กรอกคะแนนรีวิว</span>
-                  <span className="m-3">
-                  {StartRating()}
-                  
-                  </span>
-                </p>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div ref={p_starRating}>
+                    <span>กรอกคะแนนรีวิว</span>
+                    <span className="m-3">{StartRating()}</span>
+                  </div>
+                  <div className="d-flex  justify-content-center align-items-center">
+                    <div>ปีการศึกษา</div>
+                    <span>
+                      <div className="dropdown p-3">
+                        <button
+                          className="btn btn-light dropdown-toggle"
+                          type="button"
+                          id="dropdownMenuButton1"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          เลือกปีการศึกษา
+                        </button>
+                        <ul
+                          className="dropdown-menu"
+                          aria-labelledby="dropdownMenuButton1"
+                        >
+                          <li>
+                            <a className="dropdown-item" href="#">
+                              2565
+                            </a>
+                          </li>
+                          <li>
+                            <a className="dropdown-item" href="#">
+                              2564
+                            </a>
+                          </li>
+                          <li>
+                            <a className="dropdown-item" href="#">
+                              2563
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </span>
+                    <span>ครูผู้สอน xxxx</span>
+
+                  </div>
+                </div>
                 <p className="d-none " ref={p_Star}>
                   <span>กรอกคะแนนรีวิว</span>
                   <span className="m-3">
@@ -416,15 +403,15 @@ export default function Review() {
             </div>
           </div>
         </div>
+        
         <button
           className="btn btn-primary"
           data-bs-toggle="modal"
-          data-bs-target="#modal"
-          onClick={(ev) => clickModal(ev)}
+          data-bs-target={`#${item.clubName}`}
+          onClick={(ev) => clickModal(item,ev)}
         >
-          Review
+          รีวิว
         </button>
-      </main>
-    </>
+      </>
   );
 }

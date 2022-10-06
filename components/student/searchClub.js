@@ -89,11 +89,11 @@ export default function EditClub({schoolID }) {
     }
 
     async function applyClub(){
-        console.log(clubName.current.getAttribute("data-clubid"))
+        
         const body = {
             "clubID":clubName.current.getAttribute("data-clubid")
         }
-        
+        console.log(body)
         const result = await register_club(body,token,schoolID)
         
         if (!result){

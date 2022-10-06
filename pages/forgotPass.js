@@ -41,12 +41,12 @@ export default function ForgotPass() {
 
     spin.current.classList.add("d-none");
     
-    //console.log(response)
+    // console.log(response)
     
     if (!response) {
       Swal.fire({
 						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-						title: result,  
+            title: "error",  
 						showConfirmButton:true,
 						confirmButtonColor:"#ce0303",
           })
