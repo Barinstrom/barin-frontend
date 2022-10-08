@@ -11,7 +11,8 @@ import Reload from '../../components/reload'
 import { useRouter } from "next/router";
 
 
-export default function Student({ schoolID }) {
+export default function Teacher({ schoolID }) {
+	console.log("SchoolID = " + schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -26,8 +27,8 @@ export default function Student({ schoolID }) {
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
-
-
+	const [school_id,setSchool_ID] = useState()
+	
 	useEffect(() => {
 		if (chooseBtnStart){
 			optionBtn.current[0].classList.add("nowclick");
@@ -58,11 +59,12 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token,schoolID)])
 			.then(result => {
-				
+				console.log("result = " + result)
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					console.log(result[0][0])
 					const role = result[0][0].data.role
+					console.log("Role = " + role)
 					if (role !== "teacher") {
 						setDisplayFirst(false)
 					}
@@ -76,6 +78,7 @@ export default function Student({ schoolID }) {
 							setData_school(data_tmp)
 							setchooseBtnStart(true)
 							setReadyTime(true)
+							setSchool_ID(schoolID)
 						}
 					}else{
 						setDisplayFirst(false)
@@ -90,16 +93,28 @@ export default function Student({ schoolID }) {
 		})
 	},[])
 
+	useEffect(() => {
+		localStorage.setItem("schoolid",school_id)
+	}, [school_id])
 
-	function changeComponent(num) {
+	useEffect(() => {
+		if(chooseBtnStart && localStorage.getItem("comp") == 1){
+			console.log("useeffect cc")
+			changeComponent()
+			localStorage.setItem("comp",0)
+		}
+	})
+
+	function changeComponent() {
+		const num = localStorage.getItem("comp")
 		if (num == 0) {
 			SetCountBtn(0)
 		} else if (num == 1) {
 			SetCountBtn(1)
 		} 
-		
 		for (let i=0;i<=1;i++){
-			if (i === num){
+			console.log(num)
+			if (i == num){
 				optionBtn.current[i].classList.add("nowclick")
 			}else{
 				optionBtn.current[i].classList.remove("nowclick")
@@ -164,7 +179,17 @@ export default function Student({ schoolID }) {
 
 		router.replace(`/forgotPass`)
 	}
-	
+
+	function goToOwnClub(ev){
+		localStorage.setItem("comp", 0)
+		changeComponent()
+	}
+
+	function goToStdlist(ev){
+		localStorage.setItem("comp", 1)
+		changeComponent()
+	}
+
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
@@ -283,7 +308,7 @@ export default function Student({ schoolID }) {
 						<ul>
 							<li>
 								<div className={`nav_left`} 
-									onClick={(ev) => changeComponent(0)}
+									onClick={(ev) => goToOwnClub(ev)}
 									ref={el => optionBtn.current[0] = el}
 								>
 	
@@ -294,11 +319,11 @@ export default function Student({ schoolID }) {
 	
 							<li>
 								<div className={`nav_left`} 
-									onClick={(ev) => changeComponent(1)}
+									onClick={(ev) => goToStdlist(ev)}
 									ref={el => optionBtn.current[1] = el}
 								>
 									<i className="fa-solid fa-magnifying-glass me-2"></i>
-									<span>รายชื่อนักเรียนม</span>
+									<span>รายชื่อนักเรียน</span>
 								</div>
 							</li>
 	
@@ -350,4 +375,3 @@ export async function getStaticProps(context) {
 		revalidate: 1,
 	};
 }
-
