@@ -83,10 +83,16 @@ export default function EditClub({ school_data,schoolID }) {
         teacherFirstName.current.value = "--------"
         teacherLastName.current.value = "---------"
         get_teachers_inclub(item, token, schoolID).then(result => {
+            
             if (!result){
                 teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
                 teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
-            }else if (result.data.length >= 1) {
+            }
+            else if (!result.data) {
+                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (result.data.length >= 1) {
                 teacherFirstName.current.value = result.data[0].firstname
                 teacherLastName.current.value = result.data[0].lastname
             }else {

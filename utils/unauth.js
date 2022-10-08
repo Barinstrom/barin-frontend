@@ -23,6 +23,7 @@ export async function register(data) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return [true,result]
 	}
 	catch(err){
@@ -51,6 +52,7 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return result
 	}
 	catch(err){

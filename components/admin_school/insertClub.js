@@ -22,13 +22,19 @@ export default function InsertClub({ school_data, schoolID }) {
 		setWating(true)
 		paginationTeacher({"page":1},token,schoolID).then(result => {
 			//console.log(result)
-			if (result.data.docs.length < 1){
-				setWating(false)
-				setAllowRegisterClubTeacher(true)
-			}else{
+			if (!result) {
 				setWating(false)
 				setAllowRegisterClubTeacher(false)
+			} else {
+				if (result.data.docs.length < 1){
+					setWating(false)
+					setAllowRegisterClubTeacher(true)
+				}else{
+					setWating(false)
+					setAllowRegisterClubTeacher(false)
+				}
 			}
+			
 		})
 	}, [])
 	

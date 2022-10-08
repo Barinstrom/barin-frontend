@@ -4,7 +4,6 @@ import { useRouter } from "next/router"
 import Swal from "sweetalert2"
 import { forget_password } from "../utils/unauth"
 import styles from '../styles/index.module.css'
-import Link from "next/link"
 
 // Path = 
 // http://localhost:54321/forgot_password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5lZ29tb3I2NzFAeGl0dWR5LmNvbSIsImlhdCI6MTY2MjEzMjQwMSwiZXhwIjoxNjYyMTMzMzAxfQ.yHBUBpMvOax-_NPPKwUHw3HyWwYtunR7RhxnUNtAbLk
@@ -37,16 +36,16 @@ export default function ForgotPass() {
 
     spin.current.classList.remove("d-none");
 
-    const response = await forget_password(body);
+    const result = await forget_password(body);
 
     spin.current.classList.add("d-none");
     
-    // console.log(response)
+    // console.log(result)
     
-    if (!response) {
+    if (!result) {
       Swal.fire({
-						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-            title: "error",  
+						icon: 'error',
+            title: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",  
 						showConfirmButton:true,
 						confirmButtonColor:"#ce0303",
           })

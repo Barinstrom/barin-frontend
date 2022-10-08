@@ -3,13 +3,15 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { get_approved } from '../../utils/system_admin/system';
+import { get_approved,sys_edit_school } from '../../utils/system_admin/system';
 import Cookies from "universal-cookie";
 import Link from 'next/link';
 import Swal from 'sweetalert2';
+import {useRouter} from 'next/router';
 
 
 export default function Aprroved() {
+	const router = useRouter()
 	const [reloadTable, setReloadTable] = useState(false)
 	const [data, setData] = useState([])
 	const [paginate, setPaginate] = useState([])
@@ -17,10 +19,14 @@ export default function Aprroved() {
 	const search = useRef()
 
 	const schoolName = useRef()
-	const schoolID = useRef()
+	const [schoolID,setSchoolID] = useState()
 	const urlCertificateDocument = useRef()
-	// const urlLogo = useRef()
+	const editUrlCertificateDocument = useRef()
+	const urlLogo = useRef()
 	const headCertificateDocument = useRef()
+
+	const cookies = new Cookies();
+	const token = cookies.get("token");
 
 	useEffect(() => {
 		window.localStorage.removeItem("searchAprroved")
@@ -30,9 +36,6 @@ export default function Aprroved() {
 			"page": 1
 		}
 		window.localStorage.setItem("pageAprroved", 1)
-
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 
 		get_approved(body, token).then(result => {
 			console.log(result)
@@ -62,8 +65,6 @@ export default function Aprroved() {
 		window.localStorage.removeItem("searchAprroved")
 		search.current.value = ""
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_approved({ "page": 1 }, token)
 
 		if (!result) {
@@ -169,11 +170,10 @@ export default function Aprroved() {
 					<table className='table table-sm table-striped align-middle  border '>
 						<thead>
 							<tr>
-								<th style={{ width: "200px" }}>schoolID</th>
-								<th style={{ width: "200px" }}>schoolName</th>
-								<th style={{ width: "200px" }} className="text-center">สวมลอย</th>
-								<th style={{ width: "200px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-								<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>แก้ไขข้อมูล</span></th>
+								<th style={{ width: "100px" }}>schoolID</th>
+								<th style={{ width: "400px" }}>schoolName</th>
+								<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
+								<th style={{ width: "150px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -183,28 +183,29 @@ export default function Aprroved() {
 									<tr key={index}>
 										<td><span>{item.schoolID}</span></td>
 										<td><span>{item.schoolName}</span></td>
+										
 										<td className="text-center">
-											<Link href={{
-												pathname: `/system_admin/${item.schoolID}`,
-											}}>
-											<a className='btn btn-sm btn-secondary'>สวมรอย</a>
-											</Link>
-										</td>
-										<td className="text-end">
 											<span className={`certificate`}
 												onClick={() => getUrlCertificateDocument(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#urlCertificateDocument"
 											>กดเพื่อดู certificate</span>
 										</td>
-										<td className="text-end">
-											<button className='btn btn-sm btn-warning'
+										<td className="d-flex flex-column flex-md-row justify-content-end">
+											<button className='btn btn-sm btn-warning me-1 mt-1 mt-md-0'
 												onClick={() => getDetails(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#approveModal"
 											>
 												แก้ไขข้อมูล
 											</button>
+										{/* </td>
+										<td className="text-center"> */}
+											<Link href={{
+												pathname: `/system_admin/${item.schoolID}`,
+											}}>
+												<a className='btn btn-sm btn-secondary me-1 mt-1 mt-md-0'>สวมรอย</a>
+											</Link>
 										</td>
 									</tr>
 								)
@@ -235,12 +236,45 @@ export default function Aprroved() {
 
 	function getDetails(item) {
 		schoolName.current.value = item.schoolName
-		schoolID.current.value = item.schoolID
+		setSchoolID(item.schoolID)
+		urlLogo.current.src = item.urlLogo
+		editUrlCertificateDocument.current.src = item.urlCertificateDocument
 	}
 
 	function getUrlCertificateDocument(item) {
 		urlCertificateDocument.current.src = item.urlCertificateDocument
 		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
+	}
+
+	function Edit_school(ev) {
+		ev.preventDefault();
+		const body = {
+			schoolID: schoolID,
+			schoolName: schoolName.current.value,
+			urlLogo: urlLogo.current.src,
+			urlCertificateDocument: editUrlCertificateDocument.current.src
+		}
+		sys_edit_school(token,body).then(result => {
+					if (result){
+						Swal.fire({
+							icon: 'success',
+							title: 'ทำการแก้ไขสำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#0047a3"
+					}).then(res => {
+							router.reload()
+					})
+					}else{
+						Swal.fire({
+							icon: 'error',
+							title: 'ทำการแก้ไขไม่สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}
+				})
 	}
 
 	if (displayError) {
@@ -279,20 +313,37 @@ export default function Aprroved() {
 										<label className="form-label">School Name</label>
 										<input type="text" className='form-control' ref={schoolName} />
 									</div>
-									<div className="col-12 mt-2">
-										<label className="form-label">School ID</label>
-										<input type="text" className='form-control' ref={schoolID} />
-									</div>
-									{/* <div className="col-12">
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid d-block' style={{width:"300px"}} ref={urlLogo} />
+										</div>
+										
 										<label className="form-label">UrL Logo</label>
-										<img ref={urlLogo} />
-									</div> */}
+										<input
+											className="form-control"
+											type="file"
+											id="formFile"
+											onChange={(ev) => urlLogoencodeImageFileAsURL(ev)}
+										/>
+									</div> 
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid' style={{width:"100%"}} ref={editUrlCertificateDocument} />
+										</div>
+										
+										<label className="form-label">Url CertificateDocument</label>
+										<input
+											className="form-control" type="file"
+											id="formFile" 
+											onChange={(ev) => editUrlCertificateDocumentencodeImageFileAsURL(ev)}
+										/>
+									</div> 
 
 								</div>
 							</div>
 							<div className='modal-footer'>
+								<button className='btn btn-success' onClick={(ev) => Edit_school(ev)}>แก้ไขข้อมูล</button>
 								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-								{/* <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button> */}
 							</div>
 						</div>
 					</div>

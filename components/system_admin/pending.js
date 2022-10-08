@@ -77,8 +77,6 @@ export default function Pending() {
 		window.localStorage.removeItem("searchPending")
 		search.current.value = ""
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_pending({ "page": 1 }, token)
 
 		if (!result) {
@@ -106,8 +104,6 @@ export default function Pending() {
 			}
 		}
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_pending(body, token)
 
 		if (!result) {
@@ -150,9 +146,6 @@ export default function Pending() {
 		}
 		window.localStorage.setItem("pagePending", page)
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		setReloadTable(true)
 		const result = await get_pending(body, token)
 		setReloadTable(false)
@@ -186,9 +179,8 @@ export default function Pending() {
 						<tr>
 							<th style={{ width: "100px" }}>schoolID</th>
 							<th style={{ width: "300px" }}>schoolName</th>
-							<th style={{ width: "300px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-							<th style={{ width: "300px" }} className="text-center text-md-end border"><span className='me-2 me-md-2'>แก้ไขข้อมูล</span></th>
-							<th style={{ width: "300px" }} className="text-center text-md-end"><span className='me-0 me-md-3'>check and approve</span></th>
+							<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
+							<th style={{ width: "200px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -198,33 +190,29 @@ export default function Pending() {
 								<tr key={index}>
 									<td><span>{item.schoolID}</span></td>
 									<td><span>{item.schoolName}</span></td>
-									<td className="text-end">
+									<td className="text-center">
 										<span className={`certificate`}
 											onClick={() => getUrlCertificateDocument(item)}
 											data-bs-toggle="modal"
 											data-bs-target="#urlCertificateDocument"
 										>กดเพื่อดู certificate</span>
 									</td>
-									<td className="text-end">
-										<button className="btn btn-sm btn-warning me-md-1"
+									<td className="d-flex flex-column flex-lg-row justify-content-end">
+										<button className="btn btn-sm btn-warning me-1 mt-1 mt-md-0"
 											onClick={() => getDetails(item)}
 											data-bs-toggle="modal"
 											data-bs-target="#approveModal"
 										>แก้ไขข้อมูล</button>
-									</td>
-									<td className="text-end">
-										<div className='d-flex flex-column flex-md-row justify-content-end '>
-											<button className='btn btn-sm btn-success me-md-1'
-												onClick={() => approveSchool(item)}
-											>
-												approve
-											</button>
-											<button className='btn btn-sm btn-danger mt-1 mt-md-0 ms-md-1'
-												onClick={() => notApproveSchool(item)}
-											>
-												not approve
-											</button>
-										</div>
+										<button className='btn btn-sm btn-success me-1 mt-1 mt-md-0'
+											onClick={() => approveSchool(item)}
+										>
+											approve
+										</button>
+										<button className='btn btn-sm btn-danger me-1 mt-1 mt-md-0'
+											onClick={() => notApproveSchool(item)}
+										>
+											not approve
+										</button>
 									</td>
 								</tr>
 							)
@@ -361,29 +349,29 @@ export default function Pending() {
 			urlCertificateDocument: editUrlCertificateDocument.current.src
 		}
 		sys_edit_school(token,body).then(result => {
-					if (result){
-						Swal.fire({
-							icon: 'success',
-							title: 'ทำการแก้ไขสำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#0047a3"
-					}).then(res => {
-							router.reload()
-					})
-					}else{
-						Swal.fire({
-							icon: 'error',
-							title: 'ทำการแก้ไขไม่สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
-							router.reload()
-					})
-					}
+			if (result){
+				Swal.fire({
+					icon: 'success',
+					title: 'ทำการแก้ไขสำเร็จ',  
+					showConfirmButton:true,
+					confirmButtonColor:"#0047a3"
+				}).then(res => {
+						router.reload()
 				})
+			}else{
+				Swal.fire({
+					icon: 'error',
+					title: 'ทำการแก้ไขไม่สำเร็จ',  
+					showConfirmButton:true,
+					confirmButtonColor:"#00a30b"
+				}).then(res => {
+					router.reload()
+				})
+			}
+		})
 	}
 
-    const reload = (
+  const reload = (
 		<main style={{ height: "400px" }}>
 			<div className="d-flex justify-content-center h-100 align-items-center">
 				<div className="fs-4">loading ...</div>

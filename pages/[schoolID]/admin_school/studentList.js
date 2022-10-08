@@ -44,14 +44,14 @@ export default function StudentList({schoolID}) {
       }
       Promise.all([get_name_clubs(token, schoolID), get_students_inclub(body, token, schoolID)])
         .then(result => {
-          console.log(result)
+          console.log(result[0])
           generateDropdown(result[0].data)
           //console.log(result[1])
       
           if (!result[1]) {
             setDisplayError(true)
             setLoading(false)
-          } else {
+          }else {
             const paginate_tmp = generate(result[1].data)
             setDisplayError(false)
             showData(result[1].data.docs)
@@ -97,11 +97,11 @@ export default function StudentList({schoolID}) {
 
   function generateDropdown(clubs){
     const tmp = (
-      <div>
+      <>
         {clubs.map((e,i) => {
           return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
         })}
-      </div>
+      </>
     )
     setDropdown(tmp)
   }

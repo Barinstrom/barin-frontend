@@ -3,7 +3,8 @@ import styles from '../../styles/index_school.module.css'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef,useEffect } from 'react';
-import { checkLogin,get_all_schoolID } from "../../utils/unauth";
+import { checkLogin, get_all_schoolID } from "../../utils/unauth";
+import { get_data } from '../../utils/auth';
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 
@@ -45,7 +46,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       
       spin.current.classList.add("d-none");
       
-      //console.log(result)
+      // console.log("login check",result,check_data)
       if (!result) {
         Swal.fire({
 						icon: 'error',
@@ -54,29 +55,58 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
 						confirmButtonColor:"#ce0303"
 				})
         return
-      }else {
-        if (result.data.role === "teacher" || result.data.role ===  "student"){
-          const cookie = new Cookies()
-		      cookie.set("token",result.data.token)
+      }
+      else {
+        const check_data = await get_data(result.data.token);
+        if (!check_data[1]) {
           Swal.fire({
-						icon: 'success',
-						title: 'เข้าสู่ระบบสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-					}
-        )
-        router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
-      
-        }else if((result.data.role ===  "admin" || result.data.role ===  "host")){
-          console.log("test1")
-          Swal.fire({
-            icon: 'warning',
-            title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง', 
-            showConfirmButton:true,
-            confirmButtonColor:"#e3c21c"
+              icon: 'error',
+              title: 'ไม่พบข้อมูล กรุณาลองเข้าใหม่อีกครั้ง',
+              showConfirmButton:true,
+              confirmButtonColor:"#ce0303"
           })
-          router.push("/")
+          return
         }
+        else {
+          if (check_data[0].data._doc.paymentStatus != "success" || check_data[0].data._doc.status != "approve") {
+            // console.log(check_data[0].data._doc)
+            //check_data[0].data._doc.paymentStatus!="success" || check_data[0].data._doc.status!="approve"
+            Swal.fire({
+              icon: 'error',
+              title: 'โรงเรียนยังไม่เปิดใช้งาน',
+              showConfirmButton:true,
+              confirmButtonColor:"#ce0303"
+          })
+          return
+          } else {
+            if (result.data.role === "teacher" || result.data.role === "student") {
+              const cookie = new Cookies()
+              cookie.set("token", result.data.token)
+              Swal.fire({
+                icon: 'success',
+                title: 'เข้าสู่ระบบสำเร็จ',
+                showConfirmButton: true,
+                confirmButtonColor: "#009431"
+              }).then(() => {
+                router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
+              })
+          
+        
+            } else if ((result.data.role === "admin" || result.data.role === "host")) {
+              console.log("test1")
+              Swal.fire({
+                icon: 'warning',
+                title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง' + '\n' + 'กำลังนำท่านสูงเส้นทางที่ถูกต้อง',
+                showConfirmButton: true,
+                confirmButtonColor: "#e3c21c"
+              }).then(() => {
+                router.push("/")
+              })
+            
+            }
+          }
+        }
+        
       }
 		}
   }
@@ -146,18 +176,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
 }
 
 export async function getStaticPaths() {
-  // const schoolPathAll = await get_all_schoolID();
-  
-  // const schoolPathGenerate = schoolPathAll.data
-  // // console.log(schoolPathGenerate)
-  // const all_path = schoolPathGenerate.map(e => ({
-  //     params: e,
-  //   })
-  // )
-  // console.log("all_path =",all_path)
   return {
-		// paths: all_path,
-    paths: [],
+		paths: [],
 		fallback: true,
 	};
 }
@@ -165,16 +185,17 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const schoolID_param = context.params.schoolID
   const schoolPathAll = await get_all_schoolID();
-  // console.log(schoolID_param)
   const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
+  
   if (school_path_data) {
     let urlLogo = school_path_data.urlLogo
     let schoolID = school_path_data.schoolID
     let schoolName = school_path_data.schoolName
+    
     if (!urlLogo) {
       urlLogo = "https://files.tawanchai.com/pic/spt.png"
     }
-    // console.log("urlLogo =", urlLogo)
+    
     return {
       props: { schoolID, urlLogo, schoolName },
       revalidate: 1,
@@ -186,7 +207,5 @@ export async function getStaticProps(context) {
       revalidate: 1,
     }
   }
-
-  
 }
 

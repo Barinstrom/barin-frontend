@@ -1,219 +1,262 @@
 import React, {useState, useRef, useEffect} from "react";
-import FileBase64 from 'react-file-base64';
-import StudentList from "../../components/test/studentList";
-import Link from "next/link";
-import Reload from "../reload";
 import { get_teacher_ownclubs } from "../../utils/teacher/teacher_getdata";
+import { update_club } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
+import { useRouter } from "next/router";
+
 
 export default function OwnClub({schoolID}) {
+	const clubName = useRef()
+	const clubInfo = useRef()
+	const clubLimit = useRef()
+	const scheduleStart = useRef()
+	const scheduleEnd = useRef()
+	const groupID = useRef()
+	const category = useRef()
+	const router = useRouter()
+	
+	const [clubImg, setClubImg] = useState("")
+	const [clubId, setClubId] = useState("")
+  
 	const [data, setData] = useState([])
-    const [clubname, setClubName] = useState("")
 	const [loading,setLoading] = useState(true)
-    const [clubdes, setClubDes] = useState("")
-    const [clubsch, setClubSch] = useState("")
-    const [clubimg, setClubImg] = useState("")
-    const [clublimit, setClubLimit] = useState("")
-    const [clubid, setClubId] = useState("")
-    const uploadImg = useRef();
-    const [stdlist, setStdList] = useState(0)
+	const [displayError, setDisplayError] = useState(false)
+	
+	const cookies = new Cookies()
+	const token = cookies.get("token")
 
 	useEffect(() => {
 		setLoading(true)
-		const cookie = new Cookies()
-		const token = cookie.get("token")
-		
 		get_teacher_ownclubs(token,schoolID).then(result => {
-			console.log(result)
-			setData(result.data.clubs)
-			setLoading(false)
-		})
-	}, [])
+			//console.log(result)
 
-    function encodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
+			const clubs = result.data.clubs
+			if (clubs){
+				setData(result.data.clubs)
+				setDisplayError(false)
+				setLoading(false)
+			}else{
+				setDisplayError(true)
+				setLoading(false)
+			}
+		})
+	},[])
+
+  function encodeImageFileAsURL(ev) {
+		let file = ev.target.files[0];
+		let reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = function () {
-			//console.log("RESULT", reader.result);
 			setClubImg(reader.result);
 		};
 	}
 
-    function clickModal(ev){
-        ev.preventDefault()
-        console.log(ev)
-        const club = JSON.parse(ev.target.getAttribute("data-bs-info"))
-        console.log(club)
-        setClubName(club.clubName)
-        setClubDes(club.clubInfo)
-        setClubSch(club.schedule)
-        // setClubImg(club.img)
-        setClubLimit(club.limit)
-        setClubId(club._id)
-    }
-
-    function Edit(){
-        const submit = document.getElementById("submitbtn")
-        const name_in = document.getElementById("club_name")
-        const des_in = document.getElementById("club_des")
-        const sch_in = document.getElementById("club_sch")
-        const limit_in = document.getElementById("club_limit")
-        const img_in = document.getElementById("club_img")
-        submit.removeAttribute("hidden")
-        name_in.removeAttribute("disabled")
-        des_in.removeAttribute("disabled")
-        img_in.removeAttribute("disabled")
-        sch_in.removeAttribute("disabled")
-        limit_in.removeAttribute("disabled")
-    }    
-
-    function Submit(){
-        const submit = document.getElementById("submitbtn")
-        const name_in = document.getElementById("club_name")
-        const des_in = document.getElementById("club_des")
-        const sch_in = document.getElementById("club_sch")
-        const limit_in = document.getElementById("club_limit")
-        const img_in = document.getElementById("club_img")
-        name_in.setAttribute("disabled",1)
-        des_in.setAttribute("disabled",1)
-        img_in.setAttribute("disabled",1)
-        sch_in.setAttribute("disabled",1)
-        limit_in.setAttribute("disabled",1)
-        submit.setAttribute("hidden", 1)
-
-        const body = {
-            name: clubname,
-            des: clubdes, 
-            sch: clubsch, 
-            img: clubimg, 
-            limit: clublimit,
-        }
-        console.log(body) 
-    }
-
-    function closeInfo(){
-        console.log("close")
-        const submit = document.getElementById("submitbtn")
-        const name_in = document.getElementById("club_name")
-        const des_in = document.getElementById("club_des")
-        const sch_in = document.getElementById("club_sch")
-        const img_in = document.getElementById("club_img")
-        const limit_in = document.getElementById("club_limit")
-        name_in.setAttribute("disabled",1)
-        des_in.setAttribute("disabled",1)
-        sch_in.setAttribute("disabled",1)
-        limit_in.setAttribute("disabled",1)
-        img_in.setAttribute("disabled",1)
-        submit.setAttribute("hidden", 1)
-        uploadImg.current.value = "";
-		setClubImg("https://dummyimage.com/300x300");
-    }
-
-    function goToStudentList(ev){
-		console.log("gotostdlist")
-		const button = ev.target
-		const club = JSON.parse(button.getAttribute("data-bs-info"))
+  	function clickModal(club){
 		console.log(club)
-        localStorage.setItem("comp", 1)
-        //console.log(localStorage.getItem("comp"))
-        setStdList(1)
-        localStorage.setItem("fromClubID", club._id)
-		localStorage.setItem("fromClubName", club.clubName)
-    }
+
+		clubName.current.value = club.clubName
+		clubInfo.current.value = club.clubInfo
+		category.current.value = club.category
+		groupID.current.value = club.groupID
+		
+		let [ schedule ] = club.schedule // [ "17.02.00-18.02.00"]
+		let [ startTime ,endTime ] = schedule.split("-")
+		scheduleStart.current.value = startTime
+		scheduleEnd.current.value = endTime
+
+		clubLimit.current.value = club.limit
+
+		if (club.clubImage){
+			setClubImg(clubImage)
+		}else{
+			setClubImg("https://dummyimage.com/300x300")
+		}
+    
+		setClubId(club._id)
+  	}
+
+    	function Submit(){
+			const body_update = {
+				clubID: clubId,
+				clubName:clubName.current.value,
+				clubInfo:clubInfo.current.value ,
+				category:category.current.value ,
+				limit: clubLimit.current.value,
+				groupID: groupID.current.value,
+				schedule: [String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
+				// urlPicture:
+			}
+
+			Swal.fire({
+				title: 'คุณต้องการแก้ไขข้อมูลชุมนุมใช่หรือไม่',
+				showConfirmButton: true,
+				confirmButtonColor: "#0047a3",
+				confirmButtonText: 'ใช่',
+
+				showCancelButton: true,
+				cancelButtonText: "ยกเลิก",
+				cancelButtonColor: "#d93333",
+			}).then((res) => {
+				console.log(res)
+				if (res.isDismissed){
+					return
+				}else{
+					update_club(body_update, token, schoolID).then(result => {
+						//console.log(result)
+						if (!result || !result.data.success) {
+							Swal.fire({
+								icon: 'error',
+								title: 'เกิดข้อผิดพลาด กรุณาลองเข้าใหม่อีกครั้ง',
+								showConfirmButton:true,
+								confirmButtonColor:"#ce0303"
+							})
+							return
+						}else if(result.data.success){
+							Swal.fire({
+							icon: 'success',
+							title: 'แก้ไขสำเร็จ',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431"
+							}).then(() => {
+								//window.location.reload();
+								get_teacher_ownclubs(token,schoolID).then(result => {
+									//console.log(result)
+						
+									const clubs = result.data.clubs
+									if (clubs){
+										setData(result.data.clubs)
+										setDisplayError(false)
+										setLoading(false)
+									}else{
+										setDisplayError(true)
+										setLoading(false)
+									}
+								})
+							})
+						}
+					})
+				}
+			})
+		}
+
+    function displayStudentList(e){
+		//console.log(e)
+		window.localStorage.setItem("clubNameFromClick",e.clubName)
+		window.localStorage.setItem("clubidFromClick",e._id)
+		window.localStorage.setItem("displayComponent",1)
+		window.location.href = `/${schoolID}/teacher`
+	}
+	
 	if(loading){
 		return (
-			<main id="main">
-				<div className="text-center fs-1">OwnClub</div>
-				<table className="table table-hover table-bordered table-striped text-center">
-					<thead className="table-dark">
-						<tr>
-							<th style={{width: "60%"}}>ชื่อชุมนุม</th>
-							<th>รายชื่อนักเรียน</th>
-							<th>ข้อมูลต่างๆ</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr><td colSpan={3}><Reload/></td></tr>
-					</tbody>
-				</table>
-			</main>
+			<div className="border d-flex justify-content-center align-items-center" style={{minHeight:"600px"}}>
+				<div className="fs-4">loading ...</div>
+				<div className="spinner-border ms-3"></div>
+			</div>
+		)
+	}else if (displayError){
+		return (
+			<div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
 		)
 	}else{
 		return (
-			<main id="main">
+			<main>
 				<div className="text-center fs-1">OwnClub</div>
-				<table className="table table-hover table-bordered table-striped text-center">
-					<thead className="table-dark">
-						<tr>
-							<th style={{width: "60%"}}>ชื่อชุมนุม</th>
-							<th>รายชื่อนักเรียน</th>
-							<th>ข้อมูลต่างๆ</th>
-						</tr>
-					</thead>
-					<tbody>
-						{data.map((e, i) => {
-							return (
-								<tr key={i}>
-									<td>{e.clubName}</td>
-									<td><a className="btn btn-info" onClick={(ev) => goToStudentList(ev)} data-bs-info={JSON.stringify(e)} href={"/" + localStorage.getItem("schoolid") + "/teacher"}>ข้อมูลนักเรียน</a></td>
-									<td>
-										<button className="btn btn-info" data-bs-info={JSON.stringify(e)} data-bs-toggle="modal" data-bs-target="#modal" onClick={(ev) => clickModal(ev)}>
-											รายละเอียด
-										</button>
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-				<div className="modal" id="modal">
+				<div className="table-responsive">
+					<table className="table align-middle">
+						<thead>
+							<tr>
+								<th style={{width: "60%"}}>ชื่อชุมนุม</th>
+								<th style={{width: "20%"}} className="text-center">รายชื่อนักเรียน</th>
+								<th style={{width: "20%"}} className="text-center">รายละเอียดชุมนุม</th>
+							</tr>
+						</thead>
+						<tbody>
+							{data.map((e, i) => {
+								return (
+									<tr key={i}>
+										<td>{e.clubName}</td>
+										<td className="text-center">
+											<button className="btn btn-sm btn-success" 
+												onClick={(ev) => displayStudentList(e,ev)}>
+												ดูรายชื่อ
+											</button>
+										</td>
+										<td className="text-center">
+											<span>
+												<button className="btn btn-sm btn-info" 
+													
+													data-bs-toggle="modal" 
+													data-bs-target="#modalOwnClubTeacher" 
+													onClick={(ev) => clickModal(e,ev)}>
+													รายละเอียด
+												</button>
+											</span>
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				</div>
+				
+				
+				<div className="modal" id="modalOwnClubTeacher">
 					<div className="modal-dialog">
 						<div className="modal-content">
-							{/* Modal Header */}
+							
 							<div className="modal-header">
-								<div className="modal-title h1">Club Info</div>
-								<button className="btn btn-warning mx-1" onClick={() => Edit()}>Edit</button>
+								<div className="modal-title fs-3">Club Info</div>
+								<button className="btn-close" data-bs-dismiss="modal"></button>
 							</div>
-							{/* Modal Body */}
-							<div className="modal-body d-flex flex-column justify-content-center">
-								<div className="d-flex">
-									{/* Club Name */}
-									<div className="form-group mx-4 my-2" style={{minWidth: "60%"}}>
-										<label>Club Name:</label>
-										<input type="text" className="form-control" id="club_name" value={clubname} onChange={(ev)=>{setClubName(ev.target.value)}} disabled></input>
+							
+							<div className="modal-body">
+								<div className="row">
+									<div className="col-12">
+										<label className="form-label">Club Name:</label>
+										<input type="text" className="form-control" ref={clubName}></input>
 									</div>
-									{/* Club Scheduler */}
-									<div className="form-group mr-4 my-2" style={{width: "25%"}}>
-										<label>Scheduler:</label>
-										<input type="text" className="form-control" id="club_sch" value={clubsch} onChange={(ev)=>{setClubSch(ev.target.value)}} disabled></input>
+									
+									<div className="col-sm-6">
+									<label className="form-label">เวลาเริ่ม</label>
+                                    <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
 									</div>
-								</div>
-								{/* Club Description */}
-								<div className="form-group mx-4 my-2" >
-									<label>Description:</label>
-									<textarea cols={5} row={5} className="form-control" id="club_des" value={clubdes} onChange={(ev)=>{setClubDes(ev.target.value)}} disabled></textarea>
-								</div>
-								{/* Club Picture */}
-								<div className="form-group mx-4 my-2" disabled>
-									<label>Picture:</label>
-									<img src={clubimg} className="form-control mt-2"></img>
-									<br></br>
-									<input className="form-control" type="file" id="club_img" onChange={(ev) => encodeImageFileAsURL(ev)} ref={uploadImg} disabled/>
-								</div>
-								{/* Club Limit */}
-								<div className="form-group mx-4 my-2" style={{width: "25%"}}>
-									<label>Limit:</label>
-									<input type="text" className="form-control" id="club_limit" value={clublimit} onChange={(ev)=>{setClubLimit(ev.target.value)}} disabled></input>
+									<div className="col-sm-6">
+										<label className="form-label">เวลาจบ</label>
+																			<input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
+									</div>
+
+									<div className="col-12">
+										<label className="form-label">รหัสวิชา</label>
+										<input type="text" className="form-control" ref={groupID}/>
+									</div>
+                                
+									<div className="col-12">
+										<label className="form-label">category</label>
+										<input type="text" className='form-control' ref={category}/>
+									</div>
+									
+									<div className="col-12 mt-2">
+										<label className="form-label">Description:</label>
+										<textarea cols={5} row={5} className="form-control" ref={clubInfo}></textarea>
+									</div>
+									
+									<div className="col-12 mt-2">
+										<label className="form-label">Picture:</label>
+										<img src={clubImg} className="form-control" />
+										<input className="form-control mt-2" type="file" onChange={(ev) => encodeImageFileAsURL(ev)}/>
+									</div>
+									
+									<div className="col-12 mt-2">
+										<label className="form-label">Limit:</label>
+										<input type="text" className="form-control" ref={clubLimit}></input>
+									</div>
 								</div>
 							</div>
+							
 							<div className="modal-footer">
-								<div className="btn-group" role={"group"}>
-									<button className="btn btn-success" id="submitbtn" hidden={1} onClick={() => Submit()}>Submit</button>
-									<button className="btn btn-danger" data-bs-dismiss="modal" onClick={() => closeInfo()}>Close</button>
-									{/* <a className="btn btn-info" onClick={(ev) => goToStudentList(ev)} href={"/" + localStorage.getItem("schoolid") + "/teacher"}>ข้อมูลนักเรียน</a> */}
-								</div>
+								<button className="btn btn-success" id="submitbtn"  onClick={() => Submit()}>Submit</button>
 							</div>
 						</div>
 					</div>

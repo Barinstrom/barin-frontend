@@ -34,7 +34,7 @@ export default function Student({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0][0])
+				// console.log(result[0][0])
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
@@ -363,16 +363,9 @@ export default function Student({ schoolID }) {
 }
 
 export async function getStaticPaths() {
-  const schoolPathAll = await get_all_schoolID();
-  
-  const schoolPathGenerate = schoolPathAll.data
-  const all_path = schoolPathGenerate.map((e) => {
-		return { params: e }
-	})
-  
-  return {
-		paths: all_path,
-		fallback: false,
+  	return {
+		paths: [],
+		fallback: true,
 	};
 }
 

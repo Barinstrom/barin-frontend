@@ -24,6 +24,7 @@ export async function get_data(token) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return [result,true]
 	} catch (err) {
 		return [err,false]
@@ -65,6 +66,7 @@ export async function get_school(token,schoolID) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return result
 	} catch (err) {
 		console.log(err)
@@ -123,12 +125,11 @@ export async function get_students_inclub(data, token, schoolID) {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			method: "get",
 			timeout: 10000
 		})
 		return result
 	} catch (err) {
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

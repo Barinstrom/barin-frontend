@@ -67,7 +67,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 		ev.preventDefault()
 		const form = new FormData(ev.target)
 		const formSuccess = Object.fromEntries(form.entries())
-		console.log(formSuccess)
+		//console.log(formSuccess)
 		
 		if (!formSuccess.firstname || !formSuccess.lastname || !formSuccess.email || !formSuccess.tel){
 			Swal.fire({

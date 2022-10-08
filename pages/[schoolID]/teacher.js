@@ -1,45 +1,78 @@
 import React, { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import { useRouter } from "next/router";
+import { get_data } from "../../utils/auth";
+import Cookies from "universal-cookie"
 import styles from "../../styles/admin.module.css"
 import OwnClub from "../../components/teacher/ownClub"
 import StdList from "../../components/teacher/stdList"
-import Cookies from "universal-cookie"
-import { get_data } from "../../utils/auth";
-import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 import Reload from '../../components/reload'
-import { useRouter } from "next/router";
-
 
 export default function Teacher({ schoolID }) {
-	console.log("SchoolID = " + schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
 	const hamberger = useRef()
 	const dropdown = useRef()
 	const router = useRouter()
-	/* ตัวแปรเก็บค่า timer */
 	let timer;
 	
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [data_school,setData_school] = useState()
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
-	const [chooseBtnStart,setchooseBtnStart] = useState(false)
-	const [school_id,setSchool_ID] = useState()
-	
+	const [chooseBtnStart,setchooseBtnStart] = useState(
+		{
+			componentReady:0,
+			checkStatus:false
+		}
+	)
+	const [checkReadyComponent,setCheckReadyComponent] = useState(false)
+
 	useEffect(() => {
-		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
-			if (!data_school.paymentStatus) {
-				for (let i = 0; i < 2; i++) {
-					optionBtn.current[i].hidden = true
-				}
-			} 
+		if (chooseBtnStart.checkStatus){
+			console.log(chooseBtnStart)
+			
+			optionBtn.current[chooseBtnStart.componentReady].classList.add("nowclick");
+			SetCountBtn(chooseBtnStart.componentReady)
 		}
 	},[chooseBtnStart])
+	
+	useEffect(() => {
+		if (checkReadyComponent){
+			const component = window.localStorage.getItem("displayComponent")
+			console.log("compoent =",component)
+			if (!component){
+				setchooseBtnStart({
+					componentReady:0,
+					checkStatus:true
+				})
+			}else{
+				setchooseBtnStart({
+					componentReady:parseInt(component),
+					checkStatus:true
+				})
+			}
+		}
+	}, [checkReadyComponent])
 
+	function changeComponent(num) {
+		if (num == 0) {
+			SetCountBtn(0)
+		} else if (num == 1) {
+			SetCountBtn(1)
+		} 
+		for (let i=0;i<=1;i++){
+			if (i == num){
+				optionBtn.current[i].classList.add("nowclick")
+			}else{
+				optionBtn.current[i].classList.remove("nowclick")
+			}
+		}
+		nav.current.classList.remove("active");
+		hamberger.current.classList.remove("hamactive");
+	}
+	
 	useEffect(() => {
 		if (readyTime){
 			controllTime("start");
@@ -57,72 +90,43 @@ export default function Teacher({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token,schoolID)])
-			.then(result => {
-				console.log("result = " + result)
-				if (result[0][1]) {
-					const data_tmp = result[0][0].data._doc
-					console.log(result[0][0])
-					const role = result[0][0].data.role
-					console.log("Role = " + role)
-					if (role !== "teacher") {
-						setDisplayFirst(false)
-					}
+		if (schoolID) {
+			Promise.all([get_data(token, schoolID)])
+				.then(result => {
+					//console.log(result[0][0])
+					//console.log(result[0][1])
+				
+					if (result[0][1]) {
+						const data_tmp = result[0][0].data._doc
+						const role = result[0][0].data.role
 					
-					else if (data_tmp) {
-						if (data_tmp.schoolID != schoolID) {
+						if (role !== "teacher") {
 							setDisplayFirst(false)
 						}
-						else {
-							setDisplayFirst(true)
-							setData_school(data_tmp)
-							setchooseBtnStart(true)
-							setReadyTime(true)
-							setSchool_ID(schoolID)
+					
+						else if (data_tmp) {
+							if (data_tmp.schoolID != schoolID) {
+								setDisplayFirst(false)
+							}
+							else {
+								setDisplayFirst(true)
+								setData_school(data_tmp)
+								setReadyTime(true)
+								//setSchool_ID(schoolID)
+								setCheckReadyComponent(true)
+							}
+						} else {
+							setDisplayFirst(false)
 						}
-					}else{
-						setDisplayFirst(false)
 					}
-				}
-				else {
-					if (result[0][0].response.status === 401) {
-						setDisplayFirst(false)
+					else {
+						if (result[0][0].response.status === 401) {
+							setDisplayFirst(false)
+						}
 					}
-				}
-				
-		})
-	},[])
-
-	useEffect(() => {
-		localStorage.setItem("schoolid",school_id)
-	}, [school_id])
-
-	useEffect(() => {
-		if(chooseBtnStart && localStorage.getItem("comp") == 1){
-			console.log("useeffect cc")
-			changeComponent()
-			localStorage.setItem("comp",0)
+				})
 		}
-	})
-
-	function changeComponent() {
-		const num = localStorage.getItem("comp")
-		if (num == 0) {
-			SetCountBtn(0)
-		} else if (num == 1) {
-			SetCountBtn(1)
-		} 
-		for (let i=0;i<=1;i++){
-			console.log(num)
-			if (i == num){
-				optionBtn.current[i].classList.add("nowclick")
-			}else{
-				optionBtn.current[i].classList.remove("nowclick")
-			}
-		}
-		nav.current.classList.remove("active");
-		hamberger.current.classList.remove("hamactive");
-	}
+	},[schoolID])
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
@@ -136,19 +140,6 @@ export default function Teacher({ schoolID }) {
 		} else {
 			clearInterval(timer);
 		}
-	}
-
-	let component = null
-	if (!data_school) {
-		component = <Error statusCode={404} />
-	}
-	else if (!data_school.paymentStatus) {
-		component = <Error statusCode={404} />
-	}
-	else if (countBtn === 0){
-		component = <OwnClub school_data={data_school} schoolID={schoolID} />
-	}else if (countBtn === 1){
-		component = <StdList school_data={data_school} schoolID={schoolID} />
 	}
 
 	/* แสดง dropdown */
@@ -166,7 +157,6 @@ export default function Teacher({ schoolID }) {
 
 	function logOut() {
 		const cookies = new Cookies();
-		//console.log(cookies.get("token"))
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
@@ -180,20 +170,17 @@ export default function Teacher({ schoolID }) {
 		router.replace(`/forgotPass`)
 	}
 
-	function goToOwnClub(ev){
-		localStorage.setItem("comp", 0)
-		changeComponent()
-	}
-
-	function goToStdlist(ev){
-		localStorage.setItem("comp", 1)
-		changeComponent()
-	}
-
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
+
+	let component = null
+	if (countBtn === 0){
+		component = <OwnClub school_data={data_school} schoolID={schoolID} />
+	}else if (countBtn === 1){
+		component = <StdList school_data={data_school} schoolID={schoolID} />
+	}
 
 	const teacher_page =  (
 			<>
@@ -308,7 +295,7 @@ export default function Teacher({ schoolID }) {
 						<ul>
 							<li>
 								<div className={`nav_left`} 
-									onClick={(ev) => goToOwnClub(ev)}
+									onClick={(ev) => changeComponent(0)}
 									ref={el => optionBtn.current[0] = el}
 								>
 	
@@ -319,7 +306,7 @@ export default function Teacher({ schoolID }) {
 	
 							<li>
 								<div className={`nav_left`} 
-									onClick={(ev) => goToStdlist(ev)}
+									onClick={(ev) => changeComponent(1)}
 									ref={el => optionBtn.current[1] = el}
 								>
 									<i className="fa-solid fa-magnifying-glass me-2"></i>
@@ -341,9 +328,8 @@ export default function Teacher({ schoolID }) {
 			</>
 		)
 	
-	console.log("re-render")
-
-	if (displayFirst === "loading") { 
+	
+if (displayFirst === "loading") { 
 		return <Reload />
 	}
 	else if (displayFirst) {
@@ -355,16 +341,9 @@ export default function Teacher({ schoolID }) {
 }
 
 export async function getStaticPaths() {
-  const schoolPathAll = await get_all_schoolID();
-  
-  const schoolPathGenerate = schoolPathAll.data
-  const all_path = schoolPathGenerate.map((e) => {
-		return { params: e }
-	})
-  
-  return {
-		paths: all_path,
-		fallback: false,
+	return {
+		paths: [],
+		fallback: true,
 	};
 }
 

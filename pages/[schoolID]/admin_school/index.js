@@ -60,44 +60,35 @@ export default function Admin({ schoolID }) {
 
 		Promise.all([get_data(token)])
 			.then(result => {
-				console.log(result[0][0])
-				//console.log(result[0][1])
-				if (!schoolID) {
-					
-				}
-				else {
-					if (result[0][1]){
-						const data_tmp = result[0][0].data._doc
-						const role = result[0][0].data.role
-						const user_email = result[0][0].data.email
-						if (role !== "admin") {
-							setDisplayFirst(false)
-						}
-						else {
-							if (data_tmp) {
-								if (data_tmp.schoolID != schoolID) {
-									setDisplayFirst(false)
-								}
-								else {
-									setIspaid(data_tmp.paymentStatus)
-									setDisplayFirst(true)
-									setData_school(data_tmp)
-									setchooseBtnStart(true)
-									setReadyTime(true)
-									setSaveEmail(user_email)
-								}
-								
-							} else {
+				if (result[0][1]){
+					const data_tmp = result[0][0].data._doc
+					const role = result[0][0].data.role
+					const user_email = result[0][0].data.email
+					if (role !== "admin") {
+						setDisplayFirst(false)
+					}
+					else {
+						if (data_tmp) {
+							if (data_tmp.schoolID != schoolID) {
 								setDisplayFirst(false)
 							}
-						}
-					}else{
-						if (result[0][0].response.status === 401){
+							else {
+								setIspaid(data_tmp.paymentStatus)
+								setDisplayFirst(true)
+								setData_school(data_tmp)
+								setchooseBtnStart(true)
+								setReadyTime(true)
+								setSaveEmail(user_email)
+							}
+						} else {
 							setDisplayFirst(false)
 						}
 					}
+				}else{
+					if (result[0][0].response.status === 401){
+						setDisplayFirst(false)
+					}
 				}
-				
 			})
 	},[schoolID])
 
