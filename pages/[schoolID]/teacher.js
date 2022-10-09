@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router";
 import { get_data } from "../../utils/auth";
+import { forget_password } from "../../utils/unauth";
 import Cookies from "universal-cookie"
 import styles from "../../styles/admin.module.css"
 import OwnClub from "../../components/teacher/ownClub"
 import StdList from "../../components/teacher/stdList"
 import Error from "next/error";
 import Reload from '../../components/reload'
+import Swal from "sweetalert2";
 
 export default function Teacher({ schoolID }) {
 	const nav = useRef();
@@ -27,7 +29,8 @@ export default function Teacher({ schoolID }) {
 			checkStatus:false
 		}
 	)
-	const [checkReadyComponent,setCheckReadyComponent] = useState(false)
+	const [checkReadyComponent, setCheckReadyComponent] = useState(false)
+	const [userEmail, setUserEmail] = useState("")
 
 	useEffect(() => {
 		if (chooseBtnStart.checkStatus){
@@ -99,7 +102,7 @@ export default function Teacher({ schoolID }) {
 					if (result[0][1]) {
 						const data_tmp = result[0][0].data._doc
 						const role = result[0][0].data.role
-					
+						const email = result[0][0].data.email
 						if (role !== "teacher") {
 							setDisplayFirst(false)
 						}
@@ -112,6 +115,7 @@ export default function Teacher({ schoolID }) {
 								setDisplayFirst(true)
 								setData_school(data_tmp)
 								setReadyTime(true)
+								setUserEmail(email)
 								//setSchool_ID(schoolID)
 								setCheckReadyComponent(true)
 							}
@@ -163,12 +167,51 @@ export default function Teacher({ schoolID }) {
 		router.replace(`/${schoolID}`)
 	}
 
-	function forgetPassword() {
+	async function forgetPassword() {
 		const cookies = new Cookies();
 		const token = cookies.get("token")
 
-		router.replace(`/forgotPass`)
+		if (!userEmail) {
+			Swal.fire(
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
+		}
+
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#3085d6",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+
+			const body = { "email": userEmail }
+			forget_password(body).then((result) => {
+				if (!result) {
+					Swal.fire({
+						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+						title: result,
+						showConfirmButton: true,
+						confirmButtonColor: "#ce0303",
+					})
+				} else {
+					Swal.fire({
+						icon: 'success',
+						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431"
+					})
+				}
+			})
+		})
 	}
+
 
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");

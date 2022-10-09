@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "../../../styles/admin.module.css";
 import { get_data } from "../../../utils/auth";
-import { get_all_schoolID } from "../../../utils/unauth";
+import { get_all_schoolID,forget_password } from "../../../utils/unauth";
 
 import EditStudent from "../../../components/admin_school/editStudent";
 import EditTeacher from "../../../components/admin_school/editTeacher";
@@ -16,6 +16,7 @@ import Reload from "../../../components/reload";
 import Cookies from "universal-cookie";
 import Error from "next/error";
 import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
 export default function Admin({ schoolID }) {
 	console.log(schoolID)
@@ -58,38 +59,40 @@ export default function Admin({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token)])
-			.then(result => {
-				if (result[0][1]){
-					const data_tmp = result[0][0].data._doc
-					const role = result[0][0].data.role
-					const user_email = result[0][0].data.email
-					if (role !== "admin") {
-						setDisplayFirst(false)
-					}
-					else {
-						if (data_tmp) {
-							if (data_tmp.schoolID != schoolID) {
+		if (schoolID) {
+			Promise.all([get_data(token)])
+				.then(result => {
+					if (result[0][1]) {
+						const data_tmp = result[0][0].data._doc
+						const role = result[0][0].data.role
+						const user_email = result[0][0].data.email
+						if (role !== "admin") {
+							setDisplayFirst(false)
+						}
+						else {
+							if (data_tmp) {
+								if (data_tmp.schoolID != schoolID) {
+									setDisplayFirst(false)
+								}
+								else {
+									setIspaid(data_tmp.paymentStatus)
+									setDisplayFirst(true)
+									setData_school(data_tmp)
+									setchooseBtnStart(true)
+									setReadyTime(true)
+									setSaveEmail(user_email)
+								}
+							} else {
 								setDisplayFirst(false)
 							}
-							else {
-								setIspaid(data_tmp.paymentStatus)
-								setDisplayFirst(true)
-								setData_school(data_tmp)
-								setchooseBtnStart(true)
-								setReadyTime(true)
-								setSaveEmail(user_email)
-							}
-						} else {
+						}
+					} else {
+						if (result[0][0].response.status === 401) {
 							setDisplayFirst(false)
 						}
 					}
-				}else{
-					if (result[0][0].response.status === 401){
-						setDisplayFirst(false)
-					}
-				}
-			})
+				})
+		}
 	},[schoolID])
 
 	/* เมื่อกดตรงไหนบนหน้าจอนอกจาก doraemon ให้ปิด dropdown */
@@ -191,11 +194,49 @@ export default function Admin({ schoolID }) {
 		router.replace("/")
 	}
 
-	function forgetPassword(){
+	async function forgetPassword() {
 		const cookies = new Cookies();
 		const token = cookies.get("token")
-		
-		router.replace(`/forgotPass`)
+
+		if (!saveEmail) {
+			Swal.fire(
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
+		}
+
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#3085d6",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+
+			const body = { "email": saveEmail }
+			forget_password(body).then((result) => {
+				if (!result) {
+					Swal.fire({
+						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+						title: result,
+						showConfirmButton: true,
+						confirmButtonColor: "#ce0303",
+					})
+				} else {
+					Swal.fire({
+						icon: 'success',
+						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431"
+					})
+				}
+			})
+		})
 	}
 
 	const admin_page_unpaid = (

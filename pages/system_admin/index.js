@@ -6,8 +6,10 @@ import Pending from "../../components/system_admin/pending";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
 import { get_data } from "../../utils/auth";
+import { forget_password } from "../../utils/unauth";
 import Reload from '../../components/reload'
 import Error from "next/error";
+import Swal from "sweetalert2"
 
 
 export default function System({ schoolID }) {
@@ -25,6 +27,7 @@ export default function System({ schoolID }) {
 	const [countBtn, SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
+	const [userEmail, setUserEmail] = useState("")
 
 	useEffect(() => {
 		const cookies = new Cookies();
@@ -35,11 +38,13 @@ export default function System({ schoolID }) {
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
+					const email = result[0][0].data.email
 					if (role !== "host") {
 						setDisplayFirst(false)
 					}else if (data_tmp) {
 						setDisplayFirst(true)
 						//setData_school(data_tmp)
+						setUserEmail(email)
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
@@ -136,8 +141,49 @@ export default function System({ schoolID }) {
 		router.replace("/")
 	}
 
-	function forgetPassword() {
-		router.replace(`/forgotPass`)
+	async function forgetPassword() {
+		const cookies = new Cookies();
+		const token = cookies.get("token")
+
+		if (!userEmail) {
+			Swal.fire(
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
+		}
+
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#3085d6",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+
+			const body = { "email": userEmail }
+			forget_password(body).then((result) => {
+				if (!result) {
+					Swal.fire({
+						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+						title: result,
+						showConfirmButton: true,
+						confirmButtonColor: "#ce0303",
+					})
+				} else {
+					Swal.fire({
+						icon: 'success',
+						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431"
+					})
+				}
+			})
+		})
 	}
 
 

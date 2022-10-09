@@ -32,39 +32,41 @@ export default function Student({ schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		Promise.all([get_data(token)])
-			.then(result => {
-				// console.log(result[0][0])
-				if (result[0][1]) {
-					const data_tmp = result[0][0].data._doc
-					const role = result[0][0].data.role
-					const email = result[0][0].data.email
-					// console.log(email)
-					if (role !== "student") {
-						setDisplayFirst(false)
-					}
-
-					else if (data_tmp) {
-						if (data_tmp.schoolID != schoolID) {
+		if (schoolID) {
+			Promise.all([get_data(token)])
+				.then(result => {
+					console.log(result[0][0])
+					if (result[0][1]) {
+						const data_tmp = result[0][0].data._doc
+						const role = result[0][0].data.role
+						const email = result[0][0].data.email
+						// console.log(email)
+						if (role !== "student") {
 							setDisplayFirst(false)
 						}
-						else {
-							setDisplayFirst(true)
-							setUserEmail(email)
-							setchooseBtnStart(true)
-							setReadyTime(true)
+
+						else if (data_tmp) {
+							if (data_tmp.schoolID != schoolID) {
+								setDisplayFirst(false)
+							}
+							else {
+								setDisplayFirst(true)
+								setUserEmail(email)
+								setchooseBtnStart(true)
+								setReadyTime(true)
+							}
+						} else {
+							setDisplayFirst(false)
 						}
-					} else {
-						setDisplayFirst(false)
 					}
-				}
-				else {
-					if (result[0][0].response.status === 401) {
-						setDisplayFirst(false)
+					else {
+						if (result[0][0].response.status === 401) {
+							setDisplayFirst(false)
+						}
 					}
-				}
-			})
-	},[]);
+				})
+		}
+	}, [schoolID]);
 
 
 	useEffect(() => {
@@ -189,7 +191,7 @@ export default function Student({ schoolID }) {
 				  }
 			})
 		})
-    }
+  }
 
 
 	let component = null 
