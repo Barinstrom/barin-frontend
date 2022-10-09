@@ -1,53 +1,71 @@
 import React from "react"
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 import ErrorPage from "next/error";
+import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 import { add_club,add_clubs } from "../../utils/school_admin/add_data";
 import {paginationTeacher} from '../../utils/auth'
 import AllowAddClub from "./allowAddClub";
-import Cookies from "universal-cookie";
-import Swal from "sweetalert2";
 
 export default function InsertClub({ school_data, schoolID }) {
-	const [file, setfile] = useState();
+	/* hook state */
+	const [clubImg, setClubImg] = useState("");
 	const [csvFile, setCsvFile] = useState("");
 	const [allowRegisterClubTeacher,setAllowRegisterClubTeacher] = useState(true)
-	const [waiting,setWating] = useState(true)
+	const [loading,setLoading] = useState(true)
+
+	/* hook ref */
+	const clubName = useRef()
+	const clubInfo = useRef()
+	const groupID = useRef()
+	const firstname = useRef()
+	const lastname = useRef()
+	const limit = useRef()
+	const category = useRef()
+	const schoolYear = useRef()
+	const startTime = useRef()
+	const endTime = useRef()
+	const urlPicture = useRef()
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
-	//console.log(token)
-	//console.log(schoolID)
+
+	const reload = (
+        <main style={{height:"500px"}}>
+            <div className="d-flex justify-content-center h-100 align-items-center">
+                <div className="fs-4">loading ...</div>
+                <div className="spinner-border ms-3"></div>
+            </div>
+        </main>
+    )
 	
 	useEffect(() => {
-		setWating(true)
 		paginationTeacher({"page":1},token,schoolID).then(result => {
-			//console.log(result)
+			console.log(result)
 			if (!result) {
-				setWating(false)
-				setAllowRegisterClubTeacher(false)
-			} else {
+				setLoading(false)
+				setAllowRegisterClubTeacher(true)
+			}else {
 				if (result.data.docs.length < 1){
-					setWating(false)
+					setLoading(false)
 					setAllowRegisterClubTeacher(true)
 				}else{
-					setWating(false)
+					setLoading(false)
 					setAllowRegisterClubTeacher(false)
 				}
 			}
-			
 		})
-	}, [])
+	},[])
 	
-	/* img to base64 */
+	
 	function encodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
-		reader.onloadend = function () {
-			// console.log("RESULT", reader.result);
-			setfile(reader.result);
-		};
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		
 		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			setClubImg(reader.result);
+		}
 	}
 	
 	/* ส่วนของการแปลง string เป็น object */
@@ -76,24 +94,24 @@ export default function InsertClub({ school_data, schoolID }) {
     /* เมื่อกดปุ่มทำการอ่านข้อมูลจากไฟล์ csv */
     const submit = (ev) => {
         ev.preventDefault();
-			if (csvFile === ""){
-				alert("โปรดเลือกไฟล์ที่ต้องการส่งด้วย")
+			if (!csvFile){
+				Swal.fire({
+					icon: 'warning',
+					title: 'โปรดใส่ไฟล์ csv ด้วย',
+					showConfirmButton: true,
+					confirmButtonColor: "#f7a518",
+					confirmButtonText: 'ok',
+				})
 				return
 			}
 			
 			const fileSuccess = csvFile
-			//console.log(fileSuccess)
-			
-			// ใช้ FileReader ในการอ่านไฟล์
 			const reader = new FileReader()
+			
 			reader.readAsText(fileSuccess)
-
-			// เมื่อทำการอ่านข้อมูลสำเร็จให้จะเกิด event นี้และได้ค่าที่อ่านมาเป็น string
-			reader.onload = (ev) => {
-					const text = ev.target.result;
-					console.log(text)
-
-					const data = stringtoObject(text)
+			reader.onloaded = () => {
+					const text = reader.result;
+					const body = stringtoObject(text)
 					// if (data === "data is undefined"){
 					// 		alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
 					// 		return
@@ -106,57 +124,93 @@ export default function InsertClub({ school_data, schoolID }) {
 			}
 		}
 	
-		async function SubmitOneClub(ev){
-			ev.preventDefault()
+	async function SubmitOneClub(ev){
+		ev.preventDefault()
 
-			const form = new FormData(ev.target)
-			const formSuccess = Object.fromEntries(form.entries())
-			
-			const currentDate = new Date()
-			const successCurrentDate = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`
-			
-			const startTime = Date.parse(`${successCurrentDate} ${formSuccess.startTime}`)
-			const endTime = Date.parse(`${successCurrentDate} ${formSuccess.endTime}`)
-			
-			if (!(startTime < endTime)) {
+		const tmp = {
+			clubName:clubName.current.value,
+			clubInfo:clubInfo.current.value,
+			groupID:groupID.current.value,
+			schoolYear:schoolYear.current.value,
+			category:category.current.value,
+			firstname:firstname.current.value,
+			lastname:lastname.current.value,
+			limit:limit.current.value,
+			startTime:startTime.current.value,
+			endTime:endTime.current.value
+		}
+		
+		for (let e in tmp){
+			if (!tmp[e] || !clubImg){
 				Swal.fire({
 					icon: 'warning',
-					title: 'ข้อมูล schedule ไม่ถูกต้อง',
+					title: 'โปรดกรอกข้อมูลให้ครบถ้วน',
 					showConfirmButton:true,
-					confirmButtonColor:"#e3c21c"
+					confirmButtonColor:"#f7a518"
 				})
 				return
 			}
-			else {
-				formSuccess.schedule = [formSuccess.startTime + "-" + formSuccess.endTime]
-				console.log(formSuccess)
-				
-				const cookies = new Cookies();
-				const token = cookies.get("token");
-				const result = await add_club(formSuccess,token,schoolID);
-				
-				if (!result){
-					Swal.fire({
-						icon: 'error',
-						title: 'เพิ่มข้อมูลไม่สำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
-					})
-				}else{
-					Swal.fire({
-						icon: 'success',
-						title: 'เพิ่มข้อมูลเสร็จสิ้น',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-					})
-				}
+		}
+
+		const currentDate = new Date()
+		const successCurrentDate = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`
+		
+		const startTimeCheck = Date.parse(`${successCurrentDate} ${startTime.current.value}`)
+		const endTimeCheck = Date.parse(`${successCurrentDate} ${endTime.current.value}`)
+		
+		if (endTimeCheck < startTimeCheck) {
+			Swal.fire({
+				icon: 'warning',
+				title: 'ข้อมูล schedule ไม่ถูกต้อง',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+			return
+		}else {
+			const body = {
+				...tmp,
+				"schedule":[startTime.current.value + "-" + endTime.current.value],
+				"urlPicture":clubImg
+			}
+			
+			const result = await add_club(body,token,schoolID);
+			if (!result){
+				Swal.fire({
+					icon: 'error',
+					title: 'เพิ่มข้อมูลไม่สำเร็จ',
+					showConfirmButton:true,
+					confirmButtonColor:"#ce0303"
+				})
+			}else{
+				Swal.fire({
+					icon: 'success',
+					title: 'เพิ่มข้อมูลเสร็จสิ้น',
+					showConfirmButton:true,
+					confirmButtonColor:"#009431"
+				})
 			}
 		}
+	}
+
+	function clearInfo(){
+		clubName.current.value = ""
+		clubInfo.current.value = ""
+		groupID.current.value = ""
+		schoolYear.current.value = ""
+		category.current.value = ""
+		firstname.current.value = ""
+		lastname.current.value = ""
+		limit.current.value = ""
+		startTime.current.value = ""
+		endTime.current.value = ""
+		urlPicture.current.value = ""
+	}
 		
 	if (!school_data.paymentStatus) {
 		return <ErrorPage statusCode={404} />;
-	}else if (waiting){
-		return null
+	}else if (loading){
+		return reload
 	}else if (allowRegisterClubTeacher){
 		return <AllowAddClub/>
 	}else{
@@ -165,8 +219,8 @@ export default function InsertClub({ school_data, schoolID }) {
 				<div className="text-center fs-1">InsertClub</div>
 				<div className="card mt-5">
 					<div className="card-body">
-						<h5 className="card-title">เพิ่มข้อมูลของคลับหลายคลับ</h5>
-						<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+						<h5 className="card-title">เพิ่มข้อมูลของชุมนุมหลายชุมนุม</h5>
+						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมหลายชุมนุม สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการใส่ไฟล์ในนี้ได้เลย</p>
 					</div>
 					<div className="card-footer">
 						<form>
@@ -184,66 +238,65 @@ export default function InsertClub({ school_data, schoolID }) {
 	
 				<div className="card mt-5">
 					<div className="card-body">
-						<h5 className="card-title">เพิ่มข้อมูลของคลับ 1 คลับ</h5>
-						<p className="card-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+						<h5 className="card-title">เพิ่มข้อมูลของชุมนุม 1 ชุมนุม</h5>
+						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมแค่ 1 ชุมนุม คุณไม่จำเป็นต้องสร้างไฟล์ csv สามารถกรอกแบบฟอร์มได้เลย</p>
 					</div>
 					<div className="card-footer">
 						<div className="d-flex justify-content-end">
-							<button  className="btn btn-primary" data-bs-target="#mymodal" data-bs-toggle="modal">ใส่ข้อมูล</button>
+							<button  className="btn btn-primary" data-bs-target="#insertModalClub" data-bs-toggle="modal">ใส่ข้อมูล</button>
 						</div>
 					</div>
 				</div>
 				
 				{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
-				<div className="modal fade" id="mymodal">
+				<div className="modal fade" id="insertModalClub">
 					<div className="modal-dialog">
 						<div className="modal-content">
 							<div className="modal-header">
-								<div className="w-100 mt-1">
-									<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
-								</div>
+								<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+								<button className="btn-close" data-bs-dismiss="modal" onClick={clearInfo}></button>
 							</div>
 							<div className="modal-body">
 								<form className="row gy-2 gx-3" onSubmit={(ev) => SubmitOneClub(ev)}>
 									<div className="col-12">
-										<label className="form-label">ชื่อคลับ</label>
-										<input type="text" className="form-control" name="clubName"/>
+										<label className="form-label">ชื่อชุมนุม</label>
+										<input type="text" className="form-control" ref={clubName}/>
 									</div>
 									<div className="col-12">
 										<label className="form-label">รหัสวิชา</label>
-										<input type="text" className="form-control" name="groupID"/>
+										<input type="text" className="form-control" ref={groupID}/>
 									</div>
 									<div className="col-6">
 										<label className="form-label">ชื่อ ครูผู้สอน</label>
-										<input type="text" className="form-control" name="firstname" />
+										<input type="text" className="form-control" ref={firstname} />
 									</div>
 									<div className="col-6">
 										<label className="form-label">นามสกุล ครูผู้สอน</label>
-										<input type="text" className="form-control" name="lastname" />
+										<input type="text" className="form-control" ref={lastname} />
 									</div>
 									<div className="col-12">
 										<label className="form-label">category</label>
-										<input type="text" className="form-control" name="category"/>
+										<input type="text" className="form-control" ref={category}/>
 									</div>
 									<div className="col-12">
-										<label className="form-label">รายละเอียดคลับ</label>
-										<textarea className="form-control" rows="3" name="clubInfo"></textarea>
+										<label className="form-label">รายละเอียดชุมนุม</label>
+										<textarea className="form-control" rows="3" ref={clubInfo}></textarea>
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">จำนวนนักเรียนสูงสุด</label>
-										<input type="number" className="form-control" name="limit"/>
+										<input type="number" className="form-control" ref={limit}/>
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">ปีการศึกษา</label>
-										<input type="number" className="form-control" min={school_data.nowSchoolYear} name="schoolYear"/>
+										<input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">เวลาเริ่ม</label>
-										<input type="time" className="form-control mt-3" name="startTime"></input>
+										<input type="time" className="form-control mt-3" ref={startTime} />
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">เวลาจบ</label>
-										<input type="time" className="form-control mt-3" name="endTime"></input>
+										<input type="time" className="form-control mt-3" ref={endTime} />
 									</div>
 									<div className="col-12">
 										<label className="form-label">รูปโปรโมทชุมนุม</label>
@@ -251,8 +304,8 @@ export default function InsertClub({ school_data, schoolID }) {
 										<input
 											className="form-control"
 											type="file"
-											id="formFile"
 											onChange={(ev) => encodeImageFileAsURL(ev)}
+											ref={urlPicture}
 										/>
 									</div>
 									<div className="col-12 mt-4 text-center">

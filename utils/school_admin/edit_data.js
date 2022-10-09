@@ -7,7 +7,7 @@ import axios from "axios";
 //https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
 const Url = "https://barinapi.tawanchai.com";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
+const stagingUrl = "https://barin-backend-staging.herokuapp.com"
 
 // ตั้งเวลาลงทะเบียน role addmin_school
 export async function set_schedule(data, token, schoolID) {
@@ -54,7 +54,7 @@ export async function update_club(data, token, schoolID) {
 
 // แก้ไขข้อมูลนักเรียน
 export async function update_student(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-student";
+  const apiUrl = stagingUrl+ "/" + String(schoolID) + "/update-student";
 
   try {
     const result = await axios({
@@ -67,9 +67,10 @@ export async function update_student(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
+    console.log(result)
     return result
-  } catch (err) {
-    console.log(err.message)
+  }catch (err) {
+    console.log(err)
     return false
   }
 };
@@ -97,25 +98,26 @@ export async function update_teacher(data, token, schoolID) {
 }
 
 
-// แก้ไข school_data
-export async function edit_school_data(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-school";
-  console.log("/update-school")
+// edit school_data
+export async function admin_edit_school(token,data){
+  const apiUrl = stagingUrl + "/update-school";
   try {
-    const result = await axios({
-      url: apiUrl,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json;charset=UTF-8",
+    const response = await axios({
+      method:"patch",
+      url:apiUrl,
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": `Bearer ${token}`
       },
-      method: "patch",
-      data: JSON.stringify(data),
-      timeout: 10000
+      timeout:10000,
+      data:JSON.stringify(data)
     })
-    // console.log(result)
-    return [result,true]
-  } catch (err) {
-    // console.log(err)
-    return [err,false]
+    return true
+  }catch(err) {
+    console.log(err);
+    return false;
   }
 };
+
+
+

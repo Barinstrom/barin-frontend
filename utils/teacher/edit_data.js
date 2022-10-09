@@ -1,4 +1,3 @@
-import Cookies from "universal-cookie";
 import axios from "axios";
 
 /* url ของจริง */

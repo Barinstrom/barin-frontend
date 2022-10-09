@@ -27,9 +27,6 @@ export default function ForgotPass() {
       return
     }
 
-    //const form = new FormData(ev.target)
-    //const body = Object.fromEntries(form.entries())
-    //console.log(body)
     const body = {
       "email":email.current.value
     }
@@ -40,22 +37,21 @@ export default function ForgotPass() {
 
     spin.current.classList.add("d-none");
     
-    // console.log(result)
-    
     if (!result) {
       Swal.fire({
-						icon: 'error',
-            title: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",  
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303",
-          })
-    }
-    else {
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+        showConfirmButton: true,
+        confirmButtonColor: "#d1000a",
+        confirmButtonText: 'ok',
+      })
+    } else {
       Swal.fire({
         icon: 'success',
-        title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email'+'\n'+'กรุณาตรวจสอบ email',
-        showConfirmButton:true,
-        confirmButtonColor:"#009431"
+        title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+        showConfirmButton: true,
+        confirmButtonColor: "#009431",
+        confirmButtonText: 'ok',
       })
     }
   } 
@@ -65,7 +61,7 @@ export default function ForgotPass() {
 
       <style jsx>{`
         .background-spinner{
-            background-color:rgb(0, 0, 0,0.3);
+            background-color:rgb(0, 0, 0,0.4);
             position: absolute;
             top: 0;
             bottom: 0;

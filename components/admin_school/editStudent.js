@@ -1,8 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
+import React ,{ useEffect,useRef,useState } from 'react';
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 import ErrorPage from "next/error";
@@ -45,7 +42,6 @@ export default function EditStudent({ school_data,schoolID }) {
         window.localStorage.setItem("pageEditStudent",1)
         
         paginationStudent(body,token,schoolID).then(result => {
-            //console.log(result.data)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -61,7 +57,6 @@ export default function EditStudent({ school_data,schoolID }) {
 		firstname.current.setAttribute("user-id",ev.target.getAttribute("data-bs-id"))
         firstname.current.value = item.firstname
         lastname.current.value = item.lastname
-        //email.current.value = item.email
         tel.current.value = item.tel
         classYear.current.value = item.classYear
         enteredYear.current.value = item.enteredYear
@@ -84,19 +79,20 @@ export default function EditStudent({ school_data,schoolID }) {
                     icon: 'error',
                     title: 'แก้ไขข้อมูลไม่สำเร็จ',
                     showConfirmButton:true,
-                    confirmButtonColor:"#ce0303"
+                    confirmButtonColor:"#d1000a"
                 })
                 return
             }else if (result_update.status === 200){
                 Swal.fire({
                     icon: 'success',
-                    title: 'แก้ไขข้อมูลเสร็จสิ้น',
+                    title: 'แก้ไขข้อมูลสำเร็จ',
                     showConfirmButton:true,
                     confirmButtonColor:"#009431"
                 })
+                
                 const body = {
                     "page":window.localStorage.getItem("pageEditStudent"),
-                    "info":window.localStorage.getItem("searchEditStudent")
+                    "query":window.localStorage.getItem("searchEditStudent")
                 }
                 
                 const result = await paginationStudent(body,token,schoolID)
@@ -104,12 +100,11 @@ export default function EditStudent({ school_data,schoolID }) {
                 if (!result){
                     setDisplayError(true)
                 }else{
-                    
                     if (result.data.docs.length === 0){
                         window.localStorage.setItem("pageEditStudent",result.data.totalPages)
                         const body = {
                             "page":window.localStorage.getItem("pageEditStudent"),
-                            "info":window.localStorage.getItem("searchEditStudent")
+                            "query":window.localStorage.getItem("searchEditStudent")
                         }
                         
                         const result_new = await paginationStudent(body,token,schoolID)
@@ -158,18 +153,15 @@ export default function EditStudent({ school_data,schoolID }) {
         }
     }
     
-    /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
         let body
-        
         if (!search.current.value){
             window.localStorage.removeItem("searchEditStudent")
             body = {"page":1}
         }else{
             window.localStorage.setItem("pageEditStudent",1)
             window.localStorage.setItem("searchEditStudent",search.current.value)
-
             body = {
                 "page":1,
                 "query":window.localStorage.getItem("searchEditStudent")
@@ -192,27 +184,19 @@ export default function EditStudent({ school_data,schoolID }) {
         const paginate_tmp = []
         if (result.hasPrevPage){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-1)}><i className="fa-solid fa-angle-left"></i></button>)
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-        }
-        
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page-1)}><i className="fa-solid fa-angle-left"></i></button>)    
-        }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
         
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page+1)}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+1)}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-        }
-
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
         return paginate_tmp
@@ -220,12 +204,10 @@ export default function EditStudent({ school_data,schoolID }) {
 
     
     async function clickPage(page){
-        
         const body = {
             "page":page,
             "query":window.localStorage.getItem("searchEditStudent")
         }
-        
         
         window.localStorage.setItem("pageEditStudent",page)
         
@@ -255,6 +237,7 @@ export default function EditStudent({ school_data,schoolID }) {
                 </thead>
                 <tbody>
                     {result.map((item,index) => {
+                        //console.log(item)
                         return (
                             <tr key={index}>
                                 <td>{item.firstname} {item.lastname}</td>
@@ -295,7 +278,7 @@ export default function EditStudent({ school_data,schoolID }) {
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){
-        return <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
+        return <div className='text-center fs-3'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
     }else{
         return (
             <>

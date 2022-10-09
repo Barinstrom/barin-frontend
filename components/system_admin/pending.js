@@ -1,23 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
-import { get_pending,sys_edit_school } from '../../utils/system_admin/system';
+import React, {useEffect,useState,useRef} from 'react';
+import {useRouter} from 'next/router';
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
-import {useRouter} from 'next/router';
+import { get_pending,sys_edit_school } from '../../utils/system_admin/system';
 
 export default function Pending() {
 	const router = useRouter()
+	
 	const [reloadTable, setReloadTable] = useState(false)
 	const [data, setData] = useState([])
 	const [paginate, setPaginate] = useState([])
 	const [displayError, setDisplayError] = useState(false)
-	const search = useRef()
-
-	const schoolName = useRef()
 	const [schoolID,setSchoolID] = useState()
+	
+	const search = useRef()
+	const schoolName = useRef()
 	const urlCertificateDocument = useRef()
 	const editUrlCertificateDocument = useRef()
 	const urlLogo = useRef()
@@ -38,38 +36,31 @@ export default function Pending() {
 			if (!result) {
 				setDisplayError(true)
 			} else {
-				const paginate_tmp = generate(result)
+				const paginate_tmp = generate(result.data)
 				setDisplayError(false)
-				showData(result.docs)
+				showData(result.data.docs)
 				showPaginate(paginate_tmp)
 			}
 		})
 	}, [])
 
 	function editUrlCertificateDocumentencodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
 		reader.onloadend = () => {
-			// console.log("RESULT", reader.result);
-			// setfile(reader.result);
 			editUrlCertificateDocument.current.src = reader.result;
 		};
-		reader.readAsDataURL(file);
 	}
 
 	function urlLogoencodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
+		let file = ev.target.files[0];
+		let reader = new FileReader();
 		
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
-			// console.log("RESULT", reader.result);
-			// setfile(reader.result);
 			urlLogo.current.src = reader.result;
 		};
-		
 	}
 
 	async function clickReset(ev) {
@@ -352,19 +343,21 @@ export default function Pending() {
 			if (result){
 				Swal.fire({
 					icon: 'success',
-					title: 'ทำการแก้ไขสำเร็จ',  
-					showConfirmButton:true,
-					confirmButtonColor:"#0047a3"
-				}).then(res => {
-						router.reload()
+					title: 'แก้ไขข้อมูลสำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#009431",
+					confirmButtonText: 'ok',
+				}).then(() => {
+					router.reload()
 				})
 			}else{
 				Swal.fire({
 					icon: 'error',
-					title: 'ทำการแก้ไขไม่สำเร็จ',  
-					showConfirmButton:true,
-					confirmButtonColor:"#00a30b"
-				}).then(res => {
+					title: 'แก้ไขข้อมูลไม่สำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#d1000a",
+					confirmButtonText: 'ok',
+				}).then(() => {
 					router.reload()
 				})
 			}
@@ -425,7 +418,6 @@ export default function Pending() {
 										<input
 											className="form-control"
 											type="file"
-											id="formFile"
 											onChange={(ev) => urlLogoencodeImageFileAsURL(ev)}
 										/>
 									</div> 
@@ -437,7 +429,6 @@ export default function Pending() {
 										<label className="form-label">Url CertificateDocument</label>
 										<input
 											className="form-control" type="file"
-											id="formFile" 
 											onChange={(ev) => editUrlCertificateDocumentencodeImageFileAsURL(ev)}
 										/>
 									</div> 

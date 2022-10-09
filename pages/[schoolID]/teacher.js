@@ -18,6 +18,9 @@ export default function Teacher({ schoolID }) {
 	const dropdown = useRef()
 	const router = useRouter()
 	let timer;
+
+	const cookies = new Cookies();
+	const token = cookies.get("token")
 	
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [data_school,setData_school] = useState()
@@ -30,11 +33,10 @@ export default function Teacher({ schoolID }) {
 		}
 	)
 	const [checkReadyComponent, setCheckReadyComponent] = useState(false)
-	const [userEmail, setUserEmail] = useState("")
+	const [saveEmail, setSaveEmail] = useState("")
 
 	useEffect(() => {
 		if (chooseBtnStart.checkStatus){
-			console.log(chooseBtnStart)
 			
 			optionBtn.current[chooseBtnStart.componentReady].classList.add("nowclick");
 			SetCountBtn(chooseBtnStart.componentReady)
@@ -44,7 +46,6 @@ export default function Teacher({ schoolID }) {
 	useEffect(() => {
 		if (checkReadyComponent){
 			const component = window.localStorage.getItem("displayComponent")
-			console.log("compoent =",component)
 			if (!component){
 				setchooseBtnStart({
 					componentReady:0,
@@ -90,19 +91,13 @@ export default function Teacher({ schoolID }) {
 	},[readyTime])
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		if (schoolID) {
-			Promise.all([get_data(token, schoolID)])
+			get_data(token, schoolID)
 				.then(result => {
-					//console.log(result[0][0])
-					//console.log(result[0][1])
-				
-					if (result[0][1]) {
-						const data_tmp = result[0][0].data._doc
-						const role = result[0][0].data.role
-						const email = result[0][0].data.email
+					if (result[1]) {
+						const data_tmp = result[0].data._doc
+						const role = result[0].data.role
+						const email = result[0].data.email
 						if (role !== "teacher") {
 							setDisplayFirst(false)
 						}
@@ -115,8 +110,7 @@ export default function Teacher({ schoolID }) {
 								setDisplayFirst(true)
 								setData_school(data_tmp)
 								setReadyTime(true)
-								setUserEmail(email)
-								//setSchool_ID(schoolID)
+								setSaveEmail(email)
 								setCheckReadyComponent(true)
 							}
 						} else {
@@ -124,7 +118,7 @@ export default function Teacher({ schoolID }) {
 						}
 					}
 					else {
-						if (result[0][0].response.status === 401) {
+						if (result[0].response.status !== 200) {
 							setDisplayFirst(false)
 						}
 					}
@@ -160,7 +154,6 @@ export default function Teacher({ schoolID }) {
 	}
 
 	function logOut() {
-		const cookies = new Cookies();
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
@@ -168,10 +161,7 @@ export default function Teacher({ schoolID }) {
 	}
 
 	async function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
-
-		if (!userEmail) {
+		if (!saveEmail) {
 			Swal.fire(
 				'ไม่พบอีเมลล์ของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
@@ -183,36 +173,38 @@ export default function Teacher({ schoolID }) {
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
 			showConfirmButton: true,
-			confirmButtonColor: "#3085d6",
+			confirmButtonColor: "#0208bb",
 			confirmButtonText: 'ยืนยัน',
 
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
 		}).then((result) => {
-
-			const body = { "email": userEmail }
-			forget_password(body).then((result) => {
-				if (!result) {
-					Swal.fire({
-						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-						title: result,
-						showConfirmButton: true,
-						confirmButtonColor: "#ce0303",
-					})
-				} else {
-					Swal.fire({
-						icon: 'success',
-						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
-						showConfirmButton: true,
-						confirmButtonColor: "#009431"
-					})
-				}
-			})
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
 		})
 	}
-
-
+	
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");

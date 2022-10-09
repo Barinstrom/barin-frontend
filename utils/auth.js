@@ -24,7 +24,6 @@ export async function get_data(token) {
 			},
 			timeout: 10000
 		})
-		// console.log(result)
 		return [result,true]
 	} catch (err) {
 		return [err,false]
@@ -117,7 +116,6 @@ export async function get_students_inclub(data, token, schoolID) {
 	}
 	
 	const params_success = apiUrl + `?${params}`
-	//console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
@@ -212,8 +210,6 @@ export async function paginationClub(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	//console.log(params)
-	
 	try {
 		const result = await axios({
 			method:"get",
@@ -224,10 +220,11 @@ export async function paginationClub(data,token,schoolID) {
 			},
 			timeout:10000
 		})
+		console.log(result)
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

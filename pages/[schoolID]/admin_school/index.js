@@ -1,25 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import styles from "../../../styles/admin.module.css";
 import { get_data } from "../../../utils/auth";
 import { get_all_schoolID,forget_password } from "../../../utils/unauth";
+import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 
 import EditStudent from "../../../components/admin_school/editStudent";
 import EditTeacher from "../../../components/admin_school/editTeacher";
 import EditClub from "../../../components/admin_school/editClub";
-import EditOwnData from "../../../components/admin_school/editOwnData";
 import InsertClub from "../../../components/admin_school/insertClub";
 import InsertStudent from "../../../components/admin_school/insertStudent";
 import InsertTeacher from "../../../components/admin_school/insertTeacher";
 import SchoolData from "../../../components/admin_school/schoolData";
 import TimeConfig from "../../../components/admin_school/timeConfig";
 import Reload from "../../../components/reload";
-import Cookies from "universal-cookie";
 import Error from "next/error";
-import { useRouter } from "next/router";
-import Swal from "sweetalert2";
+
 
 export default function Admin({ schoolID }) {
-	console.log(schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -35,6 +34,9 @@ export default function Admin({ schoolID }) {
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
 	const [ispaid, setIspaid] = useState("")
 	const [saveEmail, setSaveEmail] = useState("")
+
+	const cookies = new Cookies();
+	const token = cookies.get("token");
 
 	useEffect(() => {
 		if (chooseBtnStart){
@@ -56,42 +58,34 @@ export default function Admin({ schoolID }) {
 	},[readyTime])
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		if (schoolID) {
-			Promise.all([get_data(token)])
-				.then(result => {
-					if (result[0][1]) {
-						const data_tmp = result[0][0].data._doc
-						const role = result[0][0].data.role
-						const user_email = result[0][0].data.email
-						if (role !== "admin") {
+			get_data(token).then(result => {
+				if (result[1]) {
+					console.log(result[0])
+					const data_tmp = result[0].data._doc
+					const role = result[0].data.role
+					const user_email = result[0].data.email
+					if (role !== "admin") {
+						setDisplayFirst(false)
+					}
+					else {
+						if (data_tmp.schoolID != schoolID) {
 							setDisplayFirst(false)
-						}
-						else {
-							if (data_tmp) {
-								if (data_tmp.schoolID != schoolID) {
-									setDisplayFirst(false)
-								}
-								else {
-									setIspaid(data_tmp.paymentStatus)
-									setDisplayFirst(true)
-									setData_school(data_tmp)
-									setchooseBtnStart(true)
-									setReadyTime(true)
-									setSaveEmail(user_email)
-								}
-							} else {
-								setDisplayFirst(false)
-							}
-						}
-					} else {
-						if (result[0][0].response.status === 401) {
-							setDisplayFirst(false)
+						}else {
+							setIspaid(data_tmp.paymentStatus)
+							setDisplayFirst(true)
+							setData_school(data_tmp)
+							setchooseBtnStart(true)
+							setReadyTime(true)
+							setSaveEmail(user_email)
 						}
 					}
-				})
+				} else {
+					if (result[0].response.status === 401) {
+						setDisplayFirst(false)
+					}
+				}
+			})
 		}
 	},[schoolID])
 
@@ -125,12 +119,10 @@ export default function Admin({ schoolID }) {
 			SetCountBtn(6)
 		} else if (num == 7) {
 			SetCountBtn(7)
-		} else {
-			SetCountBtn(8)
 		}
 		
 		if (ispaid === "success") {
-			for (let i = 0; i <= 8; i++) {
+			for (let i = 0; i <= 7; i++) {
 				if (i === num) {
 					optionBtn.current[i].classList.add("nowclick")
 				} else {
@@ -175,8 +167,6 @@ export default function Admin({ schoolID }) {
 		component = <EditTeacher school_data={data_school} schoolID={schoolID}/>
 	}else if (countBtn === 7){
 		component = <EditClub school_data={data_school} schoolID={schoolID}/>
-	}else{
-		component = <EditOwnData school_data={data_school} schoolID={schoolID}/>
 	}
 	
 	const clickHamberger = () => {
@@ -184,10 +174,7 @@ export default function Admin({ schoolID }) {
 		nav.current.classList.toggle("active");
 	};
 
-
 	function logOut(){
-		const cookies = new Cookies();
-		console.log(cookies.get("token"))
 		cookies.remove("token",{path:`${schoolID}`})
 		cookies.remove("token",{path:"/"})
 
@@ -195,9 +182,6 @@ export default function Admin({ schoolID }) {
 	}
 
 	async function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
-
 		if (!saveEmail) {
 			Swal.fire(
 				'ไม่พบอีเมลล์ของท่าน',
@@ -210,32 +194,35 @@ export default function Admin({ schoolID }) {
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
 			showConfirmButton: true,
-			confirmButtonColor: "#3085d6",
+			confirmButtonColor: "#0208bb",
 			confirmButtonText: 'ยืนยัน',
 
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
 		}).then((result) => {
-
-			const body = { "email": saveEmail }
-			forget_password(body).then((result) => {
-				if (!result) {
-					Swal.fire({
-						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-						title: result,
-						showConfirmButton: true,
-						confirmButtonColor: "#ce0303",
-					})
-				} else {
-					Swal.fire({
-						icon: 'success',
-						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
-						showConfirmButton: true,
-						confirmButtonColor: "#009431"
-					})
-				}
-			})
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
 		})
 	}
 
@@ -548,15 +535,6 @@ export default function Admin({ schoolID }) {
 							>
 								<i className="fa-solid fa-list-check"></i>
 								<span className="ms-2">แก้ไขข้อมูลชุมนม</span>
-							</div>
-						</li>
-						<li>
-							<div className={`nav_left`} 
-								onClick={() => changeComponent(8)}
-								ref={(el) => optionBtn.current[8] = el}
-							>
-								<i className="fa-solid fa-list-check"></i>
-								<span className="ms-2">แก้ไขข้อมูลตัวเอง</span>
 							</div>
 						</li>
 					</ul>

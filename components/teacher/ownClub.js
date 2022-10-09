@@ -3,8 +3,6 @@ import { get_teacher_ownclubs } from "../../utils/teacher/teacher_getdata";
 import { update_club } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
-import { useRouter } from "next/router";
-
 
 export default function OwnClub({schoolID}) {
 	const clubName = useRef()
@@ -14,11 +12,8 @@ export default function OwnClub({schoolID}) {
 	const scheduleEnd = useRef()
 	const groupID = useRef()
 	const category = useRef()
-	const router = useRouter()
 	
 	const [clubImg, setClubImg] = useState("")
-	const [clubId, setClubId] = useState("")
-  
 	const [data, setData] = useState([])
 	const [loading,setLoading] = useState(true)
 	const [displayError, setDisplayError] = useState(false)
@@ -29,113 +24,101 @@ export default function OwnClub({schoolID}) {
 	useEffect(() => {
 		setLoading(true)
 		get_teacher_ownclubs(token,schoolID).then(result => {
-			//console.log(result)
-
-			const clubs = result.data.clubs
-			if (clubs){
-				setData(result.data.clubs)
-				setDisplayError(false)
+			if (!result){
 				setLoading(false)
-			}else{
 				setDisplayError(true)
+			}else{
+				const clubs = result.data
+				setData(clubs)
+				setDisplayError(false)
 				setLoading(false)
 			}
 		})
 	},[])
 
-  function encodeImageFileAsURL(ev) {
+	function encodeImageFileAsURL(ev) {
 		let file = ev.target.files[0];
 		let reader = new FileReader();
+		
 		reader.readAsDataURL(file);
 		reader.onloadend = function () {
 			setClubImg(reader.result);
 		};
 	}
 
-  	function clickModal(club){
+	function clickModal(club){
 		console.log(club)
-
+		clubName.current.setAttribute("club-id",club._id)
 		clubName.current.value = club.clubName
 		clubInfo.current.value = club.clubInfo
 		category.current.value = club.category
 		groupID.current.value = club.groupID
+		clubLimit.current.value = club.limit
 		
-		let [ schedule ] = club.schedule // [ "17.02.00-18.02.00"]
-		let [ startTime ,endTime ] = schedule.split("-")
+		const [ startTime ,endTime ] = club.schedule[0].split("-")
 		scheduleStart.current.value = startTime
 		scheduleEnd.current.value = endTime
-
-		clubLimit.current.value = club.limit
-
-		if (club.clubImage){
-			setClubImg(clubImage)
+		
+		if (club.urlPicture){
+			setClubImg(club.urlPicture)
 		}else{
 			setClubImg("https://dummyimage.com/300x300")
 		}
-    
-		setClubId(club._id)
-  	}
+	}
 
-    	function Submit(){
+		function Submit(){
 			const body_update = {
-				clubID: clubId,
+				clubID: clubName.current.getAttribute("club-id"),
 				clubName:clubName.current.value,
 				clubInfo:clubInfo.current.value ,
 				category:category.current.value ,
 				limit: clubLimit.current.value,
 				groupID: groupID.current.value,
 				schedule: [String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
-				// urlPicture:
 			}
-
+			
 			Swal.fire({
-				title: 'คุณต้องการแก้ไขข้อมูลชุมนุมใช่หรือไม่',
+				title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลชุมนุมใช่หรือไม่",
 				showConfirmButton: true,
-				confirmButtonColor: "#0047a3",
-				confirmButtonText: 'ใช่',
-
+				confirmButtonColor: "#0208bb",
+				confirmButtonText: 'ok',
+	
 				showCancelButton: true,
-				cancelButtonText: "ยกเลิก",
+				cancelButtonText: "cancel",
 				cancelButtonColor: "#d93333",
 			}).then((res) => {
-				console.log(res)
-				if (res.isDismissed){
-					return
-				}else{
+				if (res.isConfirmed){
 					update_club(body_update, token, schoolID).then(result => {
-						//console.log(result)
-						if (!result || !result.data.success) {
+						if (!result) {
 							Swal.fire({
 								icon: 'error',
-								title: 'เกิดข้อผิดพลาด กรุณาลองเข้าใหม่อีกครั้ง',
-								showConfirmButton:true,
-								confirmButtonColor:"#ce0303"
+								title: 'แก้ไขข้อมูลไม่สำเร็จ',
+								showConfirmButton: true,
+								confirmButtonColor: "#d1000a",
+								confirmButtonText: 'ok',
 							})
 							return
 						}else if(result.data.success){
 							Swal.fire({
-							icon: 'success',
-							title: 'แก้ไขสำเร็จ',
-							showConfirmButton: true,
-							confirmButtonColor: "#009431"
+								icon: 'success',
+								title: 'แก้ไขข้อมูลสำเร็จ',
+								showConfirmButton:true,
+								confirmButtonColor:"#009431"
 							}).then(() => {
-								//window.location.reload();
 								get_teacher_ownclubs(token,schoolID).then(result => {
-									//console.log(result)
-						
-									const clubs = result.data.clubs
-									if (clubs){
-										setData(result.data.clubs)
-										setDisplayError(false)
+									if (!result){
 										setLoading(false)
-									}else{
 										setDisplayError(true)
+									}else{
+										const clubs = result.data
+										setData(clubs)
+										setDisplayError(false)
 										setLoading(false)
 									}
 								})
 							})
 						}
-					})
+					})	
 				}
 			})
 		}
@@ -150,7 +133,7 @@ export default function OwnClub({schoolID}) {
 	
 	if(loading){
 		return (
-			<div className="border d-flex justify-content-center align-items-center" style={{minHeight:"600px"}}>
+			<div className="d-flex justify-content-center align-items-center" style={{minHeight:"600px"}}>
 				<div className="fs-4">loading ...</div>
 				<div className="spinner-border ms-3"></div>
 			</div>
@@ -186,7 +169,6 @@ export default function OwnClub({schoolID}) {
 										<td className="text-center">
 											<span>
 												<button className="btn btn-sm btn-info" 
-													
 													data-bs-toggle="modal" 
 													data-bs-target="#modalOwnClubTeacher" 
 													onClick={(ev) => clickModal(e,ev)}>
@@ -203,7 +185,7 @@ export default function OwnClub({schoolID}) {
 				
 				
 				<div className="modal" id="modalOwnClubTeacher">
-					<div className="modal-dialog">
+					<div className="modal-dialog modal-dialog-scrollable">
 						<div className="modal-content">
 							
 							<div className="modal-header">
@@ -224,7 +206,7 @@ export default function OwnClub({schoolID}) {
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">เวลาจบ</label>
-																			<input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
+										<input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
 									</div>
 
 									<div className="col-12">

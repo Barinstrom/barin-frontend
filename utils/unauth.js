@@ -64,9 +64,7 @@ export async function checkLogin(data){
 
 // forgot pass
 export async function forget_password(data) {
-	// url success
 	const apiUrl = stagingUrl + "/forgotpassword";
-	// console.log(data)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -77,7 +75,6 @@ export async function forget_password(data) {
 			},
 			timeout: 10000
 		})
-		console.log(result)
 		return result
 	}
 	catch(err){
@@ -109,7 +106,7 @@ export async function reset_password(data) {
 };
 
 
-// reset pass
+// get_all_schoolID
 export async function get_all_schoolID() {
 	const apiUrl = stagingUrl + "/getAllSchoolID";
 	
@@ -125,7 +122,7 @@ export async function get_all_schoolID() {
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

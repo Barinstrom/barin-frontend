@@ -7,7 +7,7 @@ import Searchclub from "../../components/student/searchClub"
 import Reload from '../../components/reload'
 import Cookies from "universal-cookie"
 import { get_data } from "../../utils/auth";
-import { get_all_schoolID,forget_password } from "../../utils/unauth"
+import {forget_password } from "../../utils/unauth"
 import Error from "next/error";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2"
@@ -19,55 +19,50 @@ export default function Student({ schoolID }) {
 	const hamberger = useRef()
 	const dropdown = useRef()
 	const router = useRouter()
-	/* ตัวแปรเก็บค่า timer */
 	let timer;
+
+	const cookies = new Cookies();
+	const token = cookies.get("token")
 	
 	const [displayFirst,setDisplayFirst] = useState("loading")
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime,setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
-	const [userEmail,setUserEmail] = useState("")
+	const [saveEmail,setSaveEmail] = useState("")
 	
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		if (schoolID) {
-			Promise.all([get_data(token)])
-				.then(result => {
-					console.log(result[0][0])
-					if (result[0][1]) {
-						const data_tmp = result[0][0].data._doc
-						const role = result[0][0].data.role
-						const email = result[0][0].data.email
-						// console.log(email)
-						if (role !== "student") {
+			get_data(token).then(result => {
+				console.log(result[0])
+				if (result[1]) {
+					const data_tmp = result[0].data._doc
+					const role = result[0].data.role
+					const email = result[0].data.email
+					
+					if (role !== "student") {
+						setDisplayFirst(false)
+					}else if (data_tmp) {
+						if (data_tmp.schoolID != schoolID) {
 							setDisplayFirst(false)
 						}
-
-						else if (data_tmp) {
-							if (data_tmp.schoolID != schoolID) {
-								setDisplayFirst(false)
-							}
-							else {
-								setDisplayFirst(true)
-								setUserEmail(email)
-								setchooseBtnStart(true)
-								setReadyTime(true)
-							}
-						} else {
-							setDisplayFirst(false)
+						else {
+							setDisplayFirst(true)
+							setSaveEmail(email)
+							setchooseBtnStart(true)
+							setReadyTime(true)
 						}
+					} else {
+						setDisplayFirst(false)
 					}
-					else {
-						if (result[0][0].response.status === 401) {
-							setDisplayFirst(false)
-						}
+				}
+				else {
+					if (result[0].response.status !== 200) {
+						setDisplayFirst(false)
 					}
-				})
+				}
+			})
 		}
-	}, [schoolID]);
-
+	},[schoolID]);
 
 	useEffect(() => {
 		if (readyTime){
@@ -149,49 +144,49 @@ export default function Student({ schoolID }) {
 	}
 
 	async function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
-
-		if (!userEmail) {
+		if (!saveEmail) {
 			Swal.fire(
-			'ไม่พบอีเมลล์ของท่าน',
-			'กรุณาลอง login ใหม่อีกครั้ง',
-			'warning'
-      		)
-     		return
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
 		}
-		
+
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
 			showConfirmButton: true,
-			confirmButtonColor: "#3085d6",
+			confirmButtonColor: "#0208bb",
 			confirmButtonText: 'ยืนยัน',
 
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
 		}).then((result) => {
-			
-			const body = {"email" : userEmail}
-			forget_password(body).then((result) => {
-				if (!result) {
-					Swal.fire({
-					  icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-					  title: result,  
-					  showConfirmButton:true,
-					  confirmButtonColor:"#ce0303",
-					})
-				  }else {
-					Swal.fire({
-					  icon: 'success',
-					  title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email'+'\n'+'กรุณาตรวจสอบ email',
-					  showConfirmButton:true,
-					  confirmButtonColor:"#009431"
-					})
-				  }
-			})
-		})
-  }
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
+		})	
+	}
 
 
 	let component = null 

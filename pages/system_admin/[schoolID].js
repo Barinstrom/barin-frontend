@@ -6,7 +6,6 @@ import { get_school_data } from "../../utils/system_admin/system";
 import EditStudent from "../../components/admin_school/editStudent";
 import EditTeacher from "../../components/admin_school/editTeacher";
 import EditClub from "../../components/admin_school/editClub";
-import EditOwnData from "../../components/admin_school/editOwnData";
 import InsertClub from "../../components/admin_school/insertClub";
 import InsertStudent from "../../components/admin_school/insertStudent";
 import InsertTeacher from "../../components/admin_school/insertTeacher";
@@ -18,7 +17,6 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 
 export default function Admin({ schoolID }) {
-	// console.log(schoolID)
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -119,12 +117,10 @@ export default function Admin({ schoolID }) {
 			SetCountBtn(6)
 		} else if (num == 7) {
 			SetCountBtn(7)
-		} else {
-			SetCountBtn(8)
 		}
 		
 		if (ispaid === "success") {
-			for (let i = 0; i <= 8; i++) {
+			for (let i = 0; i <= 7; i++) {
 				if (i === num) {
 					optionBtn.current[i].classList.add("nowclick")
 				} else {
@@ -169,8 +165,6 @@ export default function Admin({ schoolID }) {
 		component = <EditTeacher school_data={data_school} schoolID={schoolID}/>
 	}else if (countBtn === 7){
 		component = <EditClub school_data={data_school} schoolID={schoolID}/>
-	}else{
-		component = <EditOwnData school_data={data_school} schoolID={schoolID}/>
 	}
 	
 	const clickHamberger = () => {
@@ -378,15 +372,6 @@ export default function Admin({ schoolID }) {
 							>
 								<i className="fa-solid fa-list-check"></i>
 								<span className="ms-2">แก้ไขข้อมูลชุมนม</span>
-							</div>
-						</li>
-						<li>
-							<div className={`nav_left`} 
-								onClick={() => changeComponent(8)}
-								ref={(el) => optionBtn.current[8] = el}
-							>
-								<i className="fa-solid fa-list-check"></i>
-								<span className="ms-2">แก้ไขข้อมูลตัวเอง</span>
 							</div>
 						</li>
 					</ul>

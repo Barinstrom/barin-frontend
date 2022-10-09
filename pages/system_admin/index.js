@@ -11,8 +11,7 @@ import Reload from '../../components/reload'
 import Error from "next/error";
 import Swal from "sweetalert2"
 
-
-export default function System({ schoolID }) {
+export default function System() {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -21,18 +20,18 @@ export default function System({ schoolID }) {
 	const router = useRouter()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
+	
+	const cookie = new Cookies();
+	const token = cookie.get("token")
 
 	//const [data_school, setData_school] = useState()
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [countBtn, SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
-	const [userEmail, setUserEmail] = useState("")
+	const [saveEmail, setSaveEmail] = useState("")
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		Promise.all([get_data(token)])
 			.then(result => {
 				if (result[0][1]) {
@@ -44,7 +43,7 @@ export default function System({ schoolID }) {
 					}else if (data_tmp) {
 						setDisplayFirst(true)
 						//setData_school(data_tmp)
-						setUserEmail(email)
+						setSaveEmail(email)
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
@@ -133,19 +132,12 @@ export default function System({ schoolID }) {
 	}
 
 	function logOut() {
-		const cookies = new Cookies();
-		//console.log(cookies.get("token"))
-		cookies.remove("token", { path: `${schoolID}` })
-		cookies.remove("token", { path: "/" })
-
+		cookie.remove("token", { path: "/" })
 		router.replace("/")
 	}
 
 	async function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
-
-		if (!userEmail) {
+		if (!saveEmail) {
 			Swal.fire(
 				'ไม่พบอีเมลล์ของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
@@ -157,39 +149,42 @@ export default function System({ schoolID }) {
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
 			showConfirmButton: true,
-			confirmButtonColor: "#3085d6",
+			confirmButtonColor: "#0208bb",
 			confirmButtonText: 'ยืนยัน',
 
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
 		}).then((result) => {
-
-			const body = { "email": userEmail }
-			forget_password(body).then((result) => {
-				if (!result) {
-					Swal.fire({
-						icon: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-						title: result,
-						showConfirmButton: true,
-						confirmButtonColor: "#ce0303",
-					})
-				} else {
-					Swal.fire({
-						icon: 'success',
-						title: 'ส่งช่องทางการเปลี่ยนรหัสไปทาง email' + '\n' + 'กรุณาตรวจสอบ email',
-						showConfirmButton: true,
-						confirmButtonColor: "#009431"
-					})
-				}
-			})
-		})
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
+		})	
 	}
 
 
 	let component = null
 	if (countBtn === 0) {
-		component = <Pending  />
+		component = <Pending />
 	} else if (countBtn === 1) {
 		component = <Approved />
 	} else {
@@ -288,9 +283,7 @@ export default function System({ schoolID }) {
 								<span className={`${styles.logo_bell}`}>
 									<i className="fa-regular fa-bell"></i>
 								</span>
-								<span className={`${styles.user_name} ms-1`}>
-									{/* {data.data.userId} */}
-								</span>
+								<span className={`${styles.user_name} ms-1`}></span>
 
 								<div className={`${styles.logo}`}>
 									<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
@@ -344,7 +337,7 @@ export default function System({ schoolID }) {
 
 				{/* ส่วน component มาแสดงผล */}
 				<main className={styles.content}>
-					<div className="container border">
+					<div className="container">
 						{component}
 					</div>
 				</main>

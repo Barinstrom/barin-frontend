@@ -43,17 +43,15 @@ export async function get_pending(data,token) {
 		}
 		
 		const paramsSuccess = apiUrl+`?${params}`
-		//console.log(paramsSuccess)
 		
-		const response = await axios({
+		
+		const result = await axios({
 			method:"get",
 			url:paramsSuccess,
 			headers:{"Content-Type":"application/json","Authorization": `Bearer ${token}`},
 			timeout:10000
 		})
-		//console.log(response)
-		return response.data
-		
+		return result
 	} catch(err) {
 		console.log(err);
 		return false;
@@ -83,9 +81,7 @@ export async function get_approved(data,token) {
 			headers:{"Content-Type":"application/json","Authorization": `Bearer ${token}`},
 			timeout:10000
 		})
-		//console.log(response)
-		return response.data
-		
+		return response
 	} catch(err) {
 		console.log(err.message);
 		return false;
@@ -125,18 +121,16 @@ export async function get_not_approved(data,token) {
 };
 
 
-// check approve submit
+// edit info school
 export async function sys_edit_school(token,data) {
-	const apiUrl = stagingUrl + "/edit_school";
-	// console.log(apiUrl)
-	console.log(data)
+	const apiUrl = stagingUrl + "/update-school";
 	try {
 		const response = await axios({
 			method:"patch",
 			url:apiUrl,
 			headers:{"Content-Type":"application/json","Authorization": `Bearer ${token}`},
 			timeout:10000,
-			data:data
+			data:JSON.stringify(data)
 		})
 		console.log(response)
 		return true

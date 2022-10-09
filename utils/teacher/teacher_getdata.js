@@ -1,4 +1,3 @@
-import Cookies from "universal-cookie";
 import axios from "axios";
 
 /* url ของจริง */
@@ -26,7 +25,7 @@ export async function get_teacher_ownclubs(token, schoolID) {
     })
     return result
   } catch (err) {
-    console.log(err.message)
+    console.log(err)
     return false
   }
 };

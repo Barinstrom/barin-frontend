@@ -51,8 +51,6 @@ export default function EditClub({ school_data,schoolID }) {
         window.localStorage.setItem("pageEditClub",1)
         
         paginationClub(body, token, schoolID).then(result => {
-            // console.log(result.data)
-            
             if (!result){
                 setDisplayError(true)
             }else{
@@ -288,7 +286,7 @@ export default function EditClub({ school_data,schoolID }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {result.map((item,index) => {
+                    {[].map((item,index) => {
                         return (
                             <tr key={index}>
                                 <td>{item.groupID}</td>
@@ -337,16 +335,12 @@ export default function EditClub({ school_data,schoolID }) {
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){
-        return (
-            <>
-                <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
-            </>
-        )
+        return <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
     }else{
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">แก้ไขข้อมูลคลับ</div>
+                    <div className="text-center fs-1 mb-3">แก้ไขข้อมูลชุมนุม</div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>

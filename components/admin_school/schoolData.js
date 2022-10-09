@@ -1,23 +1,27 @@
 import React from "react";
-import { useRef,useState, useEffect } from "react";
+import { useRef,useState, useEffect} from "react";
+import { useRouter } from "next/router";
+
+import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
+import { admin_edit_school } from "../../utils/school_admin/edit_data";
+
+/* ส่วนของ striped */
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import Cookies from "universal-cookie";
 import { stripe } from "../../utils/payment";
-import { edit_school_data } from "../../utils/school_admin/edit_data"; 
 import CheckoutForm from "../Stripe_CheckoutForm";
-import Swal from "sweetalert2";
 
 const stripePromise = loadStripe(
 	"pk_test_51LevDSHCloRRkXJqsQqsWQbkJowAnWVTJ5dUqbk25qSOCcPmGGAgtXcjPEEMKklf8jFduSSalNUu1qM5fpK62WUG00l9MCl6LT"
 );
 
 export default function SchoolData({ school_data, schoolID, email }) {
-	const cookie = new Cookies()
-	const token = cookie.get("token")
-	console.log(school_data)
-	const [clientSecret, setClientSecret] = useState("");
-	const [picture, setPicture] = useState(school_data.urlLogo);
+	const cookie = new Cookies();
+	const token = cookie.get("token");
+	const router = useRouter()
+	
+	/* hook useRef */
 	const btnEdit = useRef();
 	const btnCancel = useRef();
 	const btnConfirm = useRef();
@@ -26,20 +30,20 @@ export default function SchoolData({ school_data, schoolID, email }) {
 	const schoolNameShow = useRef();
 	const schoolNameInput = useRef();
 	const uploadImg = useRef();
-
-	/* img to base64 */
+	
+	/* hook useState */
+	const [clientSecret, setClientSecret] = useState("");
+	const [picture, setPicture] = useState(school_data.urlLogo);
+	
 	function encodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
+		let file = ev.target.files[0];
+		let reader = new FileReader();
 		reader.readAsDataURL(file);
-		reader.onloadend = function () {
-			//console.log("RESULT", reader.result);
+		reader.onloadend = () => {
 			setPicture(reader.result);
 		};
 	}
 
-	/* click edit data */
 	function taskEdit(ev) {
 		ev.preventDefault();
 		btnCancel.current.classList.remove("d-none");
@@ -51,14 +55,14 @@ export default function SchoolData({ school_data, schoolID, email }) {
 		schoolLogo.current.classList.remove("d-none");
 	}
 
-	/* click cancel */
+	
 	function taskCancel(ev) {
 		ev.preventDefault();
 		btnCancel.current.classList.add("d-none");
 		btnConfirm.current.classList.add("d-none");
 		btnEdit.current.classList.remove("d-none");
 
-		/* now data -> old data */
+		
 		schoolNameInput.current.value = schoolNameInput.current.defaultValue;
 		uploadImg.current.value = "";
 		setPicture(school_data.urlLogo);
@@ -68,73 +72,58 @@ export default function SchoolData({ school_data, schoolID, email }) {
 		schoolLogo.current.classList.add("d-none");
 	}
 
-	/* click confirm */
-	async function taskConfirm(ev,token) {
+	
+	async function taskConfirm(ev) {
 		ev.preventDefault();
 		
-		// console.log("school_data",school_data)
-		
 		if (!schoolNameInput.current.value){
-			alert("โปรดใส่ชื่อโรงเรียน")
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดใส่ชื่อโรงเรียน',
+				showConfirmButton:true,
+				confirmButtonColor:"#f7a518"
+			})
+			return
 		}
 
-		const data = {
+		const body = {
+			schoolID:schoolID,
 			schoolName: schoolNameInput.current.value,
 			logo: picture
 		};
 
-		/*
-		"schoolID":"xxxx",
-				"schoolName":"xxxd",
-		"urlCertificateDocument":"https://res.cloudinary.com/tawanchai/image/upload/v1662800159/certificate_doc/barinschool%40hotmail.com.png",
-				"paymentStatus":"pending",
-				"status":"pending"
-		*/
-		console.log(data);
-
-		/* api call */
-		const result = await edit_school_data(data, token, schoolID)
-		if (result[1]) {
+		const result =  await admin_edit_school(token,body)
+		
+		if (result){
 			Swal.fire({
 				icon: 'success',
 				title: 'แก้ไขข้อมูลสำเร็จ',
 				showConfirmButton: true,
 				confirmButtonColor: "#009431",
-				confirmButtonText: 'ปิด',
-			}).then((res) => {
-				window.location.reload();
+				confirmButtonText: 'ok',
+			}).then(() => {
+				router.reload()
 			})
-		}
-		else {
+		}else{
 			Swal.fire({
 				icon: 'error',
 				title: 'แก้ไขข้อมูลไม่สำเร็จ',
 				showConfirmButton: true,
-				confirmButtonColor: "#ce0303",
-				confirmButtonText: 'ปิด',
-			}).then((res) => {
-				window.location.reload();
+				confirmButtonColor: "#d1000a",
+				confirmButtonText: 'ok',
+			}).then(() => {
+				router.reload()
 			})
 		}
-		/* end api call */
-		// window.location.reload();
 	}
-
-
 	
-
 	useEffect(() => {
-		//console.log("set Stripe",token);
 		// Create PaymentIntent as soon as the page loads
 		stripe(token).then((data) => {
 			if (data) {
 				setClientSecret(data.data.clientSecret)
 			}
-			else {
-				/* แสดงว่าเกิดข้อผิดพลาดในการดึงข้อมูล */
-			}
 		})
-
 	}, []);
 
 	if (school_data.paymentStatus == "success") {
@@ -160,7 +149,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 						/>
 					</div>
 					<div className="card-body">
-						<h4 className="card-text mt-3 d-none border" ref={schoolName}>
+						<h4 className="card-text mt-3 d-none" ref={schoolName}>
 							<label className="form-label">
 								School Name :
 							</label>
@@ -213,7 +202,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 							<button
 								className="btn btn-success d-none w-100 mt-2"
 								ref={btnConfirm}
-								onClick={(ev) => taskConfirm(ev,token)}
+								onClick={(ev) => taskConfirm(ev)}
 							>
 								ตกลง
 							</button>

@@ -12,10 +12,12 @@ export default function Login() {
   const email = useRef()
   const password = useRef()
   const router = useRouter()
+
+  const cookie = new Cookies()
   
   useEffect(() => {
-    const cookie = new Cookies()
-    cookie.remove("token")
+    cookie.remove("token", { path: "/" })
+    cookie.remove("token", { path: "/system_admin" })
   },[])
 
 
@@ -26,23 +28,22 @@ export default function Login() {
 	  const password_check = password.current.value;
 		
     if (!email_check || !password_check) {
-		  Swal.fire(
-        'โปรดกรอกข้อมูลให้ครบถ้วน!',
-        '',
-        'warning',
-      )
+      Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
       return
 		}else{
-        const body = {
-			    email: email_check ,
-			    password: password_check ,
-        }
+      const body = {
+        email: email_check ,
+        password: password_check ,
+      }
       
       spin.current.classList.remove("d-none");
-      
-      // เรียกฟังชันก์จาก unauth
       const result = await checkLogin(body);
-      
       spin.current.classList.add("d-none");
       
       console.log(result)
@@ -51,44 +52,40 @@ export default function Login() {
 						icon: 'error',
 						title: 'ข้อมูลไม่ถูกต้อง',
 						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
+						confirmButtonColor:"#d1000a"
 				})
         return
       }else {
         if (result.data.role === "host"){
-          const cookie = new Cookies()
-		      cookie.set("token",result.data.token)
-          Swal.fire(
-            {
+          
+          cookie.set("token",result.data.token)
+          
+          Swal.fire({
 						icon: 'success',
 						title: 'เข้าสู่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
-            }).then(res => {
-              router.push("/" + "system_admin")
-            })
-          
-          
-        
+          }).then(() => {
+            router.push("/" + "system_admin")
+          })
         }else if ((result.data.role === "teacher" || result.data.role ===  "student")){
           Swal.fire({
-					icon: 'warning',
-					title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสูงเส้นทางที่ถูกต้อง', 
-					showConfirmButton:true,
-					confirmButtonColor:"#e3c21c"
-          }).then(res => {
+            icon: 'info',
+            title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสู่เส้นทางที่ถูกต้อง', 
+            showConfirmButton:true,
+            confirmButtonColor:"#0076d1"
+          }).then(() => {
             router.push("/" + String(result.data.schoolID))
           })
-          
         }else {
-          const cookie = new Cookies()
-		      cookie.set("token",result.data.token)
+          
+          cookie.set("token",result.data.token)
           Swal.fire({
 						icon: 'success',
 						title: 'เข้าสุ่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
-          }).then(res => {
+          }).then(() => {
             router.push("/" + String(result.data.schoolID) + "/admin_school")
           })
           
