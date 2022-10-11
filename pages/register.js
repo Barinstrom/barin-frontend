@@ -44,14 +44,18 @@ export default function Register() {
 		const password = tagForm.current[3].value;
 		const confirmPassword = tagForm.current[4].value;
 		const tel = tagForm.current[5].value;
+		const english = /^[A-Za-z0-9]*$/;
 
 		/* เช็คว่าใส่ข้อมูลครบไหม */
-		if (!email || !schoolID || !password || !confirmPassword || !school_name || !tel || ( password!=confirmPassword )) {
+		if (!english.test(schoolID)) {
+			alert("โปรดใส่ School ID  เป็นตัวอักษรภาษาอังกฤษเท่านั้น");
+		} else if (!email || !schoolID || !password || !confirmPassword || !school_name || !tel || (password != confirmPassword)) {
 			alert("โปรดกรอกข้อมูลให้ถูกต้องและครบถ้วน");
 			return;
 		} else if (!file) {
 			alert("โปรดใส่เอกสารยืนยันโรงเรียน");
-		} else {
+		}
+		else {
 			//console.log("ข้อมูลครบ");
 
 			const will_data = {

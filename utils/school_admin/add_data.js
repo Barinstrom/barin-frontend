@@ -13,6 +13,7 @@ const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 // เพิ่มข้อมูลนักเรียน 1 คน
 export async function add_student(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
+	console.log(data,token,schoolID)
 	try {
 		const result = await axios({
 			url: apiUrl,

@@ -1,153 +1,196 @@
-import React from 'react';
-import styles from '../styles/index.module.css'
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useRef,useEffect } from 'react';
-import { checkLogin } from "../utils/unauth";
-import Swal from 'sweetalert2';
-import Cookies from 'universal-cookie';
+import React from 'react'
+import Link from 'next/link'
 
-export default function Login() {
-  const spin = useRef()
-  const email = useRef()
-  const password = useRef()
-  const router = useRouter()
-
-  const cookie = new Cookies()
-  
-  useEffect(() => {
-    cookie.remove("token", { path: "/" })
-    cookie.remove("token", { path: "/system_admin" })
-  },[])
-
-
-  async function clickLogin(ev){
-    ev.preventDefault();
-    
-    const email_check = email.current.value;
-	  const password_check = password.current.value;
-		
-    if (!email_check || !password_check) {
-      Swal.fire({
-				icon: 'warning',
-				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
-				showConfirmButton: true,
-				confirmButtonColor: "#f7a518",
-				confirmButtonText: 'ok',
-			})
-      return
-		}else{
-      const body = {
-        email: email_check ,
-        password: password_check ,
-      }
-      
-      spin.current.classList.remove("d-none");
-      const result = await checkLogin(body);
-      spin.current.classList.add("d-none");
-      
-      console.log(result)
-      if (!result) {
-        Swal.fire({
-						icon: 'error',
-						title: 'ข้อมูลไม่ถูกต้อง',
-						showConfirmButton:true,
-						confirmButtonColor:"#d1000a"
-				})
-        return
-      }else {
-        if (result.data.role === "host"){
-          
-          cookie.set("token",result.data.token)
-          
-          Swal.fire({
-						icon: 'success',
-						title: 'เข้าสู่ระบบสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-          }).then(() => {
-            router.push("/" + "system_admin")
-          })
-        }else if ((result.data.role === "teacher" || result.data.role ===  "student")){
-          Swal.fire({
-            icon: 'info',
-            title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสู่เส้นทางที่ถูกต้อง', 
-            showConfirmButton:true,
-            confirmButtonColor:"#0076d1"
-          }).then(() => {
-            router.push("/" + String(result.data.schoolID))
-          })
-        }else {
-          
-          cookie.set("token",result.data.token)
-          Swal.fire({
-						icon: 'success',
-						title: 'เข้าสุ่ระบบสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-          }).then(() => {
-            router.push("/" + String(result.data.schoolID) + "/admin_school")
-          })
-          
-        }
-      }
-		}
-  }
-  
+export default function Homepage() {
   return (
-    <main className={styles.register}>
-
-      <style jsx>{`
-        .background-spinner{
-            background-color:rgb(0, 0, 0,0.3);
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+    <>
+    <style jsx>
+      {`
+        .homepage{
+          animation: up-down 2s ease-in-out infinite alternate-reverse both;
         }
-      `}</style>
-			
-      <div className='background-spinner d-none' ref={spin}>
-        <div className="spinner-border text-primary"></div>
-      </div>
+
+        #about {
+          margin-top: 100px;
+          padding-top: 100px;
+          background-color: white;
+          padding-bottom: 100px;
+          color: black;
+          position:relative;
+        }
+
+        #about::after{
+          content:"";
+          background-color:rgb(0, 0, 0,0.1);
+          top:0;
+          bottom:0;
+          left:0;
+          right:0;
+          position:absolute;
+        }
+
+        #price {
+          margin-top: 150px;
+          padding-bottom: 50px;
+          position:relative;
+        }
+
+        .navbar-color{
+          background-color:#fff;
+          opacity:0.8;
+        }
+
+        @media screen and (max-width:650px) {
+          #about {
+            margin-top: 50px;
+            padding-top: 50px;
+            padding-bottom: 50px;
+          }
+
+          #price {
+            margin-top: 100px;
+          }
+        }
+        
+        @keyframes up-down{
+          0% {
+            transform: translateY(10px);
+          }
+          100% {
+            transform: translateY(-10px);
+          }
+        }
+
+        .btn-register{
+          text-decoration:none;
+          background-color:#fff;
+          border-radius:20px;
+          padding:8px 15px;
+          font-size:20px;
+          color:#fff;
+          box-shadow:0 2px 5px #5a96d3;
+        }
+
+        .btn-register:hover{
+          border:1px solid #5a96d3;
+        }
+    `}
+    </style>
+
+    <main className='main' style={{backgroundColor:"#1c73ca"}}>
+    <header>
+          <nav className={`navbar-color fixed-top navbar navbar-light navbar-expand-sm text-black`}>
+            <div className="container">
+              <a href="#about" className="navbar-brand"><img src="logo.jpg" style={{"height":"50px"}} /><span className="ms-3">BarinStrom</span></a>
+              <button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mycollapse">
+                  <span className="navbar-toggler-icon"></span>
+              </button>
+              <div className="collapse navbar-collapse" id="mycollapse">
+                <ul className="navbar-nav ms-auto">
+                  {/* <li className="nav-item me-2"><a className='nav-link' href='#price'>สมัครสมาชิก</a></li> */}
+                  <li className="nav-item me-2"><Link href='/login'><a className='nav-link' >เข้าสู่ระบบ</a></Link></li>
+                </ul>
+              </div>
+            </div>
+            
+          </nav>
+    </header>
       
-      <section className={styles.block} >
-        <aside className={styles.block_left}>
-          <div>
-            <div className={styles.barin_strom}>
-              <span>BARIN</span><br />
-              <span>STROM</span>
+      <section>
+        <div style={{"height":"100px"}}></div>
+        <div className='container'>
+          <div className='row'>
+            <div className="col-md-6">
+              <div className="d-flex justify-content-center align-items-center h-100">
+                  <div>
+                    <h1 className="text-white">เว็บลงทะเบียนชุมนุม</h1>
+                    <p className='text-white fs-4 mb-4'>หากคุณต้องการจัดการสมัครชุมนุมในโรงเรียน แอพของเราตอบโจทย์สำหรับคุณ
+                      มีการจัดการต่างๆที่ดี มีฟีเจอร์ต่างๆ ที่ทำให้ผู้ใช้ไม่ว่าจะเป็นครูหรือนักเรียนใช้งานได้ง่ายและสะดวก
+                    </p>
+                    <Link href='#price'>
+                      <a className='btn-register text-black'>สมัครสมาชิก</a>
+                    </Link>
+                    
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <img className='img-fluid homepage' src="homepage.png"/>
             </div>
           </div>
-        </aside>
-          
-        <aside className={styles.block_right}>
-          <div className={styles.form}>
-            <div className='form-floating'>
-              <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
-              <label className='form-label'>อีเมลล์</label>
-            </div>
-          
-            <div className='form-floating mt-2'>
-              <input type="password" className={`form-control`} placeholder="รหัสผ่าน" id={`${styles.block2}`} ref={password} />
-              <label className='form-label'>รหัสผ่าน</label>
-            </div>
-          </div>
-          
-          <div className='mt-3 d-flex flex-column align-items-center'>
-            <button className={styles.login_btn} onClick={(ev) => clickLogin(ev)}>เข้าสู่ระบบ</button>
-            <Link href="/register"><button className={styles.register_btn}>สมัครสมาชิก</button></Link>
-            <div className={styles.additional}>
-              <Link href="/forgotPass"><a className={`mt-2 ${styles.forgotpass}`}>ลืมรหัสผ่าน</a></Link>
-            </div>
-          </div>
-        </aside> 
+        </div>
       </section>
-    </main>
+
+    <section id="about">
+          <div className="container">
+            <div className="row ">
+              <h1 className='text-center display-4'>
+                เกี่ยวกับเรา
+              </h1>
+            </div>
+        <div className="row mt-3">
+            <div className="col-md-6 ">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua.
+              </p>
+              <ul>
+                  <li>Ullamco laboris nisi ut aliquip ex ea commodo consequat</li>
+                  <li>Duis aute irure dolor in reprehenderit in voluptate velit</li>
+                  <li>Ullamco laboris nisi ut aliquip ex ea commodo consequat</li>
+              </ul>
+            </div>
+            <div className="col-md-6">
+                <p className="text-center mt-3">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                Reprehenderit adipisci distinctio quibusdam eos ut accusantium,
+                dignissimos ab eveniet debitis nihil sequi, neque autem expedita voluptas molestiae.
+                Hic itaque dolor eveniet?
+              </p>
+            </div>
+          </div>
+      </div>
+    </section>
+        
+    <section id="price">
+      <div className="container">
+          <div className="row d-flex justify-content-center">
+              <div className="col-10 text-white">
+                  <h1 className="text-center">Pricing</h1>
+                    <p className="text-center mt-3">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit adipisci distinctio quibusdam eos ut accusantium, dignissimos ab eveniet debitis nihil sequi, neque autem expedita voluptas molestiae. Hic itaque dolor eveniet?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section className="mt-3 ">
+        <div className="container d-flex justify-content-center">
+            <div className="row" style={{"maxWidth":"900px","width":"100%" , "height":"400px"}}>
+            
+                <div className="col-lg-4 mt-3 mt-lg-0 mx-auto">
+                    <div className="card text-black">
+                        <div className="card-header">
+                            <p className="text-center card-title">ปกติ</p>
+                        </div>
+                        <div className="card-body">
+                            <p className="text-center">ค่าบำรุงรักษา <b>2500</b> บาท/ปี</p>
+                            <p className="text-center">
+                                มีค่าสมัครสมาชิก 5000 บาท<br />
+                                <b>ปีแรก</b>ไม่มีค่าบำรุงรักษา<br />
+                                ใช้งานระบบได้ทุกส่วน<br />
+                            </p>
+                        </div>
+                        <div className="d-flex justify-content-center pb-3">
+                          <Link href='/register'><a className="btn btn-primary d-block w-75" >สมัครสมาชิก</a></Link>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+</main>
+    </>
   )
 }

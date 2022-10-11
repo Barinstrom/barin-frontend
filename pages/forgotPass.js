@@ -1,6 +1,7 @@
 import React from "react"
 import { useRef } from "react"
 import { useRouter } from "next/router"
+import Link from "next/link"
 import Swal from "sweetalert2"
 import { forget_password } from "../utils/unauth"
 import styles from '../styles/index.module.css'
@@ -99,6 +100,14 @@ export default function ForgotPass() {
           <div className='mt-3 d-flex flex-column align-items-center'>
             <button className={styles.login_btn} onClick={(ev) => clickForm(ev)}>ลืมรหัสผ่าน</button>
           </div>
+          <div className='mt-3 d-flex flex-column align-items-center'>
+          <Link href="/">
+            <button className={styles.comeback_btn}>กลับสู่หน้าหลัก</button>
+          </Link>
+          
+          </div>
+
+         
         </aside> 
       </section>
     </main>

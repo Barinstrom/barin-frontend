@@ -1,8 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
+import React, {useEffect , useState , useRef} from 'react';
 import { paginationClub } from '../../utils/auth';
 import { register_club,get_student_ownclub,drop_club } from '../../utils/student/student';
 import Cookies from 'universal-cookie';

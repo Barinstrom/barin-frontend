@@ -31,8 +31,7 @@ export default function EditClub({ school_data,schoolID }) {
     
     const cookie = new Cookies()
     const token = cookie.get("token")
-    // console.log(token)
-
+    
     const reload = (
         <main style={{ height: "400px" }}>
             <div className="d-flex justify-content-center h-100 align-items-center">
@@ -49,8 +48,10 @@ export default function EditClub({ school_data,schoolID }) {
             "page":1,
         }
         window.localStorage.setItem("pageEditClub",1)
+
         
         paginationClub(body, token, schoolID).then(result => {
+            console.log(result)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -63,7 +64,6 @@ export default function EditClub({ school_data,schoolID }) {
     },[])
 
     function detailInfo(item, ev) {
-        // console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
@@ -256,7 +256,6 @@ export default function EditClub({ school_data,schoolID }) {
         setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
         setReloadTable(false)
-        // console.log(result.data)
         if (!result){
             setDisplayError(true)
         }else{
@@ -286,7 +285,7 @@ export default function EditClub({ school_data,schoolID }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {[].map((item,index) => {
+                    {result.map((item,index) => {
                         return (
                             <tr key={index}>
                                 <td>{item.groupID}</td>

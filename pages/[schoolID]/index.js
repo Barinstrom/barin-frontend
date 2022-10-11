@@ -170,9 +170,9 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               >
                 เข้าสู่ระบบ
               </button>
-              <Link href="/register">
+              {/* <Link href="/register">
                 <button className={styles.register_btn}>สมัครสมาชิก</button>
-              </Link>
+              </Link> */}
               <div className={styles.additional}>
                 <Link href="/forgotPass">
                   <a className={`mt-2 ${styles.forgotpass}`}>ลืมรหัสผ่าน</a>

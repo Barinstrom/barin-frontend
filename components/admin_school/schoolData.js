@@ -13,7 +13,7 @@ import { stripe } from "../../utils/payment";
 import CheckoutForm from "../Stripe_CheckoutForm";
 
 const stripePromise = loadStripe(
-	"pk_test_51LevDSHCloRRkXJqsQqsWQbkJowAnWVTJ5dUqbk25qSOCcPmGGAgtXcjPEEMKklf8jFduSSalNUu1qM5fpK62WUG00l9MCl6LT"
+	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
 export default function SchoolData({ school_data, schoolID, email }) {

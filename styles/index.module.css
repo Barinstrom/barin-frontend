@@ -86,6 +86,18 @@
   margin-top: 5px;
 }
 
+.comeback_btn{
+  font-size: 1.1rem;
+  border: none;
+  padding: 10px;
+  width: 300px;
+  background-color: #005ebd;
+  border-radius: 25px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+}
+
 .additional{
   margin-top: 10px;
 }

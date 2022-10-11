@@ -126,3 +126,26 @@ export async function get_all_schoolID() {
 		return false
 	}
 };
+
+
+// activate check
+export async function is_activate(data) {
+	const apiUrl = stagingUrl + "/activate";
+
+	try {
+		const result = await axios({
+			url: apiUrl,
+			method: "post",
+			data: JSON.stringify(data),
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			timeout: 10000
+		})
+		return [result, true]
+	}
+	catch (err) {
+		console.log(err)
+		return [err, false]
+	}
+};
