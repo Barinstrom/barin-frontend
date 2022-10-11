@@ -194,3 +194,9 @@ export default function CheckStatus() {
     }
     
 }
+
+export async function getServerSideProps() {
+    return {
+        props: {}
+    }
+}
