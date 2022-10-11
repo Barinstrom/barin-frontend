@@ -27,6 +27,8 @@ export default function Student({ schoolID }) {
 	const [readyTime,setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
 	const [userEmail,setUserEmail] = useState("")
+	// ใช้ในหน้า pastClub
+	const [schedule,setSchedule] =useState("")
 	
 	useEffect(() => {
 		const cookies = new Cookies();
@@ -39,6 +41,7 @@ export default function Student({ schoolID }) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
 					const email = result[0][0].data.email
+					
 					// console.log(email)
 					if (role !== "student") {
 						setDisplayFirst(false)
@@ -53,6 +56,8 @@ export default function Student({ schoolID }) {
 							setUserEmail(email)
 							setchooseBtnStart(true)
 							setReadyTime(true)
+							// ใช้ในหน้า pastClub
+							setSchedule(result[0][0].data._doc.schedule)
 						}
 					} else {
 						setDisplayFirst(false)
@@ -198,7 +203,8 @@ export default function Student({ schoolID }) {
 	}else if (countBtn === 1){
 		component = <Searchclub schoolID={schoolID}/>
 	}else{
-		component = <Pastclub schoolID={schoolID}/>
+		console.log(schedule)
+		component = <Pastclub schoolID={schoolID} schedule={schedule}/>
 	}
 	
 	if (displayFirst === "loading"){

@@ -5,7 +5,7 @@ import { get_student_pastclub } from "../../utils/student/student";
 import Cookies from "universal-cookie";
 
 
-export default function Pastclub({ schoolID }) {
+export default function Pastclub({ schoolID,schedule }) {
 	const clubName = useRef()
 	const clubInfo = useRef()
 	const groupID = useRef()
@@ -49,7 +49,7 @@ export default function Pastclub({ schoolID }) {
 												>ดูรายละเอียด
 												</button>
 											</td>
-											<td><Review item={item} schoolID={schoolID} /></td>
+											<td><Review item={item} schoolID={schoolID} schedule={schedule} /></td>
 										</tr>
 									)
 								})}
