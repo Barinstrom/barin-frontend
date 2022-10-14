@@ -13,7 +13,8 @@ export default function InsertTeacher({ school_data,schoolID }) {
 
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
-        const result = []
+			const result = []
+			text = text.trim()
         const tmp = text.split("\n")
         const heads = tmp[0].split(",")
         

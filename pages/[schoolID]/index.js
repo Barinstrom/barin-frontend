@@ -85,18 +85,17 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
                 title: "เข้าสู่ระบบสำเร็จ",
                 showConfirmButton: true,
                 confirmButtonColor: "#009431",
-              }).then(() => {
-                router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
-              });
+              })
+              router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
+
             }else if (result.data.role === "admin" || result.data.role === "host"){
                 Swal.fire({
                   icon: "info",
                   title:"เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" +"\n" +"กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
                   showConfirmButton: true,
                   confirmButtonColor: "#0076d1",
-                }).then(() => {
-                  router.push("/");
-              });
+                })
+                router.push("/login");
             }
           }
         }

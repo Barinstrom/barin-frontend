@@ -29,3 +29,26 @@ export async function update_club(data, token, schoolID) {
     return false
   }
 };
+
+
+// ตัดเกรด
+export async function update_study_status(data, token, schoolID) {
+  const apiUrl = stagingUrl + String(schoolID) + "/update-study-status";
+
+  try {
+    const result = await axios({
+      url: apiUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      method: "patch",
+      data: JSON.stringify(data),
+      timeout: 10000
+    })
+    return result
+  } catch (err) {
+    console.log(err)
+    return false
+  }
+};

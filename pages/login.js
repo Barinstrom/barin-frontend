@@ -65,18 +65,18 @@ export default function Login() {
 						title: 'เข้าสู่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
-          }).then(() => {
-            router.push("/" + "system_admin")
           })
+          router.push("/" + "system_admin")
+          
         }else if ((result.data.role === "teacher" || result.data.role ===  "student")){
           Swal.fire({
             icon: 'info',
             title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสู่เส้นทางที่ถูกต้อง', 
             showConfirmButton:true,
             confirmButtonColor:"#0076d1"
-          }).then(() => {
-            router.push("/" + String(result.data.schoolID))
           })
+          router.push("/" + String(result.data.schoolID))
+          
         }else {
           
           cookie.set("token",result.data.token)
@@ -85,9 +85,9 @@ export default function Login() {
 						title: 'เข้าสุ่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
-          }).then(() => {
-            router.push("/" + String(result.data.schoolID) + "/admin_school")
           })
+          router.push("/" + String(result.data.schoolID) + "/admin_school")
+          
           
         }
       }
