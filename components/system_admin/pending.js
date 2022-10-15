@@ -32,7 +32,6 @@ export default function Pending() {
 		window.localStorage.setItem("pagePending", 1)
 		
 		get_pending(body, token).then(result => {
-			console.log(result)
 			if (!result) {
 				setDisplayError(true)
 			} else {
@@ -73,9 +72,9 @@ export default function Pending() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -96,13 +95,12 @@ export default function Pending() {
 		}
 
 		const result = await get_pending(body, token)
-
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -144,9 +142,9 @@ export default function Pending() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -162,6 +160,13 @@ export default function Pending() {
 					.certificate:hover{
 						text-decoration: underline;
 					}
+
+					.allbtn{
+						border:none;
+						background-color:#2f3d20;
+						color:white;
+						border-radius:3px;
+					}
 				`}</style>
 				
 				<div className='table-responsive'>
@@ -170,13 +175,12 @@ export default function Pending() {
 						<tr>
 							<th style={{ width: "100px" }}>schoolID</th>
 							<th style={{ width: "300px" }}>schoolName</th>
-							<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
-							<th style={{ width: "200px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
+							<th style={{ width: "150px" }} className="text-center"><span>certificate</span></th>
+							<th style={{ width: "200px" }} className="text-center"><span>จัดการโรงเรียน</span></th>
 						</tr>
 					</thead>
 					<tbody>
 						{result.map((item, index) => {
-							//console.log(item)
 							return (
 								<tr key={index}>
 									<td><span>{item.schoolID}</span></td>
@@ -189,20 +193,20 @@ export default function Pending() {
 										>กดเพื่อดู certificate</span>
 									</td>
 									<td className="d-flex flex-column flex-lg-row justify-content-end">
-										<button className="btn btn-sm btn-warning me-1 mt-1 mt-md-0"
+										<button className="allbtn me-1 mt-1"
 											onClick={() => getDetails(item)}
 											data-bs-toggle="modal"
 											data-bs-target="#approveModal"
 										>แก้ไขข้อมูล</button>
-										<button className='btn btn-sm btn-success me-1 mt-1 mt-md-0'
+										<button className='allbtn me-1 mt-1'
 											onClick={() => approveSchool(item)}
 										>
-											approve
+											อนุมัติ
 										</button>
-										<button className='btn btn-sm btn-danger me-1 mt-1 mt-md-0'
+										<button className='allbtn me-1 mt-1'
 											onClick={() => notApproveSchool(item)}
 										>
-											not approve
+											ไม่อนุมัติ
 										</button>
 									</td>
 								</tr>
@@ -238,7 +242,6 @@ export default function Pending() {
 	}
 
 	function getUrlCertificateDocument(item) {
-		// console.log(item)
 		urlCertificateDocument.current.src = item.urlCertificateDocument
 		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
     }
@@ -253,27 +256,33 @@ export default function Pending() {
 
             showCancelButton: true,
             cancelButtonText: "cancel",
-            cancelButtonColor: "#d93333",
-		}).then((result) => {
-			if (result.isConfirmed){
-				const body = {
+			cancelButtonColor: "#d93333",
+						
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return sys_edit_school(token, {
 					schoolID: item.schoolID,
 					schoolName: item.schoolName,
 					status:"approve"
-				}
-				
-				sys_edit_school(token,body).then(result => {
-					if (result){
-						Swal.fire({
+				})
+			},
+			allowOutsideClick: () => !Swal.isLoading()
+		
+		}).then((result) => {
+			if (result.isConfirmed) {
+				console.log(result)
+				if (result.value) {
+					Swal.fire({
 							icon: 'success',
 							title: 'ทำการ approve สำเร็จ',  
 							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
+							confirmButtonColor:"#0047a3"
+					}).then(res => {
 							router.reload()
 					})
-					}else{
-						Swal.fire({
+				}
+				else {
+					Swal.fire({
 							icon: 'error',
 							title: 'ทำการ approve ไม่สำเร็จ',  
 							showConfirmButton:true,
@@ -281,8 +290,34 @@ export default function Pending() {
 						}).then(res => {
 							router.reload()
 					})
-					}
-				})
+				}
+				// const body = {
+				// 	schoolID: item.schoolID,
+				// 	schoolName: item.schoolName,
+				// 	status:"approve"
+				// }
+				
+				// sys_edit_school(token,body).then(result => {
+				// 	if (result){
+				// 		Swal.fire({
+				// 			icon: 'success',
+				// 			title: 'ทำการ approve สำเร็จ',  
+				// 			showConfirmButton:true,
+				// 			confirmButtonColor:"#00a30b"
+				// 		}).then(res => {
+				// 			router.reload()
+				// 	})
+				// 	}else{
+				// 		Swal.fire({
+				// 			icon: 'error',
+				// 			title: 'ทำการ approve ไม่สำเร็จ',  
+				// 			showConfirmButton:true,
+				// 			confirmButtonColor:"#00a30b"
+				// 		}).then(res => {
+				// 			router.reload()
+				// 	})
+				// 	}
+				// })
 			}
 		})
 	}
@@ -299,35 +334,52 @@ export default function Pending() {
             cancelButtonText: "ยกเลิก",
             cancelButtonColor: "#d93333",
         }).then((result) => {
-            if (result.isConfirmed){
-				const body = {
-					schoolID: item.schoolID,
-					schoolName: item.schoolName,
-					status:"not_approve"
-				}
-				
-				sys_edit_school(token,body).then(result => {
-					if (result){
-						Swal.fire({
-							icon: 'success',
-							title: 'ทำการ not approve สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#0047a3"
-					}).then(res => {
-							router.reload()
-					})
-					}else{
-						Swal.fire({
-							icon: 'error',
-							title: 'ทำการ not approve ไม่สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
-							router.reload()
-					})
+					if (result.isConfirmed) {
+
+							Swal.fire({
+								title: 'กรุณาใส่ข้อความที่จะส่งไปบอกผู้สมัครใช้งานระบบ',
+								input: 'text',
+								inputAttributes: {
+									autocapitalize: 'off'
+								},
+								showCancelButton: true,
+								confirmButtonText: 'ส่งอีเมล',
+								showLoaderOnConfirm: true,
+								preConfirm: (msg) => {
+									return sys_edit_school(token, {
+										schoolID: item.schoolID,
+										schoolName: item.schoolName,
+										status: "not_approve",
+										msg:msg
+									})
+								},
+								allowOutsideClick: () => !Swal.isLoading()
+							}).then((result) => {
+								if (result.isConfirmed) {
+									console.log(result)
+									if (result.value) {
+										Swal.fire({
+												icon: 'success',
+												title: 'ทำการ not approve สำเร็จ',  
+												showConfirmButton:true,
+												confirmButtonColor:"#0047a3"
+										}).then(res => {
+												router.reload()
+										})
+									}
+									else {
+										Swal.fire({
+												icon: 'error',
+												title: 'ทำการ not approve ไม่สำเร็จ',  
+												showConfirmButton:true,
+												confirmButtonColor:"#00a30b"
+											}).then(res => {
+												router.reload()
+										})
+									}
+								}
+							})
 					}
-				})
-			}
         })
     }
 

@@ -39,7 +39,8 @@ export default function System() {
 					const role = result[0][0].data.role
 					const email = result[0][0].data.email
 					if (role !== "host") {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}else if (data_tmp) {
 						setDisplayFirst(true)
 						//setData_school(data_tmp)
@@ -47,12 +48,14 @@ export default function System() {
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 				}
 				else {
 					if (result[0][0].response.status === 401) {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 				}
 			})
@@ -344,7 +347,7 @@ export default function System() {
 			</>
 		)
 	} else {
-		return <Error statusCode={404} />
+		return <Error statusCode={401} />
 	}
 }
 

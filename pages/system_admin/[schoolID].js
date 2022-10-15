@@ -76,12 +76,14 @@ export default function Admin({ schoolID }) {
 						// }
 						
 					} else {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 				
 				}else{
-					if (result[0][0].response.status === 401){
-						setDisplayFirst(false)
+					if (result[0][0].response.status === 401) {
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 				}
 			})

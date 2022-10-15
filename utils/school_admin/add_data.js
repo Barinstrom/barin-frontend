@@ -6,7 +6,7 @@ import axios from "axios";
 /* url เทส */
 //https://barin-backend-staging.herokuapp.com
 /* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com";
+const Url = "https://barinapi.tawanchai.com/";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
 
@@ -48,8 +48,6 @@ export async function add_students(data,token,schoolID) {
 			data: JSON.stringify(data),
 			timeout: 10000
 		})
-		// ตรงนี้สำเร็จ status 200 แต่ รีเทินค่า [] กลับมา ไม่มีข้อมูลใน database
-		//console.log(result)
 		return true
 	} catch (err) {
 		console.log(err)
@@ -81,7 +79,7 @@ export async function add_club(data,token,schoolID) {
 };
 
 
-// เพิ่มคลับ หลายคลับ 
+
 export async function add_clubs(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-clubs";
 	
@@ -96,8 +94,8 @@ export async function add_clubs(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 100000
 		})
-		// ยังไม่ได้เทส
-		return result
+		console.log(result)
+		return true
 	} catch (err) {
 		console.log(err)
 		return false

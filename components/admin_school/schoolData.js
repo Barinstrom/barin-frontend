@@ -126,7 +126,62 @@ export default function SchoolData({ school_data, schoolID, email }) {
 		})
 	}, []);
 
-	if (school_data.paymentStatus == "success") {
+
+
+	if (school_data.paymentStatus == "pending") {
+		const appearance = {
+			theme: "stripe",
+		};
+		const options = {
+			clientSecret,
+			appearance,
+		};
+
+		return (
+			<main>
+				<style jsx>{`
+				.stripe_pay {
+					width: 100%;
+				}
+
+				@media screen and (max-width: 768px) {
+						.stripe_pay {
+							display: flex;
+							justify-content: center;
+						}
+					}
+
+				`}</style>
+				<div className="alert alert-danger text-center" role="alert">
+					คุณยังไม่ได้ทำการชำระเงิน <br /> กรุณาทำการชำระเงิน เพื่อเปิดใช้งานระบบ
+				</div>
+				<div className="alert alert-danger text-center" role="alert">
+					<div className="stripe_pay">
+						{clientSecret && (
+							<Elements options={options} stripe={stripePromise}>
+								<CheckoutForm schoolID={schoolID} token={token} email={email} />
+							</Elements>
+						)}
+					</div>
+				</div>
+			</main>
+		);
+	}
+	else if (school_data.status == "pending") {
+		return (
+			<div className="alert alert-danger text-center" role="alert">
+				โรงเรียนของคุณอยู่ในระหว่างรอการอนุมัติ
+			</div>
+		)
+	}
+	else if (school_data.status == "not_approve") {
+		return (
+			<div className="alert alert-danger text-center" role="alert">
+				ระบบ <b>ไม่อนุมัติ</b> โรงเรียนของคุณ กรุณาตรวจสอบ email
+			</div>
+		)
+	}
+	else if (school_data.paymentStatus == "success") {
 		return (
 			<div>
 				<style jsx>{`
@@ -212,43 +267,5 @@ export default function SchoolData({ school_data, schoolID, email }) {
 				
 			</div>
 		);
-	} else {
-		const appearance = {
-			theme: "stripe",
-		};
-		const options = {
-			clientSecret,
-			appearance,
-		};
-
-		return (
-			<main>
-				<style jsx>{`
-				.stripe_pay {
-					width: 100%;
-				}
-
-				@media screen and (max-width: 768px) {
-						.stripe_pay {
-							display: flex;
-							justify-content: center;
-						}
-					}
-
-				`}</style>
-				<div className="alert alert-danger text-center" role="alert">
-					คุณยังไม่ได้ทำการชำระเงิน <br /> กรุณาทำการชำระเงิน เพื่อเปิดใช้งานระบบ
-				</div>
-				<div className="alert alert-danger text-center" role="alert">
-					<div className="stripe_pay">
-						{clientSecret && (
-							<Elements options={options} stripe={stripePromise}>
-								<CheckoutForm schoolID={schoolID} token={token} email={email} />
-							</Elements>
-						)}
-					</div>
-				</div>
-			</main>
-		);
-	}
+	} 
 }

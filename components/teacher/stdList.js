@@ -12,7 +12,7 @@ export default function StdList({schoolID}){
     const headers = [
         { label: "firstname", key: "firstname" },
         { label: "lastname", key: "lastname" },
-        // { label: "classYear", key: "classYear" },
+        { label: "classYear", key: "classYear" },
         { label: "status", key: "status" },
     ];
 

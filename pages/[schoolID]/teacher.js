@@ -99,12 +99,14 @@ export default function Teacher({ schoolID }) {
 						const role = result[0].data.role
 						const email = result[0].data.email
 						if (role !== "teacher") {
-							setDisplayFirst(false)
+							router.push("/" + String(schoolID))
+							// setDisplayFirst(false)
 						}
 					
 						else if (data_tmp) {
 							if (data_tmp.schoolID != schoolID) {
-								setDisplayFirst(false)
+								router.push("/" + String(data_tmp.schoolID))
+								// setDisplayFirst(false)
 							}
 							else {
 								setDisplayFirst(true)
@@ -114,12 +116,14 @@ export default function Teacher({ schoolID }) {
 								setCheckReadyComponent(true)
 							}
 						} else {
-							setDisplayFirst(false)
+							router.push("/" + String(schoolID))
+							// setDisplayFirst(false)
 						}
 					}
 					else {
 						if (result[0].response.status !== 200) {
-							setDisplayFirst(false)
+							router.push("/" + String(schoolID))
+							// setDisplayFirst(false)
 						}
 					}
 				})

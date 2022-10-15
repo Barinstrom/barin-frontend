@@ -1,63 +1,70 @@
 import React from "react";
 import { useState,useRef } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import { register } from "../utils/unauth";
 import Swal from "sweetalert2";
 
 export default function Register() {
-	/* state เก็บข้อมูลไฟล์ string base64 และชื่อไฟล์ */
-	const [file, setfile] = useState();
-	/* ตัวแปรผูกข้อมูลเพื่อเอาค่า value */
+	const spin = useRef()
+	const router = useRouter()
+	const [file, setfile] = useState("");
 	const tagForm = useRef([]);
 	const click_check = useRef();
 
-	function checkFile(file, ev) {
-		/* console.log(file)
-		window.open(file, "_blank"); */
+	function checkFile(file) {
 		window.open().document.write(`<img src="${file}"></img>`);
 	}
 
-	/* img to base64 */
 	function encodeImageFileAsURL(ev) {
-		//console.log(ev);
-		var file = ev.target.files[0];
-		var reader = new FileReader();
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
 		reader.onloadend = function () {
-			// console.log("RESULT", reader.result);
 			setfile(reader.result);
 		};
-		reader.readAsDataURL(file);
-
 		click_check.current.classList.remove("d-none");
-
 	}
 
-	/* ฟังชันก์เมื่อกดปุ่มยืนยัน */
+	
 	async function submitForm(ev) {
-		/* ป้องกันกันส่งข้อมูลไป server โดยเราจะทำการ fetch post ข้อมูลไปทาง api แทน */
 		ev.preventDefault();
 
-		/* อ้างอิงถึงแต่ละ tag html แล้วนำค่ามา */
 		const school_name = tagForm.current[0].value;
 		const email = tagForm.current[1].value;
 		const schoolID = tagForm.current[2].value;
 		const password = tagForm.current[3].value;
 		const confirmPassword = tagForm.current[4].value;
 		const tel = tagForm.current[5].value;
-		const english = /^[A-Za-z0-9]*$/;
+		const characterEnglish = /^[A-Za-z0-9]*$/;
 
-		/* เช็คว่าใส่ข้อมูลครบไหม */
-		if (!english.test(schoolID)) {
-			alert("โปรดใส่ School ID  เป็นตัวอักษรภาษาอังกฤษเท่านั้น");
+		if (!characterEnglish.test(schoolID)) {
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดใส่ School ID  เป็นตัวอักษรภาษาอังกฤษเท่านั้น',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+			return;
 		} else if (!email || !schoolID || !password || !confirmPassword || !school_name || !tel || (password != confirmPassword)) {
-			alert("โปรดกรอกข้อมูลให้ถูกต้องและครบถ้วน");
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ถูกต้องและครบถ้วน',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
 			return;
 		} else if (!file) {
-			alert("โปรดใส่เอกสารยืนยันโรงเรียน");
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดใส่เอกสารยืนยันโรงเรียน',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
 		}
 		else {
-			//console.log("ข้อมูลครบ");
-
 			const will_data = {
 				schoolName: school_name,
 				email: email,
@@ -68,86 +75,89 @@ export default function Register() {
 				tel: tel,
 				role: "admin",
 			};
-			console.log("gogo");
-			// window.localStorage.setItem("infomation", JSON.stringify(body));
-
-			/* will call register api */
-			const [status,result] = await register(will_data);
-
-			console.log(status,result);
-			/* ถ้าได้ res เป็น ... จะ ... */
+			
+			spin.current.classList.remove("d-none")
+			const [result,status] = await register(will_data);
+			spin.current.classList.add("d-none")
+			
 			if (!status) {
-				if (result) {
-					Swal.fire({
-						icon: 'error',
-						title: result,  
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
-					})
-				}
-				else {
-					Swal.fire({
-						icon: 'error',
-						title: 'สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง!',  
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
+				Swal.fire({
+					icon: 'error',
+					title: result.response.data,  
+					showConfirmButton:true,
+					confirmButtonColor:"#ce0303"
 				})
-				}
+				return;
 			}
 			else {
 				Swal.fire({
-						icon: 'success',
-						title: 'สมัครสมาชิกสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-					})
-				Router.push({
-					pathname: "/",
-				});
+					icon: 'success',
+					title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมลล์' + '\n' + 'เพื่อยืนยันอีเมลล์',
+					showConfirmButton:true,
+					confirmButtonColor:"#009431"
+				}).then(() => {
+					router.push("/");
+				})
 			}
 		}
 	}
-
+	
 	return (
-		<>
-			
-
-			<div className="container p-3 mt-4">
-				
+		<div className="position-relative">
+			<style jsx>{`
+				.background-spinner{
+					background-color:rgb(0, 0, 0,0.3);
+					position: absolute;
+					top: 0;
+					left: 0;
+					right:0;
+					bottom:0;
+					width:100%;
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					z-index: 100;
+				}
+			`}</style>
+			<div className='background-spinner d-none' ref={spin}>
+				<div className="spinner-border text-primary"></div>
+			</div>
+			<div className="container p-1 mt-4">
 				<div className="row">
 					<div className="col-lg-6 mt-0 p-3">
-						<div>
-							<h2 className="text-center">
-								ข้อตกลงในการสมัครสมาชิก
-							</h2>
-							<ul className="list-group list-group-flush">
-								<li className="list-group-item mt-3">
-									<span>1. โปรดกรอกข้อมูลให้ครบถ้วน</span>
-								</li>
-								<li className="list-group-item">
-									<span>
-										2.
-										ในการกรอกข้อมูลแต่ละครั้งควรเช็คความถูกต้องให้เรียบร้อย
-									</span>
-								</li>
-								<li className="list-group-item">
-									<span>
-										3.
-										ตรวจสอบไฟล์ที่ต้องส่งว่าครบถ้วนและถูกต้องตามข้อกำหนดหรือไม่
-									</span>
-								</li>
-							</ul>
+						<h2 className="text-center">ข้อตกลงในการสมัครสมาชิก</h2>
+						<ul className="nav nav-tabs">
+							<li className="nav-item">
+								<a className="nav-link active" data-bs-toggle="tab" href="#tab1">1</a>
+							</li>
+							<li className="nav-item">
+								<a className="nav-link" data-bs-toggle="tab" href="#tab2">2</a>
+							</li>
+							<li className="nav-item">
+								<a className="nav-link" data-bs-toggle="tab" href="#tab3">3</a>
+							</li>
+						</ul>
+						<div className="tab-content">
+							<div id="tab1" className="tab-pane fade show active">
+								ในการสมัครสมาชิกโปรดกรอกข้อมูลให้ครบถ้วน
+							</div>
+							<div id="tab2" className="tab-pane fade">
+								เมื่อกรอกข้อมูลเสร็จแล้ว โปรดตรวจสอบความถูกต้องก่อนยืนยัน
+							</div>
+							<div id="tab3" className="tab-pane fade">
+								เมื่อกรอกข้อมูลเสร็จแล้ว โปรดตรวจสอบความถูกต้องก่อนยืนยัน
+							</div>
 						</div>
 					</div>
 					<div className="col-lg-6 mt-4 mt-lg-0 p-3">
 						<h2 className="text-center">สมัครสมาชิก</h2>
-						{/* ฟอร์ม */}
+						
 						<form
 							className="row g-2"
 							onSubmit={(ev) => submitForm(ev)}
 							encType="multipart/form-data"
 						>
-							{/* ชื่อโรงเรียน  */}
 							<div className="">
 								<label className="form-label">
 									ชื่อโรงเรียน
@@ -160,11 +170,10 @@ export default function Register() {
 									ref={(el) => (tagForm.current[0] = el)}
 								/>
 							</div>
-							{/* อีเมลล์  */}
+							
 							<div className="col-12">
 								<label className="form-label">
-									{" "}
-									อีเมลล์ (สำหรับ login และยืนยัน){" "}
+									อีเมลล์ (สำหรับ login และยืนยัน)
 								</label>
 								<input
 									type="email"
@@ -174,7 +183,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[1] = el)}
 								/>
 							</div>
-							{/* path  */}
+							
 							<div className="col-12">
 								<label className="form-label">
 									School ID (สำหรับกำหนด path ของเว็ปโรงเรียน)
@@ -187,7 +196,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[2] = el)}
 								/>
 							</div>
-							{/* path  */}
+							
 							<div className="col-12">
 								<label className="form-label">password</label>
 								<input
@@ -198,7 +207,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[3] = el)}
 								/>
 							</div>
-							{/* path  */}
+							
 							<div className="col-12">
 								<label className="form-label">
 									confirmPassword
@@ -211,11 +220,10 @@ export default function Register() {
 									ref={(el) => (tagForm.current[4] = el)}
 								/>
 							</div>
-							{/* โทรศัพท์มือถือ */}
+							
 							<div className="col-12">
 								<label className="form-label">
-									{" "}
-									เบอร์โทรศัพท์ที่สามารถติดต่อได้{" "}
+									เบอร์โทรศัพท์ที่สามารถติดต่อได้
 								</label>
 								<input
 									type="tel"
@@ -226,11 +234,9 @@ export default function Register() {
 								/>
 							</div>
 
-							{/* เอกสารยืนยันโรงเรียน ใส่ multiple กรณีอัปโหลดได้หลายไฟล์*/}
 							<div className="col-12">
 								<label className="form-label">
-									{" "}
-									เอกสารยืนยันโรงเรียน{" "}
+									เอกสารยืนยันโรงเรียน (ไฟล์รูปภาพ jpeg)
 								</label>
 								<br />
 								<input
@@ -240,21 +246,20 @@ export default function Register() {
 									onChange={(ev) => encodeImageFileAsURL(ev)}
 								/>
 							</div>
-							{/* ดูเอกสารยืนยันโรงเรียน */}
+							
 							<div className="col-12 d-none" ref={click_check}>
 								<label className="form-label">
 									กรุณากดเพื่อเช็คเอกสารยืนยันโรงเรียน :
 									<p
-										onClick={(ev) => checkFile(file, ev)}
-										className="bg-info text-center rounded rounded-3"
+										onClick={() => checkFile(file)}
+										className="bg-dark text-white text-center rounded rounded-2"
 									>
 										check picture
 									</p>
 								</label>
 							</div>
-							{/* ปุ่มยืนยัน */}
 							<div className="col-12">
-								<button className="btn btn-warning">
+								<button className="btn btn-success">
 									ยืนยัน
 								</button>
 							</div>
@@ -262,6 +267,6 @@ export default function Register() {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

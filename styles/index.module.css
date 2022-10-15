@@ -44,13 +44,11 @@
 .barin_strom span:nth-child(1){
   color: #005ebd;
   cursor: pointer;
-  transition: all 0.5s ease;
 }
 
 .barin_strom span:last-child{
   color: #ff5c5c;
   cursor: pointer;
-  transition: all 0.5s ease;
 }
 
 .block_right{
@@ -107,13 +105,9 @@
 }
 
 
-.barin_strom span:nth-child(1):hover , .barin_strom span:last-child:hover{
-  font-size: 9rem;
-}
-
 @media screen and (max-width:990px) {
   .barin_strom{
-    font-size: 10rem;
+    font-size: 9rem;
   }
 
   .block{
@@ -207,8 +201,5 @@
   }
 }
 
-.barin_strom span:nth-child(1):hover , .barin_strom span:last-child:hover{
-  font-size: 6.0rem;
-}
 
 

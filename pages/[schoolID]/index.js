@@ -56,7 +56,9 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
         });
         return;
       } else {
-        const check_data = await get_data(result.data.token);
+        // console.log(result)
+        const check_data = await get_data(result[0].data.token);
+        // console.log(check_data)
         if (!check_data[1]) {
           Swal.fire({
             icon: "error",
@@ -77,18 +79,18 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
             });
             return;
           }else {
-            if (result.data.role === "teacher" || result.data.role === "student"){
+            if (result[0].data.role === "teacher" || result[0].data.role === "student"){
               const cookie = new Cookies();
-              cookie.set("token", result.data.token);
+              cookie.set("token", result[0].data.token);
               Swal.fire({
                 icon: "success",
                 title: "เข้าสู่ระบบสำเร็จ",
                 showConfirmButton: true,
                 confirmButtonColor: "#009431",
               })
-              router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
+              router.push("/" + String(result[0].data.schoolID) + "/" + result[0].data.role)
 
-            }else if (result.data.role === "admin" || result.data.role === "host"){
+            }else if (result[0].data.role === "admin" || result[0].data.role === "host"){
                 Swal.fire({
                   icon: "info",
                   title:"เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" +"\n" +"กำลังนำท่านสู่เส้นทางที่ถูกต้อง",

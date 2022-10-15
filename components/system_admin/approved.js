@@ -35,7 +35,6 @@ export default function Aprroved() {
 		window.localStorage.setItem("pageAprroved", 1)
 
 		get_approved(body, token).then(result => {
-			console.log(result)
 			if (!result) {
 				setDisplayError(true)
 			} else {
@@ -66,9 +65,9 @@ export default function Aprroved() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -93,9 +92,9 @@ export default function Aprroved() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -137,9 +136,9 @@ export default function Aprroved() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			const paginate_tmp = generate(result)
+			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
-			showData(result.docs)
+			showData(result.data.docs)
 			showPaginate(paginate_tmp)
 		}
 	}
@@ -154,6 +153,22 @@ export default function Aprroved() {
 					}
 					.certificate:hover{
 						text-decoration: underline;
+					}
+
+					.allbtn{
+						border:none;
+						background-color:#2f3d20;
+						color:white;
+						border-radius:3px;
+					}
+
+					.all_taga{
+						border:none;
+						background-color:#2f3d20;
+						color:white;
+						border-radius:3px;
+						text-decoration:none;
+						padding:0 5px;
 					}
 				`}</style>
 				
@@ -181,8 +196,8 @@ export default function Aprroved() {
 												data-bs-target="#urlCertificateDocument"
 											>กดเพื่อดู certificate</span>
 										</td>
-										<td className="d-flex flex-column flex-xl-row justify-content-end">
-											<button className='btn btn-sm btn-warning me-0 me-xl-2 mb-2 mb-xl-0'
+										<td className="d-flex flex-column flex-lg-row justify-content-end">
+											<button className='allbtn me-0 me-lg-2'
 												onClick={() => getDetails(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#approveModal"
@@ -192,7 +207,7 @@ export default function Aprroved() {
 											<Link href={{
 												pathname: `/system_admin/${item.schoolID}`,
 											}}>
-												<a className='btn btn-sm btn-secondary'>สวมรอย</a>
+												<a className='all_taga text-center mt-1 mt-lg-0'>สวมรอย</a>
 											</Link>
 										</td>
 									</tr>
@@ -244,7 +259,6 @@ export default function Aprroved() {
 	}
 
 	function urlLogoencodeImageFileAsURL(ev) {
-		
 		let file = ev.target.files[0];
 		let reader = new FileReader();
 		
@@ -380,5 +394,4 @@ export default function Aprroved() {
 			</>
 		)
 	}
-
 }

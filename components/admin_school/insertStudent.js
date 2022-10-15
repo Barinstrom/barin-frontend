@@ -3,7 +3,7 @@ import { useState,useRef } from "react";
 import ErrorPage from "next/error";
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
-import { add_student, add_students } from "../../utils/school_admin/add_data";
+import {add_student, add_students } from "../../utils/school_admin/add_data";
 
 
 export default function InsertTeacher({ school_data,schoolID }) {

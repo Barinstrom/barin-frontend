@@ -1,5 +1,4 @@
 import React from 'react'
-import { useRef } from "react"
 import { useRouter } from "next/router"
 import Error from "next/error";
 import { useEffect } from 'react';
@@ -8,32 +7,29 @@ import { is_activate } from '../utils/unauth';
 import { useState } from 'react';
 
 export default function CheckStatus() {
-
     const router = useRouter()
     const [status,setStatus] = useState("loading")
-  
-  useEffect(() => {
-    const body = {
-        token: router.query.token
-    }
-    //get api for check status
-    is_activate(body).then((res) => {
-        if (res[1]) {
-            //true
-            setStatus(res[0].data.status)
-        }
-        else {
-            //false
-            setStatus("error")
-        }
-    })
 
-  },[])
+    useEffect(() => {
+        const body = {token: router.query.token}
+        
+        is_activate(body).then((res) => {
+            if (res[1]) {
+                setStatus(res[0].data.status)
+            }
+            else {
+                setStatus("error")
+            }
+        })
+    },[])
+
+    function comeback(){
+        router.push("/")
+    }
 
     const success_page = (
-      <>
+    <>
         <style jsx>{`
-        
             main{
                 min-height: 100vh;
                 display:flex;
@@ -81,6 +77,14 @@ export default function CheckStatus() {
                 align-items: center;
             }
 
+            .comeback_login{
+                border:none;
+                background-color:#9ABC66;
+                color:white;
+                padding:10px;
+                border-radius:8px
+            }
+
             @media screen and (max-width:500px){
                 .block {
                     background-color: white;
@@ -98,7 +102,7 @@ export default function CheckStatus() {
                 </div>
                 <h1 className="status">Success</h1>
                 <p>คุณยืนยันอีเมลล์เสร็จสิ้น</p>
-
+                <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
             </div>
         </main>
         
@@ -108,7 +112,6 @@ export default function CheckStatus() {
     const fail_page = (
         <>
             <style jsx>{`
-        
                 main{
                     min-height: 100vh;
                     display:flex;
@@ -156,6 +159,14 @@ export default function CheckStatus() {
                     align-items: center;
                 }
 
+                .comeback_login{
+                    border:none;
+                    background-color:rgb(253, 93, 93);
+                    color:white;
+                    padding:10px;
+                    border-radius:8px
+                }
+
                 @media screen and (max-width:500px){
                     .block {
                         background-color: white;
@@ -173,7 +184,7 @@ export default function CheckStatus() {
                     </div>
                     <h1 className="status">fail</h1>
                     <p>ยืนยันอีเมลล์ไม่สำเร็จ</p>
-
+                    <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
                 </div>
             </main>
 
@@ -184,12 +195,12 @@ export default function CheckStatus() {
         return <Reload />
     }
     else if (status === "error") {
-        return <Error statusCode={404} />
+        return <Error statusCode={404}/>
     }
     else if (!status) {
         return fail_page
     }
-    else {
+    else{
         return success_page
     }
     

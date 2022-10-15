@@ -224,11 +224,15 @@ export default function TimeConfig({ school_data, schoolID }) {
 		async function set_schedule_async() {
 			
 			const result = await set_schedule(sent_data, token, schoolID)
-			// console.log(result)
-			if (result.data.success) {
+			console.log(result)
+			if (!result) {
+				console.log("error")
+			}
+			else if (result.data.success) {
 				console.log("success")
 				// window.location.replace("/" + schoolID + "/admin_school")
 			}
+			
 		}
 		
 		set_schedule_async()
@@ -262,12 +266,12 @@ export default function TimeConfig({ school_data, schoolID }) {
 				<input type="date" className="form-control" disabled  ref={endOfSchoolYear}></input>
 			</div>
 			
-			<div className="col-md-6 mt-4">
+			<div className="col-12 mt-4">
 				<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
 				<input type="date" className="form-control" disabled  ref={registerDate}></input>
 				<input type="time" className="form-control mt-3" disabled  ref={registerTime}></input>
 			</div>
-			<div className="col-md-6 mt-4">
+			<div className="col-12 mt-4">
 				<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
 				<input type="date" className="form-control" disabled  ref={endOfRegisterDate} ></input>
 				<input type="time" className="form-control mt-3" disabled  ref={endOfRegisterTime} ></input>
@@ -299,12 +303,12 @@ export default function TimeConfig({ school_data, schoolID }) {
 			<input type="date" className="form-control" ref={endOfSchoolYear2}></input>
 		</div>
 		
-		<div className="col-md-6 mt-4">
+		<div className="col-12 mt-4">
 			<label className="form-label">เวลาเปิดลงทะเบียนชุมนุม</label>
 			<input type="date" className="form-control" ref={registerDate2}></input>
 			<input type="time" className="form-control mt-3"   ref={registerTime2}></input>
 		</div>
-		<div className="col-md-6 mt-4">
+		<div className="col-12 mt-4">
 			<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
 			<input type="date" className="form-control"   ref={endOfRegisterDate2} ></input>
 			<input type="time" className="form-control mt-3"   ref={endOfRegisterTime2} ></input>

@@ -36,7 +36,6 @@ export default function NotApproved() {
         window.localStorage.setItem("pageNotApproved",1)
         
         get_not_approved(body,token).then(result => {
-            console.log(result)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -61,7 +60,6 @@ export default function NotApproved() {
         ev.preventDefault()
         window.localStorage.removeItem("searchNotApproved")
         search.current.value = ""
-
 
         const result = await get_not_approved({"page":1},token)
         
@@ -158,15 +156,22 @@ export default function NotApproved() {
 					.certificate:hover{
 						text-decoration: underline;
 					}
+
+                    .allbtn{
+						border:none;
+						background-color:#2f3d20;
+						color:white;
+						border-radius:3px;
+					}
 				`}</style>
                 <div className='table-responsive'>
                 <table className='table table-striped align-middle'>
                 <thead>
                     <tr>
-                        <th style={{ width: "100px" }}>schoolID</th>
-								<th style={{ width: "400px" }}>schoolName</th>
-								<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
-								<th style={{ width: "150px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
+                        <th style={{ width: "auto" }}>schoolID</th>
+                        <th style={{ width: "auto" }}>schoolName</th>
+                        <th style={{ width: "300px" }} className="text-center"><span className='border'>certificate</span></th>
+                        <th style={{ width: "170px" }} className="text-center ps-1 ps-md-4"><span>จัดการโรงเรียน</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,18 +188,16 @@ export default function NotApproved() {
                                 >กดเพื่อดู certificate</span>
                             </td>
                             <td className="d-flex flex-column flex-md-row justify-content-end">
-                                <button className='btn btn-sm btn-warning me-1 mt-1 mt-md-0'
+                                <button className='allbtn me-0 me-lg-1'
                                     onClick={() => getDetails(item)}
                                     data-bs-toggle="modal"
                                     data-bs-target="#approveModal"
                                 >
                                     แก้ไขข้อมูล
                                 </button>
-                            {/* </td>
-                            <td className="text-end"> */}
-                                <button className='btn btn-sm btn-success me-1 mt-1 mt-md-0' 
+                            <button className='allbtn mt-1 mt-lg-0' 
                                     onClick={()=> approveSchool(item)}>
-                                    approve
+                                    อนุมัติ
                                 </button>
                             </td>
                         </tr>
@@ -233,27 +236,34 @@ export default function NotApproved() {
 
             showCancelButton: true,
             cancelButtonText: "cancel",
-            cancelButtonColor: "#d93333",
+						cancelButtonColor: "#d93333",
+						
+					showLoaderOnConfirm: true,
+					preConfirm: (test) => {
+						return sys_edit_school(token, {
+							schoolID: item.schoolID,
+							schoolName: item.schoolName,
+							status:"approve"
+						})
+					},
+					allowOutsideClick: () => !Swal.isLoading()
+
+
 		}).then((result) => {
-			if (result.isConfirmed){
-				const body = {
-					schoolID: item.schoolID,
-					schoolName: item.schoolName,
-					status:"approve"
-				}
-				
-				sys_edit_school(token,body).then(result => {
-					if (result){
-						Swal.fire({
+			if (result.isConfirmed) {
+				console.log(result)
+				if (result.value) {
+					Swal.fire({
 							icon: 'success',
 							title: 'ทำการ approve สำเร็จ',  
 							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
+							confirmButtonColor:"#0047a3"
+					}).then(res => {
 							router.reload()
 					})
-					}else{
-						Swal.fire({
+				}
+				else {
+					Swal.fire({
 							icon: 'error',
 							title: 'ทำการ approve ไม่สำเร็จ',  
 							showConfirmButton:true,
@@ -261,8 +271,34 @@ export default function NotApproved() {
 						}).then(res => {
 							router.reload()
 					})
-					}
-				})
+				}
+				// const body = {
+				// 	schoolID: item.schoolID,
+				// 	schoolName: item.schoolName,
+				// 	status:"approve"
+				// }
+				
+				// sys_edit_school(token,body).then(result => {
+				// 	if (result){
+				// 		Swal.fire({
+				// 			icon: 'success',
+				// 			title: 'ทำการ approve สำเร็จ',  
+				// 			showConfirmButton:true,
+				// 			confirmButtonColor:"#00a30b"
+				// 		}).then(res => {
+				// 			router.reload()
+				// 	})
+				// 	}else{
+				// 		Swal.fire({
+				// 			icon: 'error',
+				// 			title: 'ทำการ approve ไม่สำเร็จ',  
+				// 			showConfirmButton:true,
+				// 			confirmButtonColor:"#00a30b"
+				// 		}).then(res => {
+				// 			router.reload()
+				// 	})
+				// 	}
+				// })
 			}
 		})
 	}

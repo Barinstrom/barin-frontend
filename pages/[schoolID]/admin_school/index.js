@@ -33,6 +33,7 @@ export default function Admin({ schoolID }) {
 	const [countBtn,SetCountBtn] = useState(0)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
 	const [ispaid, setIspaid] = useState("")
+	const [isapprove, setIsapprove] = useState("")
 	const [saveEmail, setSaveEmail] = useState("")
 
 	const cookies = new Cookies();
@@ -66,13 +67,16 @@ export default function Admin({ schoolID }) {
 					const role = result[0].data.role
 					const user_email = result[0].data.email
 					if (role !== "admin") {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 					else {
 						if (data_tmp.schoolID != schoolID) {
-							setDisplayFirst(false)
+							router.push("/login")
+							// setDisplayFirst(false)
 						}else {
 							setIspaid(data_tmp.paymentStatus)
+							setIsapprove(data_tmp.status)
 							setDisplayFirst(true)
 							setData_school(data_tmp)
 							setchooseBtnStart(true)
@@ -82,7 +86,8 @@ export default function Admin({ schoolID }) {
 					}
 				} else {
 					if (result[0].response.status === 401) {
-						setDisplayFirst(false)
+						router.push("/login")
+						// setDisplayFirst(false)
 					}
 				}
 			})
@@ -121,7 +126,7 @@ export default function Admin({ schoolID }) {
 			SetCountBtn(7)
 		}
 		
-		if (ispaid === "success") {
+		if (ispaid === "success" && isapprove === "approve") {
 			for (let i = 0; i <= 7; i++) {
 				if (i === num) {
 					optionBtn.current[i].classList.add("nowclick")
@@ -554,7 +559,7 @@ export default function Admin({ schoolID }) {
 		return <Reload />
 	}
 	else if (displayFirst) {
-		if (ispaid === "success") {
+		if (ispaid === "success" && isapprove === "approve") {
 			return admin_page
 		}
 		else {

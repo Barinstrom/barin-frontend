@@ -9,8 +9,7 @@ export default function Nowclub({schoolID}) {
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
-    // console.log(token)
-	
+    
 	async function dropClub(clubID) {
 		console.log(clubID)
 		const body = {
@@ -35,7 +34,7 @@ export default function Nowclub({schoolID}) {
 						'drop ไม่สำเร็จ!',
 						'',
 						'warning',
-					).then(res => {
+					).then(() => {
 						window.location.reload();
 					})
 				} else {
@@ -43,17 +42,12 @@ export default function Nowclub({schoolID}) {
 						'drop เสร็จสิ้น',
 						'',
 						'success',
-					).then(res => {
+					).then(() => {
 						window.location.reload();
 					})
-
 				}
-
 			}
-			
 		})
-
-		
 	}
 
 	useEffect(() => {

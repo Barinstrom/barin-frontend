@@ -64,8 +64,9 @@ export default function Payment_Status() {
             
           }
           
-				}else{
-					setDisplayFirst(false)
+        } else {
+          router.push("/login")
+					// setDisplayFirst(false)
 				}
 		})
 

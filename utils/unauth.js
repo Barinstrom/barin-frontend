@@ -23,24 +23,15 @@ export async function register(data) {
 			},
 			timeout: 10000
 		})
-		// console.log(result)
-		return [true,result]
+		return [result,true]
 	}
 	catch(err){
 		console.log(err)
-		if (err.response) {
-			return [false,err.response.data]
-		}
-		else {
-			return [false,false]
-		}
-			
+		return [err,false]
 	}
 };
 
-// login & set token
 export async function checkLogin(data){
-	// url success
 	const apiUrl = stagingUrl + "/login";
 	try {
 		const result = await axios({
@@ -52,12 +43,11 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
-		// console.log(result)
-		return result
+		return [result,true]
 	}
 	catch(err){
 		console.log(err)
-		return false
+		return [err,false]
 	}
 }
 
@@ -142,6 +132,7 @@ export async function is_activate(data) {
 			},
 			timeout: 10000
 		})
+		console.log(result)
 		return [result, true]
 	}
 	catch (err) {

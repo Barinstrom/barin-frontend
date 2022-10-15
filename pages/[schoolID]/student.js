@@ -40,10 +40,12 @@ export default function Student({ schoolID }) {
 					const email = result[0].data.email
 					
 					if (role !== "student") {
-						setDisplayFirst(false)
+						router.push("/" + String(schoolID))
+						// setDisplayFirst(false)
 					}else if (data_tmp) {
 						if (data_tmp.schoolID != schoolID) {
-							setDisplayFirst(false)
+							router.push("/" + String(data_tmp.schoolID))
+							// setDisplayFirst(false)
 						}
 						else {
 							setDisplayFirst(true)
@@ -52,12 +54,14 @@ export default function Student({ schoolID }) {
 							setReadyTime(true)
 						}
 					} else {
-						setDisplayFirst(false)
+						router.push("/" + String(schoolID))
+						// setDisplayFirst(false)
 					}
 				}
 				else {
 					if (result[0].response.status !== 200) {
-						setDisplayFirst(false)
+						router.push("/" + String(schoolID))
+						// setDisplayFirst(false)
 					}
 				}
 			})

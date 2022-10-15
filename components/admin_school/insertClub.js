@@ -41,7 +41,6 @@ export default function InsertClub({ school_data, schoolID }) {
 	
 	useEffect(() => {
 		paginationTeacher({"page":1},token,schoolID).then(result => {
-			console.log(result)
 			if (!result) {
 				setLoading(false)
 				setAllowRegisterClubTeacher(true)
@@ -57,7 +56,6 @@ export default function InsertClub({ school_data, schoolID }) {
 		})
 	},[])
 	
-	
 	function encodeImageFileAsURL(ev) {
 		let file = ev.target.files[0];
 		let reader = new FileReader();
@@ -70,8 +68,8 @@ export default function InsertClub({ school_data, schoolID }) {
 	
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
-			const result = []
-			text = text.trim()
+		const result = []
+		text = text.trim()
         const tmp = text.split("\n")
 		const heads = tmp[0].split(",")
         
@@ -87,12 +85,9 @@ export default function InsertClub({ school_data, schoolID }) {
             }
             result.push(object)
         }
-		console.log(result)
-        return result
+		return result
     }
     
-    
-    /* เมื่อกดปุ่มทำการอ่านข้อมูลจากไฟล์ csv */
     const submit = (ev) => {
         ev.preventDefault();
 			if (!csvFile){
@@ -106,28 +101,46 @@ export default function InsertClub({ school_data, schoolID }) {
 				return
 			}
 			
-			const fileSuccess = csvFile
-			const reader = new FileReader()
-			
-			reader.readAsText(fileSuccess)
-			reader.onloaded = () => {
-					const text = reader.result;
-					const body = stringtoObject(text)
-					// if (data === "data is undefined"){
-					// 		alert("ใส่ข้อมูลในไฟล์ csv ไม่ครบ")
-					// 		return
-					// }else{
-					// 	console.log(data)
-					// 	add_clubs(data,token,schoolID).then(result => {
-					// 		console.log(result)
-					// 	})
-					// }
-			}
-		}
+		const fileSuccess = csvFile
+		const reader = new FileReader()
+        
+		reader.readAsText(fileSuccess)
+		reader.onloadend = async () => {
+			const text = reader.result;
+			const body = stringtoObject(text)
+			console.log(body)
+            if (body === "data is undefined"){
+                Swal.fire({
+					icon: 'warning',
+					title: 'ใส่ข้อมูลในไฟล์ csv ไม่ครบ',
+					showConfirmButton: true,
+					confirmButtonColor: "#f7a518",
+					confirmButtonText: 'ok',
+				})
+				return
+            }else{
+                const result = await add_clubs(body,token,schoolID);
+				if (result){
+					Swal.fire({
+						icon: 'success',
+						title: 'เพิ่มข้อมูลสำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#009431"
+					})
+				}else{
+					Swal.fire({
+						icon: 'error',
+						title: 'เพิ่มข้อมูลไม่สำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+					})
+				}
+            }
+        }
+	}
 	
 	async function SubmitOneClub(ev){
 		ev.preventDefault()
-
 		const tmp = {
 			clubName:clubName.current.value,
 			clubInfo:clubInfo.current.value,

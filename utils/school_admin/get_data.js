@@ -2,7 +2,7 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 
 
-const Url = "https://barinapi.tawanchai.com";
+const Url = "https://barinapi.tawanchai.com/";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
 // ดึงชื่อ clubs ทั้งหมด
