@@ -154,7 +154,7 @@ export async function get_own_review(body, token, schoolID) {
     });
     return result;
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     return false;
   }
 }

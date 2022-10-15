@@ -7,6 +7,7 @@ import {
   update_own_review,
   get_club_teachers,
 } from "../../utils/student/student";
+import Swal from 'sweetalert2';
 export default function Review({ item, schoolID, schedule }) {
   // console.log("clubinfo", item);
   const cookies = new Cookies();
@@ -16,7 +17,6 @@ export default function Review({ item, schoolID, schedule }) {
   const [like, setLike] = useState(false);
   const [dislike, setDislike] = useState(false);
   const [ownCommentData, setOwnCommentData] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
   const [commentYear, setCommentYear] = useState(new Date().getFullYear());
   const own_comment = useRef();
   const likeBtn = useRef();
@@ -27,23 +27,25 @@ export default function Review({ item, schoolID, schedule }) {
   const btn_edit = useRef();
   const btn_confirm = useRef();
   const teacherName = useRef();
+  const [paginateBtn,setPaginateBtn] = useState(null)
+
+  // เหลือ paginate และ loading
 
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
+    // paginate()
+
     ev.preventDefault();
     
-    const bodyteachers = {
+    const bodyForTeachers = {
       clubID: item._id,
       schoolYear: new Date().getFullYear()
     };
-    // console.log(teacherName)
-    // console.log(item._id)
-    
     // title
     clubNameInModal.current.innerText = "ชื่อชุมนุม " + item.clubName;
     //ชื่อครูปีปัจจุบัน
-    get_club_teachers(bodyteachers, token, schoolID).then((res) => {
+    get_club_teachers(bodyForTeachers, token, schoolID).then((res) => {
       teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
     });
     const body = {
@@ -51,15 +53,12 @@ export default function Review({ item, schoolID, schedule }) {
       page: 1,
       clubID: item._id,
     };
-    const ownBody = {
-      clubID: item._id,
-    };
-    get_own_review(ownBody, token, schoolID).then((res) => {
+    get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
       // ถ้าเคยรีวิวแล้ว  
       if (res) {
         own_comment.current.value = res.data.textReview;
         setOwnCommentData(res.data);
-        console.log("ownReview", res.data);
+        // console.log("ownReview", res.data);
         if (res.data.satisfiedLevel === "พอใจ") {
           setLike(true);
           setDislike(false);
@@ -81,11 +80,13 @@ export default function Review({ item, schoolID, schedule }) {
     //รีวิวปีปัจจุบัน
     get_review(body, token, schoolID).then((res) => {
       displayReview(res.data.docs);
+      const paginate_tmp = generate(res.data,new Date().getFullYear())
+      showPaginate(paginate_tmp)
     });
   }
 
   function displayReview(docs) {
-    console.log("review display",docs)
+    // console.log("review display",docs)
     const reveiwTest = docs.map((e, i) => {
       return (
         <div className="card mt-2" key={i}>
@@ -146,20 +147,29 @@ export default function Review({ item, schoolID, schedule }) {
       textReview: comment,
       satisfiedLevel: vote,
     };
-    console.log("ข้อมูลที่รีวิว",data)
+    // console.log("ข้อมูลที่รีวิว",data)
     const schoolID = "stamp";
     ev.preventDefault();
     if (!vote) {
-      alert("โปรดเลือกความพึงพอใจ");
+      Swal.fire({
+        title: 'โปรดเลือกความพึงพอใจ',
+        icon: 'warning',
+        showCloseButton: true,
+      })
       return;
     } else if (!comment) {
-      alert("โปรดแสดงความคิดเห็น");
+      Swal.fire({
+        title: 'โปรดแสดงความคิดเห็น',
+        icon: 'warning',
+        showCloseButton: true,
+      })
       return;
     }
 
     post_review(data, token, schoolID).then((res) => {
       console.log(res)
     });
+    //จัดปุ่ม
     likeBtn.current.disabled = true;
     likeIcon.current.disabled = true;
     dislikeBtn.current.disabled = true;
@@ -196,7 +206,11 @@ export default function Review({ item, schoolID, schedule }) {
     ev.preventDefault();
     const comment = own_comment.current.value;
     if (!vote) {
-      alert("โปรดเลือกความพึงพอใจ");
+      Swal.fire({
+        title: 'โปรดเลือกความพึงพอใจ',
+        icon: 'warning',
+        showCloseButton: true,
+      })
       return;
     } else {
       own_comment.current.disabled = true;
@@ -212,19 +226,25 @@ export default function Review({ item, schoolID, schedule }) {
         textReview: comment,
         satisfiedLevel: vote,
       };
-      console.log(updateData)
+      // console.log(updateData)
       update_own_review(updateData, token, schoolID).then((res) => {
         console.log(res);
       });
     }
   }
-  function handleDropdown(e) {
+  useEffect(() => {
+    console.log("useeffect",commentYear)
+  },[commentYear])
 
+  function handleDropdown(e,e2) {
+    console.log(e2)
     let year = e.target.innerHTML;
-    setCommentYear(parseInt(year));
+    setCommentYear(e2);
+    // setCommentYear(parseInt(year));
+    console.log("dropdown",parseInt(year))
     const body = {
       schoolYear: parseInt(year),
-      page: currentPage,
+      page: 1,
       clubID: item._id,
     };
     const bodyteachers = {
@@ -236,12 +256,19 @@ export default function Review({ item, schoolID, schedule }) {
       teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
     });
     get_review(body, token, schoolID).then((res) => {
-      // console.log("now year is ",parseInt(year));
+      console.log("get review from",parseInt(year));
+      console.log("res.data",res.data)
       displayReview(res.data.docs);
+      const paginate_tmp = generate(res.data,e2)
+      showPaginate(paginate_tmp)
     });
+    // setCommentYear(parseInt(year));
   }
+
+  //ปุ่มพอใจ ไม่พอใจ
   function voteClub() {
     function voteHandle(e) {
+      //ดักทั้งกดโดน button และ icon
       if (e.target.value === "พอใจ") {
         setVote(e.target.value);
         setLike(true);
@@ -285,6 +312,68 @@ export default function Review({ item, schoolID, schedule }) {
       </label>
     );
   }
+  //pagination
+  function generate(result,schoolYear){
+    console.log("result in generate",result)
+    const paginate_tmp = []
+    if (result.hasPrevPage && result.page - 5 >= 1){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1,schoolYear)}><i className="fa-solid fa-angles-left"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+    }
+    
+    if (result.hasPrevPage){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1),schoolYear)}><i className="fa-solid fa-angle-left"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+    }
+    
+    paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+    
+    if (result.hasNextPage){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1),schoolYear)}><i className="fa-solid fa-angle-right"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+    }
+    
+    if (result.hasNextPage && result.page + 5 <= result.totalPages){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages),schoolYear)}><i className="fa-solid fa-angles-right"></i></button>)    
+    }else{
+        paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+    }
+    return paginate_tmp
+}
+  
+function showPaginate(paginate){
+  const template = (
+      <ul className='pagination justify-content-center mt-3'>
+          {paginate.map((item,index)=>{
+              return (
+                  <li key={index} className="page-item">{item}</li>
+              )
+          })}
+      </ul>
+  )
+  setPaginateBtn(template)
+}
+function clickPage(pageSelected,commentYear){
+  console.log("clicked",pageSelected,commentYear)
+  // const yearSelected = commentYear
+  // console.log("yearSelected",yearSelected)
+  const body = {
+    schoolYear: commentYear,
+    page: pageSelected,
+    clubID: item._id,
+  };
+  console.log("body in click page",body)
+  get_review(body, token, schoolID).then((res) => {
+  console.log("afterClickPage",res);
+  displayReview(res.data.docs);
+  const paginate_tmp = generate(res.data,commentYear)
+  showPaginate(paginate_tmp)
+
+})
+}        
   return (
     <>
       <div className="modal" id={item.clubName}>
@@ -324,12 +413,12 @@ export default function Review({ item, schoolID, schedule }) {
                         {commentYear}
                       </button>
                       <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        {schedule.map((e, i) => {
+                        {schedule.map((ev, i) => {
                           return (
                             <li key={i}>
-                              <a className="dropdown-item" href="#" onClick={(e) => {handleDropdown(e);}}>
+                              <a className="dropdown-item" href="#" onClick={(e) => {handleDropdown(e,ev.schoolYear);}}>
                                 {/* เปลี่ยน ค.ศ. เป็น พ.ศ. */}
-                                {e.schoolYear}
+                                {ev.schoolYear}
                               </a>
                             </li>
                           );
@@ -357,8 +446,8 @@ export default function Review({ item, schoolID, schedule }) {
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form>
-              {/* comments */}
               {backendComments}
+              {paginateBtn}
             </div>
           </div>
         </div>
