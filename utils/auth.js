@@ -220,7 +220,6 @@ export async function paginationClub(data,token,schoolID) {
 			},
 			timeout:10000
 		})
-		console.log(result)
 		return result
 	}
 	catch(err){

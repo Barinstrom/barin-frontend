@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect , useState , useRef} from 'react';
+import { useRouter } from 'next/router';
 import { paginationClub } from '../../utils/auth';
 import { register_club,get_student_ownclub,drop_club } from '../../utils/student/student';
 import Cookies from 'universal-cookie';
@@ -22,13 +23,12 @@ export default function EditClub({schoolID }) {
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
     
+    const router = useRouter()
     const cookie = new Cookies()
     const token = cookie.get("token")
-    // console.log(token)
-
-
+    
     const reload = (
-        <main style={{ height: "400px" }}>
+        <main style={{ height: "300px" }}>
             <div className="d-flex justify-content-center h-100 align-items-center">
                 <div className="fs-4">loading ...</div>
                 <div className="spinner-border ms-3"></div>
@@ -47,29 +47,19 @@ export default function EditClub({schoolID }) {
         Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(token, schoolID)])
             .then(result => {
                 console.log(result)
-                
-                if (result[1].data.clubs.length!=0) {
-                    setDisplayError(false)
-                    setHaveClubs(true)
-                    showData(result[0].data.docs)
-                    // showData(result[1].data.clubs)
-                }
-                else if (!result[0]){
+                if (!result[0]){
                     setDisplayError(true)
-                    setHaveClubs(false)
                 }else{
+                    result[1].data.clubs.length!=0 ? setHaveClubs(true) : setHaveClubs(false)
                     const paginate_tmp = generate(result[0].data)
                     setDisplayError(false)
-                    setHaveClubs(false)
                     showData(result[0].data.docs)
                     showPaginate(paginate_tmp)
                 }
             })
-    },[])
+        },[])
 
     function detailInfo(item,ev){
-        console.log(item)
-        //console.log(ev.target.getAttribute("data-bs-id"))
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.innerText = item.clubName
         clubInfo.current.innerText = item.clubInfo
@@ -78,7 +68,6 @@ export default function EditClub({schoolID }) {
         schoolYear.current.innerText = item.schoolYear
         groupID.current.innerText = item.groupID
         
-            
         let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
         let [ st ,en ] = schedule.split("-")
         scheduleStart.current.innerText = st + " นาฬิกา"
@@ -86,81 +75,41 @@ export default function EditClub({schoolID }) {
     }
 
     async function applyClub(){
-        
         const body = {
             "clubID":clubName.current.getAttribute("data-clubid")
         }
-        console.log(body)
         const result = await register_club(body,token,schoolID)
         
         if (!result){
-            Swal.fire(
-                'สมัครไม่สำเร็จ!',
-                '',
-                'warning',
-            ).then(res => {
-                window.location.reload();
+            Swal.fire({
+                icon: 'error',
+                title: 'สมัครไม่สำเร็จ',
+                showConfirmButton:true,
+                confirmButtonColor:"#d1000a"
+            }).then(() => {
+                router.reload()
             })
         }else{
-            Swal.fire(
-                'สมัครเสร็จสิ้น',
-                '',
-                'success',
-            ).then(res => {
-                window.location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: 'สมัครสำเร็จ',
+                showConfirmButton:true,
+                confirmButtonColor:"#009431"
+            }).then(() => {
+                router.reload()
             })
         }
-    }
-
-    async function dropClub() {
-        console.log(clubName.current.getAttribute("data-clubid"))
-        const body = {
-            "clubID": clubName.current.getAttribute("data-clubid")
-        }
-
-        const result = await drop_club(body, token, schoolID)
-
-        if (!result) {
-            Swal.fire(
-                'drop ไม่สำเร็จ!',
-                '',
-                'warning',
-            ).then(res => {
-                window.location.reload();
-            })
-        } else {
-            Swal.fire(
-                'drop เสร็จสิ้น',
-                '',
-                'success',
-            ).then(res => {
-                window.location.reload();
-            })
-            
-        }
-
     }
 
     async function clickReset(ev){
         ev.preventDefault()
-
-        if (haveClubs) {
-            Swal.fire(
-                'ไม่สามารถดำเนินการได้ เนื่องจากคุณมีคลับแล้ว',
-                '',
-                'warning',
-            )
-            return;
-        }
 
         window.localStorage.removeItem("studentSearchClub")
         window.localStorage.setItem("studentPageClub",1)
 
         search.current.value = ""
         
-        const body = {
-            "page":1
-        }
+        const body = {"page":1}
         
         const result = await paginationClub(body,token,schoolID)
         
@@ -174,19 +123,9 @@ export default function EditClub({schoolID }) {
         }
     }
     
-    /* กรณี search ข้อมูลต่างๆ */
+    
     async function clickAccept(ev){
         ev.preventDefault()
-
-        if (haveClubs) {
-            Swal.fire(
-                'ไม่สามารถดำเนินการได้ เนื่องจากคุณมีคลับแล้ว',
-                '',
-                'warning',
-            )
-            return;
-        }
-
         let body
         
         if (!search.current.value){
@@ -202,7 +141,6 @@ export default function EditClub({schoolID }) {
         }
         
         const result = await paginationClub(body,token,schoolID)
-        console.log(result)
         if (!result){
             setDisplayError(true)
         }else{
@@ -236,7 +174,7 @@ export default function EditClub({schoolID }) {
         }
 
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages+5)}><i className="fa-solid fa-angles-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
@@ -245,7 +183,6 @@ export default function EditClub({schoolID }) {
 
     
     async function clickPage(page){
-        
         const body = {
             "page":page,
             "query":window.localStorage.getItem("studentSearchClub")
@@ -319,27 +256,14 @@ export default function EditClub({schoolID }) {
     }
 
     const applyBtn = (
-        <>
-            <div className='modal-footer'>
-                <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button>
-            </div>
-        </>
-    )
-
-    // const dropBtn = (
-    //     <button className='btn btn-warning' data-bs-dismiss="modal" onClick={() => dropClub()}>ยกเลิกการสมัครชุมนุม</button>
-    // )
-
-    const notBtn = (
-        <>
-        </>
+        <div className='modal-footer'>
+            <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button>
+        </div>
     )
 
     if (displayError){
         return (
-            <>
-                <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
-            </>
+            <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
         )
     }else{
         return (
@@ -413,7 +337,7 @@ export default function EditClub({schoolID }) {
                                     </div>
                                 </div>
                             </div>
-                            {haveClubs ? notBtn : applyBtn}
+                            {haveClubs ? null : applyBtn}
                         </div>
                     </div>
                 </div>

@@ -109,8 +109,6 @@ export default function StdList({schoolID}){
                 window.localStorage.setItem("pageStdentListOwnTeacher",1)
                 
                 get_students_inclub(body, token, schoolID).then(result => {
-                    //console.log(result)
-                    
                     if (!result){
                         setDisplayError(true)
                         setReloadTable(false)
@@ -126,10 +124,11 @@ export default function StdList({schoolID}){
 	}, [])
 
 	function detailTest(item){
-		console.log(item)
+		//console.log(item)
 	}
     
     function generate(result){
+        console.log(result)
         const paginate_tmp = []
         if (result.hasPrevPage && result.page - 5 >= 1){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((1))}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -138,7 +137,7 @@ export default function StdList({schoolID}){
         }
         
         if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((parseInt(result.page)-1))}><i className="fa-solid fa-angle-left"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
@@ -146,7 +145,7 @@ export default function StdList({schoolID}){
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((parseInt(result.page)+1))}><i className="fa-solid fa-angle-right"></i></button>)    
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
         }
@@ -354,7 +353,6 @@ export default function StdList({schoolID}){
                     clubID: clubID,
                     doc : doc
                 }
-                // console.log(body)
                 const result = await update_study_status(body, token, schoolID);
                 console.log(result)
                 if (result) {

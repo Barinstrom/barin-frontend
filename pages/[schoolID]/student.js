@@ -35,19 +35,15 @@ export default function Student({ schoolID }) {
 	useEffect(() => {
 		if (schoolID) {
 			get_data(token).then(result => {
-				console.log(result[0])
 				if (result[1]) {
 					const data_tmp = result[0].data._doc
 					const role = result[0].data.role
 					const email = result[0].data.email
-					
 					if (role !== "student") {
 						router.push("/" + String(schoolID))
-						// setDisplayFirst(false)
 					}else if (data_tmp) {
 						if (data_tmp.schoolID != schoolID) {
 							router.push("/" + String(data_tmp.schoolID))
-							// setDisplayFirst(false)
 						}
 						else {
 							setDisplayFirst(true)
@@ -55,17 +51,15 @@ export default function Student({ schoolID }) {
 							setchooseBtnStart(true)
 							setReadyTime(true)
 							// ใช้ในหน้า pastClub
-							setSchedule(result[0][0].data._doc.schedule)
+							setSchedule(data_tmp.schedule)
 						}
 					} else {
 						router.push("/" + String(schoolID))
-						// setDisplayFirst(false)
 					}
 				}
 				else {
 					if (result[0].response.status !== 200) {
 						router.push("/" + String(schoolID))
-						// setDisplayFirst(false)
 					}
 				}
 			})

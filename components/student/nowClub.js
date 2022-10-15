@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect,useState } from "react";
+import { useRouter } from "next/router";
 import Cookies from "universal-cookie";
 import { get_student_ownclub, drop_club } from "../../utils/student/student";
 import Swal from "sweetalert2";
@@ -9,43 +10,51 @@ export default function Nowclub({schoolID}) {
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
+	const router = useRouter()
     
 	async function dropClub(clubID) {
-		console.log(clubID)
 		const body = {
 			"clubID": clubID
 		}
 
 		Swal.fire({
-			title: 'คุณต้องการ drop club นี้ใช่หรือไม่',
-			showConfirmButton: true,
-			confirmButtonColor: "#3085d6",
-			confirmButtonText: 'ยืนยัน',
+            title: 'คุณต้องการถอนชุมนมุนี้ใช่หรือไม่',
+            showConfirmButton: true,
+            confirmButtonColor: "#0047a3",
+            confirmButtonText: 'ยืนยัน',
 
-			showCancelButton: true,
-			cancelButtonText: "ยกเลิก",
-			cancelButtonColor: "#d93333",
-		}).then(async(result) => {
-			if (result.isConfirmed) {
+            showCancelButton: true,
+            cancelButtonText: "ยกเลิก",
+            cancelButtonColor: "#d93333",
+			showLoaderOnConfirm: true,
+			preConfirm: async () => {
 				const result = await drop_club(body, token, schoolID)
-
-				if (!result) {
-					Swal.fire(
-						'drop ไม่สำเร็จ!',
-						'',
-						'warning',
-					).then(() => {
-						window.location.reload();
+				return result
+			},
+			allowOutsideClick: false,
+		}).then(res => {
+			if (res.isConfirmed){
+				if (!res.value){
+					Swal.fire({
+						icon: 'error',
+						title: "ถอนชุมนุมไม่สำเร็จ",
+						showConfirmButton:true,
+						confirmButtonColor:"#d1000a"
+					}).then(() => {
+						router.reload()
 					})
-				} else {
-					Swal.fire(
-						'drop เสร็จสิ้น',
-						'',
-						'success',
-					).then(() => {
-						window.location.reload();
+				}else{
+					Swal.fire({
+						icon: 'success',
+						title: 'ถอนชุมนุมสำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#009431"
+					}).then(() => {
+						router.reload()
 					})
 				}
+			}else{
+				return
 			}
 		})
 	}
@@ -56,52 +65,55 @@ export default function Nowclub({schoolID}) {
 		
 		get_student_ownclub(token,schoolID).then(result => {
 			console.log(result)
-
 			let clubs;
 			if (!result){
 				clubs = (
-					<div  className="alert alert-info mt-2">
-						<p className="alert-heading fs-3">เกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</p>
+					<div  className="card mt-3">
+						<div className="card-body">
+							<h5 className="card-title">เกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</h5>
+						</div>
 					</div>
 				)
 			}
 			else if (result.data.clubs.length === 0){
 				clubs = (
-					<div  className="alert alert-info mt-2">
-						<p className="alert-heading fs-3">No club</p>
-						<p>temp</p>
-						<p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut rem magnam id aperiam eaque adipisci error. Temporibus perspiciatis explicabo totam quidem, provident, voluptatibus magnam error nulla laudantium inventore odio non?</p>
+					<div  className="card mt-3">
+						<div className="card-body">
+							<h5 className="card-title">คุณยังไม่ได้ลงทะเบียนชุมนุม</h5>
+							<p className="card-text mt-3">
+								คุณสามารถกดเลือก <mark>ค้นหาชุมนุม</mark> เพื่อสมัครชุมนุมที่ต้องการได้ ถ้าหากว่าคุณอยู่ใน
+								ช่วงเวลาลงทะเบียนชุมนุม คุณควรจะตัดสินใจให้ดีว่าคุณต้องการอยู่ชุมนุมใด และ ควรจะรีบเลือกชุมนุม
+								ก่อนที่ชุมนุมจะเต็ม
+							</p>
+						</div>
 					</div>
 				)
 			}
 			else {
-				// result.data.clubs.map((e, i) => {
-				// 	console.log(i)
-				// })
-				// console.log("have")
-				const data_club = result.data.clubs
 				clubs = result.data.clubs.map((e, i) => {
 						return (
-							<div key={i} className="alert alert-info mt-2">
-								<p className="alert-heading fs-3">{e.clubName }</p>
-								<p>เวลาเรียน: {e.schedule }</p>
-								<p>{e.clubInfo}</p>
-								<button className='btn btn-warning' onClick={(ev) => dropClub(e._id)}>ยกเลิกการสมัครชุมนุม</button>
+							<div key={i} className="card mt-3">
+								<div className="card-body">
+									<p className="card-text">ชื่อชุมนุม: {e.clubName}</p>
+									<p className="card-text">เวลาเรียน: {e.schedule[0]}</p>
+									<p className="card-text">รายละเอียด: {e.clubInfo}</p>
+									<p className="card-text">อาจารย์ผู้สอน: {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
+								</div>
+								<div className="card-footer text-end">
+									<button className='btn btn-warning' onClick={() => dropClub(e._id)}>ถอนชุมนุม</button>
+								</div>
 							</div>
 						)
 					})
-				console.log(clubs)
-			}
+				}
 			setdisplayOwnclub(clubs)
 		})
 	}, [])
 
 	return (
 		<div>
-			<div className="text-center fs-1">Now Club</div>
-			<div>
-				{displayOwnclub}
-			</div>
+			<div className="text-center fs-1">ชุมนุมปัจจุบัน</div>
+			{displayOwnclub}
 		</div>
 	)
 }

@@ -15,19 +15,25 @@ export default function Pastclub({ schoolID,schedule }) {
 	const scheduleStart = useRef()
 	const scheduleEnd = useRef()
 
-	const [displayPastclub, setdisplayPastclub] = useState(null)
-
+	const [displayError, setDisplayError] = useState(false)
+	const [showData, setShowData] = useState([])
+	
 	useEffect(() => {
 		const cookie = new Cookies()
 		const token = cookie.get("token")
 		get_student_pastclub(token, schoolID).then(res => {
-			console.log(res)
-			if (res.data.clubs) {
-				const clubs = res.data.clubs
-				console.log(clubs)
-				
+			if (!res){
+				setDisplayError(true)
+			}else if (res.data.clubs.length === 0) {
 				const tmp = (
-						<table className='table table-striped align-middle'>
+					<div className="alert alert-warning mt-3">
+						<h4 className="alert-heading">คุณไม่มีชุมนุมที่เคยเรียนมา</h4>
+					</div>
+				)
+				setShowData(tmp)
+			}else{
+				const tmp = (
+						<table className='table align-middle'>
 							<thead>
 								<tr>
 									<th style={{ width: "100px" }}>รหัสวิชา</th>
@@ -36,7 +42,7 @@ export default function Pastclub({ schoolID,schedule }) {
 								</tr>
 							</thead>
 							<tbody>
-								{clubs.map((item, index) => {
+								{res.data.clubs.map((item, index) => {
 									return (
 										<tr key={index}>
 											<td>{item.groupID}</td>
@@ -45,7 +51,7 @@ export default function Pastclub({ schoolID,schedule }) {
 												<button className='btn btn-info btn-sm'
 													data-bs-toggle="modal"
 													data-bs-target="#PastClubModal"
-													onClick={(ev) => detailInfo(item, ev)}
+													onClick={(ev) => detailInfo(item)}
 												>ดูรายละเอียด
 												</button>
 											</td>
@@ -56,94 +62,94 @@ export default function Pastclub({ schoolID,schedule }) {
 							</tbody>
 						</table>
 					)
-				setdisplayPastclub(tmp)
-			}
-			else {
-				const error = (
-					<div>
-						เกิดข้อผิดพลาดไม่สามารถแสดงผลได้
-					</div>
-				)
-				setdisplayPastclub(error)
+				setShowData(tmp)
 			}
 		})
 	}, [])
 
 
-	function detailInfo(item, ev) {
-		//clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
+	function detailInfo(item) {
 		clubName.current.innerText = item.clubName
 		clubInfo.current.innerText = item.clubInfo
 		category.current.innerText = item.category
 		limitStudent.current.innerText = item.limit + " คน"
 		schoolYear.current.innerText = item.schoolYear
 		groupID.current.innerText = item.groupID
+
+		let [ schedule ] = item.schedule 
+        let [ st ,en ] = schedule.split("-")
+        scheduleStart.current.innerText = st + " นาฬิกา"
+        scheduleEnd.current.innerText = en + " นาฬิกา"
 	}
 
-
-	return (
-		<>
-			<div className="text-center fs-1">Past Club</div>
-			<div className='row'>
-				<div className='col-12'>
-					{displayPastclub}
-				</div>
-
-				<div className="modal fade" id="PastClubModal">
-					<div className="modal-dialog">
-						<div className='modal-content'>
-							<div className='modal-header'>
-								<h3 className="modal-title">รายละเอียดชุมนุม</h3>
-								<button className='btn-close' data-bs-dismiss="modal"></button>
-							</div>
-							<div className='modal-body'>
-								<div className="row">
-									<div className="col-12">
-										<p>ชื่อคลับ : &nbsp;
-											<span ref={clubName}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>รหัสวิชา : &nbsp;
-											<span ref={groupID}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>category : &nbsp;
-											<span ref={category}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>รายละเอียดคลับ : &nbsp;
-											<span ref={clubInfo}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>จำนวนที่รับ : &nbsp;
-											<span ref={limitStudent}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>ปีการศึกษา : &nbsp;
-											<span ref={schoolYear}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>เวลาเรียน : &nbsp;
-											<span ref={scheduleStart}></span>
-										</p>
-									</div>
-									<div className="col-12">
-										<p>เวลาเลิกเรียน: &nbsp;
-											<span ref={scheduleEnd}></span>
-										</p>
+	if (displayError){
+		return <div className="fs-4 text-center">เกิดข้อผิดพลาดไม่สามารถแสดงผลได้</div>
+	}else{
+		return (
+			<>
+				<div className="text-center fs-1">Past Club</div>
+				<div className='row'>
+					<div className='col-12'>
+						{showData}
+					</div>
+	
+					<div className="modal fade" id="PastClubModal">
+						<div className="modal-dialog">
+							<div className='modal-content'>
+								<div className='modal-header'>
+									<h3 className="modal-title">รายละเอียดชุมนุม</h3>
+									<button className='btn-close' data-bs-dismiss="modal"></button>
+								</div>
+								<div className='modal-body'>
+									<div className="row">
+										<div className="col-12">
+											<p>ชื่อคลับ : &nbsp;
+												<span ref={clubName}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>รหัสวิชา : &nbsp;
+												<span ref={groupID}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>category : &nbsp;
+												<span ref={category}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>รายละเอียดคลับ : &nbsp;
+												<span ref={clubInfo}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>จำนวนที่รับ : &nbsp;
+												<span ref={limitStudent}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>ปีการศึกษา : &nbsp;
+												<span ref={schoolYear}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>เวลาเรียน : &nbsp;
+												<span ref={scheduleStart}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>เวลาเลิกเรียน: &nbsp;
+												<span ref={scheduleEnd}></span>
+											</p>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</>
-	)
+			</>
+		)
+	}
+	
 }

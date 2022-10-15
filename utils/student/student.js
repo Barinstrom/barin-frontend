@@ -66,7 +66,7 @@ export async function register_club(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    return true
   } catch (err) {
     console.log(err)
     return false
@@ -88,7 +88,7 @@ export async function drop_club(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    return true
   } catch (err) {
     console.log(err)
     return false

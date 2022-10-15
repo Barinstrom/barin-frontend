@@ -83,7 +83,7 @@ export default function Login() {
           cookie.set("token",result.data.token)
           Swal.fire({
 						icon: 'success',
-						title: 'เข้าสุ่ระบบสำเร็จ',
+						title: 'เข้าสู่ระบบสำเร็จ',
 						showConfirmButton:true,
 						confirmButtonColor:"#009431"
           })

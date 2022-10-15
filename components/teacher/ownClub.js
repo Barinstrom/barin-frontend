@@ -124,7 +124,6 @@ export default function OwnClub({schoolID}) {
 		}
 
     function displayStudentList(e){
-		//console.log(e)
 		window.localStorage.setItem("clubNameFromClick",e.clubName)
 		window.localStorage.setItem("clubidFromClick",e._id)
 		window.localStorage.setItem("displayComponent",1)
@@ -184,7 +183,7 @@ export default function OwnClub({schoolID}) {
 				</div>
 				
 				
-				<div className="modal" id="modalOwnClubTeacher">
+				<div className="modal fade" id="modalOwnClubTeacher">
 					<div className="modal-dialog modal-dialog-scrollable">
 						<div className="modal-content">
 							
