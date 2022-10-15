@@ -29,6 +29,8 @@ export default function Student({ schoolID }) {
 	const [readyTime,setReadyTime] = useState(false)
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
 	const [saveEmail,setSaveEmail] = useState("")
+	// ใช้ในหน้า pastClub
+	const [schedule,setSchedule] =useState("")
 	
 	useEffect(() => {
 		if (schoolID) {
@@ -52,6 +54,8 @@ export default function Student({ schoolID }) {
 							setSaveEmail(email)
 							setchooseBtnStart(true)
 							setReadyTime(true)
+							// ใช้ในหน้า pastClub
+							setSchedule(result[0][0].data._doc.schedule)
 						}
 					} else {
 						router.push("/" + String(schoolID))
@@ -199,7 +203,8 @@ export default function Student({ schoolID }) {
 	}else if (countBtn === 1){
 		component = <Searchclub schoolID={schoolID}/>
 	}else{
-		component = <Pastclub schoolID={schoolID}/>
+		console.log(schedule)
+		component = <Pastclub schoolID={schoolID} schedule={schedule}/>
 	}
 	
 	if (displayFirst === "loading"){

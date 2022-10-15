@@ -1,377 +1,114 @@
 import React, { useState, useRef, useEffect } from "react";
-import Star from "../../components/test/star";
-import axios from "axios";
 import Cookies from "universal-cookie";
-import { get_review, post_review } from "../../utils/student/student";
-
-
-
-export default function Review({ item, schoolID }) {
+import {
+  get_review,
+  post_review,
+  get_own_review,
+  update_own_review,
+  get_club_teachers,
+} from "../../utils/student/student";
+import Swal from 'sweetalert2';
+export default function Review({ item, schoolID, schedule }) {
+  // console.log("clubinfo", item)
   const cookies = new Cookies();
   const token = cookies.get("token");
-
-  //Testing เลือก myuserId 1 แบบ
-  //@@@@ For Testing
-  //สำหรับเช็คidที่ซ้ำกับที่มีแล้ว
-  // const myuserId = "2456";
-  //สำหรับเช็คidที่ซ้ำกับที่ไม่มี
-  const myuserId = "1234";
-  //
-  const [backendComments, setBackendComments] = useState([]);
-  const [starRated, setStarRated] = useState(0);
+  const [vote, setVote] = useState("");
+  const [backendComments, setBackendComments] = useState(null);
+  const [like, setLike] = useState(false);
+  const [dislike, setDislike] = useState(false);
+  const [ownCommentData, setOwnCommentData] = useState({});
+  const [commentYear, setCommentYear] = useState(new Date().getFullYear());
   const own_comment = useRef();
-  const p_starRating = useRef();
-  const p_Star = useRef();
+  const likeBtn = useRef();
+  const dislikeBtn = useRef();
+  const likeIcon = useRef();
+  const dislikeIcon = useRef();
   const btn_review = useRef();
   const btn_edit = useRef();
   const btn_confirm = useRef();
-  const btn_delete = useRef();
+  const teacherName = useRef();
+  const [paginateBtn,setPaginateBtn] = useState(null)
 
-  const clubNameInModal = useRef()
+  // เหลือ paginate และ loading
 
-  function clickModal(item,ev) {
+  const clubNameInModal = useRef();
+
+  function clickModal(item, ev) {
+    // paginate()
+
     ev.preventDefault();
-    // get api --- paginate
-    // console.log(item.clubName)
-    // console.log(ev.target)
-    // console.log(clubNameInModal)
-    clubNameInModal.current.innerText = item.clubName
     
+    const bodyForTeachers = {
+      clubID: item._id,
+      schoolYear: new Date().getFullYear()
+    };
+    // title
+    clubNameInModal.current.innerText = "ชื่อชุมนุม " + item.clubName;
+    //ชื่อครูปีปัจจุบัน
+    get_club_teachers(bodyForTeachers, token, schoolID).then((res) => {
+      teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
+    });
     const body = {
-      schoolYear: 2022,
+      schoolYear: new Date().getFullYear(),
       page: 1,
-      clubID : item._id
-    }
-
-    console.log(body)
-    get_review(body,token, schoolID).then((data) => {
-      console.log(data);
-        // setBackendComments(data);
-        // data.map((e, i) => {
-        //   if (e.userId == myuserId) {
-        //     /* set comment value */
-        //     own_comment.current.value = e.body;
-        //     own_comment.current.disabled = true;
-        //     setStarRated(e.star);
-        //     p_starRating.current.classList.add("d-none");
-        //     p_Star.current.classList.remove("d-none");
-        //     btn_review.current.classList.add("d-none");
-        //     btn_edit.current.classList.remove("d-none");
-        //     btn_delete.current.classList.remove("d-none");
-        //   }
-        // });
+      clubID: item._id,
+    };
+    get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
+      // ถ้าเคยรีวิวแล้ว  
+      if (res) {
+        own_comment.current.value = res.data.textReview;
+        setOwnCommentData(res.data);
+        // console.log("ownReview", res.data);
+        if (res.data.satisfiedLevel === "พอใจ") {
+          setLike(true);
+          setDislike(false);
+        } else if (res.data.satisfiedLevel === "ไม่พอใจ") {
+          setLike(false);
+          setDislike(true);
+        }
+        likeBtn.current.disabled = true;
+        likeIcon.current.disabled = true;
+        dislikeBtn.current.disabled = true;
+        dislikeIcon.current.disabled = true;
+        own_comment.current.disabled = true;
+        btn_review.current.classList.add("d-none");
+        btn_confirm.current.classList.add("d-none");
+        btn_edit.current.classList.remove("d-none");
+      }
+      //
+    });
+    //รีวิวปีปัจจุบัน
+    get_review(body, token, schoolID).then((res) => {
+      displayReview(res.data.docs);
+      const paginate_tmp = generate(res.data,new Date().getFullYear())
+      showPaginate(paginate_tmp)
     });
   }
 
-  function handleReview(ev) {
-    const comment = own_comment.current.value;
-    const rating = localStorage.getItem("star");
-    //test data//
-    ////
-    const temp = {
-      id: Math.random().toString(36).substr(2, 9),
-      body: comment,
-      username: "11",
-      userId: myuserId,
-      star: parseInt(rating),
-      createdAt: new Date(),
-    };
-    //
-    //
-    const data = {
-      clubID: "dwqdqw",
-      studentID: "weqe123213",
-      textReview: "soo goooooddd",
-    };
-    const schoolID = "teststamp";
-    post_review(data, token, schoolID);
-    ev.preventDefault();
-    // if (!rating) {
-    //   alert("please rating");
-    //   return;
-    // } else if (!comment) {
-    //   alert("please comment");
-    //   return;
-    // }
-    // {
-    //   /* api สำหรับ add comment */
-    // }
-
-    // {
-    //   /* usestage เพิ่มคอมเม้น */
-    // }
-    // else {
-    //   localStorage.removeItem("star");
-    //   setBackendComments((current) => [temp, ...current]);
-    //   own_comment.current.disabled = true;
-    //   setStarRated(temp.star);
-    //   p_starRating.current.classList.add("d-none");
-    //   p_Star.current.classList.remove("d-none");
-    //   btn_review.current.classList.add("d-none");
-    //   btn_edit.current.classList.remove("d-none");
-    //   btn_delete.current.classList.remove("d-none");
-    // }
-  }
-
-  function handleEdit(ev) {
-    ev.preventDefault();
-    own_comment.current.disabled = false;
-    p_starRating.current.classList.remove("d-none");
-    p_Star.current.classList.add("d-none");
-    btn_confirm.current.classList.remove("d-none");
-    btn_edit.current.classList.add("d-none");
-    btn_delete.current.classList.add("d-none");
-  }
-
-  function handleConfirm(ev) {
-    ev.preventDefault();
-    const comment = own_comment.current.value;
-    const rating = localStorage.getItem("star");
-    if (!rating) {
-      alert("please rate this club again");
-      return;
-    } else {
-      own_comment.current.disabled = true;
-      localStorage.removeItem("star");
-      setStarRated(parseInt(rating));
-      p_Star.current.classList.remove("d-none");
-      p_starRating.current.classList.add("d-none");
-      btn_confirm.current.classList.add("d-none");
-      btn_edit.current.classList.remove("d-none");
-      btn_delete.current.classList.remove("d-none");
-      //test data//
-      ////
-      const temp = {
-        id: "213",
-        body: comment,
-        username: Math.random().toString(23),
-        userId: myuserId,
-        star: parseInt(rating),
-        createdAt: new Date(),
-      };
-      //
-      //
-      // updateComment(temp, myuserId);
-    }
-  }
-  function handleDelete(ev) {
-    ev.preventDefault();
-    if (window.confirm("Are you sure that you want to remove comment?")) {
-      deleteCommentApi(myuserId).then(() => {
-        const updatedBackendComments = backendComments.filter(
-          (backendComments) => backendComments.userId !== myuserId
-        );
-        setBackendComments(updatedBackendComments);
-      });
-      own_comment.current.disabled = false;
-      own_comment.current.value = "";
-      p_Star.current.classList.add("d-none");
-      p_starRating.current.classList.remove("d-none");
-      btn_review.current.classList.remove("d-none");
-      btn_edit.current.classList.add("d-none");
-      btn_delete.current.classList.add("d-none");
-    }
-  }
-  //starrating
-  function StartRating() {
-    const [rating, setRating] = useState(null);
-    const [hover, setHover] = useState(null);
-    return (
-      <>
-        {[...Array(5)].map((start, i) => {
-          let ratingValue = i + 1;
-          function StartHandle() {
-            setRating(ratingValue);
-            localStorage.setItem("star", ratingValue);
-          }
-
-          return (
-            <label key={i}>
-              <input
-                type="radio"
-                className="radio bg-success d-none"
-                value={ratingValue}
-                onClick={() => StartHandle()}
-              ></input>
-              <i
-                className="fa-solid fa-star fa-lg star"
-                style={
-                  ratingValue > (hover || rating)
-                    ? { color: "#e4e5e9" }
-                    : { color: "#ffc107" }
-                }
-                onMouseEnter={() => setHover(ratingValue)}
-                onMouseLeave={() => setHover(null)}
-              ></i>
-            </label>
-          );
-        })}
-
-        <style jsx>{`
-          .star {
-            cursor: pointer;
-            transition: color 200ms;
-          }
-        `}</style>
-      </>
-    );
-  }
-  return (
-    <>
-        <div className="modal" id={`${item.clubName}`}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className=" modal-header d-flex justify-content-between h2">
-                <div className="modal-title d-flex text-lg">
-                  <div className="d-flex">
-                    <span ref={clubNameInModal}></span>
-                    <div className="border border-1 rounded-2  ms-5 align-items-center">
-                      Overall:
-                      <Star TotalRating={3} />
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <button className="btn-close m-0 " data-bs-dismiss="modal"></button>
+  function displayReview(docs) {
+    // console.log("review display",docs)
+    const reveiwTest = docs.map((e, i) => {
+      return (
+        <div className="card mt-2" key={i}>
+          <div className="card-header"></div>
+          <div className="card-body">
+            <div className="comment">
+              <div className="commentimagecontainer">
+                <img src="/user-icon.png" />
+              </div>
+              <div className="commentrightpart">
+                <div className="commentcontent">
+                  <div className="commentauthor">Anonymous</div>
+                  <i className="fa-solid fa-badge-check"></i>
                 </div>
               </div>
-              <div className=" modal-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div ref={p_starRating}>
-                    <span>กรอกคะแนนรีวิว</span>
-                    <span className="m-3">{StartRating()}</span>
-                  </div>
-                  <div className="d-flex  justify-content-center align-items-center">
-                    <div>ปีการศึกษา</div>
-                    <span>
-                      <div className="dropdown p-3">
-                        <button
-                          className="btn btn-light dropdown-toggle"
-                          type="button"
-                          id="dropdownMenuButton1"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
-                          เลือกปีการศึกษา
-                        </button>
-                        <ul
-                          className="dropdown-menu"
-                          aria-labelledby="dropdownMenuButton1"
-                        >
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              2565
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              2564
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              2563
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </span>
-                    <span>ครูผู้สอน xxxx</span>
-
-                  </div>
-                </div>
-                <p className="d-none " ref={p_Star}>
-                  <span>กรอกคะแนนรีวิว</span>
-                  <span className="m-3">
-                    <Star TotalRating={starRated} className="Star" />
-                  </span>
-                </p>
-                <form>
-                  <div className="mb-3">
-                    <label className="form-label">เขียนรีวิว</label>
-                    <textarea
-                      className="form-control"
-                      rows="3"
-                      defaultValue={""}
-                      ref={own_comment}
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    ref={btn_review}
-                    onClick={(ev) => {
-                      handleReview(ev);
-                    }}
-                  >
-                    รีวิว
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-warning d-none"
-                    ref={btn_edit}
-                    onClick={(ev) => {
-                      handleEdit(ev);
-                    }}
-                  >
-                    แก้ไขรีวิว
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-success d-none"
-                    ref={btn_confirm}
-                    onClick={(ev) => {
-                      handleConfirm(ev);
-                    }}
-                  >
-                    ตกลง
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-danger d-none"
-                    ref={btn_delete}
-                    onClick={(ev) => {
-                      handleDelete(ev);
-                    }}
-                  >
-                    ลบ
-                  </button>
-                </form>
-
-                {backendComments
-                  //sort ตามวันที่ที่comment
-                  .sort(
-                    (b, a) =>
-                      new Date(a.createdAt).getTime() -
-                      new Date(b.createdAt).getTime()
-                  )
-                  //แสดง
-                  .map((e, i) => {
-                    const createdAt = new Date(
-                      e.createdAt
-                    ).toLocaleDateString();
-                    return (
-                      <div className="card mt-2" key={i}>
-                        <div className="card-header">{createdAt}</div>
-                        <div className="card-body">
-                          <div className="comment">
-                            <div className="commentimagecontainer">
-                              <img src="/user-icon.png" />
-                            </div>
-                            <div className="commentrightpart">
-                              <div className="commentcontent">
-                                <div className="commentauthor">Anonymous</div>
-                                <i className="fa-solid fa-badge-check"></i>
-                              </div>
-                            </div>
-                          </div>
-                          <span className="card-title d-flex justify-content-end align-items-start">
-                            <Star TotalRating={e.star} />
-                          </span>
-                          <p className="card-text">{e.body}</p>
-                        </div>
-                        <style>
-                          {`
+            </div>
+            <span className="card-title d-flex justify-content-end align-items-start">
+            </span>
+            <p className="card-text d-flex justify-content-between">{e.textReview}</p>
+          </div>
+          <style>
+            {`
                             .comment {
                               display: flex;
                               margin-bottom: 28px;
@@ -395,23 +132,333 @@ export default function Review({ item, schoolID }) {
                               color: rgb(59, 130, 246);
                             }
                         `}
-                        </style>
-                      </div>
-                    );
-                  })}
+          </style>
+        </div>
+      );
+    });
+    setBackendComments(reveiwTest);
+  }
+
+  function handleReview(ev) {
+    const comment = own_comment.current.value;
+    // console.log("voteแล้ว", vote);
+    const data = {
+      clubID: item._id,
+      textReview: comment,
+      satisfiedLevel: vote,
+    };
+    // console.log("ข้อมูลที่รีวิว",data)
+    const schoolID = "stamp";
+    ev.preventDefault();
+    if (!vote) {
+      Swal.fire({
+        title: 'โปรดเลือกความพึงพอใจ',
+        icon: 'warning',
+        showCloseButton: true,
+      })
+      return;
+    } else if (!comment) {
+      Swal.fire({
+        title: 'โปรดแสดงความคิดเห็น',
+        icon: 'warning',
+        showCloseButton: true,
+      })
+      return;
+    }
+
+    post_review(data, token, schoolID).then((res) => {
+      console.log(res)
+    });
+    //จัดปุ่ม
+    likeBtn.current.disabled = true;
+    likeIcon.current.disabled = true;
+    dislikeBtn.current.disabled = true;
+    dislikeIcon.current.disabled = true;
+    own_comment.current.disabled = true;
+    btn_review.current.classList.add("d-none");
+    btn_confirm.current.classList.add("d-none");
+    btn_edit.current.classList.remove("d-none");
+  }
+
+  function handleEdit(ev) {
+    //เช็ค reviewID เพ่ือใช้อัพเดท
+    const ownBody ={
+      clubID: item._id
+    }
+    get_own_review(ownBody, token, schoolID).then((res) => {
+    setOwnCommentData(res.data);})
+    // console.log("from editing",ownBody,ownCommentData)
+    //
+    ev.preventDefault();
+    own_comment.current.disabled = false;
+    btn_confirm.current.classList.remove("d-none");
+    btn_edit.current.classList.add("d-none");
+    likeBtn.current.disabled = false;
+    likeIcon.current.disabled = false;
+    dislikeBtn.current.disabled = false;
+    dislikeIcon.current.disabled = false;
+    setVote(false);
+    setLike(false);
+    setDislike(false);
+  }
+
+  function handleConfirm(ev) {
+    ev.preventDefault();
+    const comment = own_comment.current.value;
+    if (!vote) {
+      Swal.fire({
+        title: 'โปรดเลือกความพึงพอใจ',
+        icon: 'warning',
+        showCloseButton: true,
+      })
+      return;
+    } else {
+      own_comment.current.disabled = true;
+      btn_confirm.current.classList.add("d-none");
+      btn_edit.current.classList.remove("d-none");
+      likeBtn.current.disabled = true;
+      likeIcon.current.disabled = true;
+      dislikeBtn.current.disabled = true;
+      dislikeIcon.current.disabled = true;
+      own_comment.current.disabled = true;
+      const updateData = {
+        reviewID: ownCommentData._id,
+        textReview: comment,
+        satisfiedLevel: vote,
+      };
+      // console.log(updateData)
+      update_own_review(updateData, token, schoolID).then((res) => {
+        console.log(res);
+      });
+    }
+  }
+  useEffect(() => {
+    console.log("useeffect",commentYear)
+  },[commentYear])
+
+  function handleDropdown(e,e2) {
+    console.log(e2)
+    let year = e.target.innerHTML;
+    setCommentYear(e2);
+    // setCommentYear(parseInt(year));
+    console.log("dropdown",parseInt(year))
+    const body = {
+      schoolYear: parseInt(year),
+      page: 1,
+      clubID: item._id,
+    };
+    const bodyteachers = {
+      clubID: item._id,
+      schoolYear: parseInt(year)
+    };
+    // console.log(bodyteachers)
+    get_club_teachers(bodyteachers, token, schoolID).then((res) => {
+      teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
+    });
+    get_review(body, token, schoolID).then((res) => {
+      console.log("get review from",parseInt(year));
+      console.log("res.data",res.data)
+      displayReview(res.data.docs);
+      const paginate_tmp = generate(res.data,e2)
+      showPaginate(paginate_tmp)
+    });
+    // setCommentYear(parseInt(year));
+  }
+
+  //ปุ่มพอใจ ไม่พอใจ
+  function voteClub() {
+    function voteHandle(e) {
+      //ดักทั้งกดโดน button และ icon
+      if (e.target.value === "พอใจ") {
+        setVote(e.target.value);
+        setLike(true);
+        setDislike(false);
+      } else if (e.target.innerHTML === "พอใจ") {
+        setVote(e.target.innerHTML);
+        setLike(true);
+        setDislike(false);
+      } else if (e.target.value === "ไม่พอใจ") {
+        setVote(e.target.value);
+        setLike(false);
+        setDislike(true);
+      } else if (e.target.innerHTML === "ไม่พอใจ") {
+        setVote(e.target.innerHTML);
+        setLike(false);
+        setDislike(true);
+      }
+    }
+    return (
+      <label>
+        <button ref={likeBtn} className="btn p-1 m-1" value="พอใจ" onClick={(e) => voteHandle(e)}
+          style={
+            like
+              ? { border: "solid 2px green", borderColor: "green" }
+              : { border: "solid 2px gray", borderColor: "gray" }
+          }
+        >
+          <i ref={likeIcon} className="fa-regular fa-thumbs-up fa-sm m-2" style={like ? { color: "green" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>พอใจ</i>
+        </button>
+
+        <button ref={dislikeBtn} className="btn p-1 m-1" value="ไม่พอใจ" onClick={(e) => voteHandle(e)}
+          style={
+            dislike
+              ? { border: "solid 2px red", borderColor: "red" }
+              : { border: "solid 2px gray", borderColor: "gray" }
+          }
+        >
+          <i ref={dislikeIcon} className="fa-regular fa-thumbs-down fa-sm m-2" style={dislike ? { color: "red" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>ไม่พอใจ</i>
+        </button>
+        
+      </label>
+    );
+  }
+  //pagination
+  function generate(result,schoolYear){
+    console.log("result in generate",result)
+    const paginate_tmp = []
+    if (result.hasPrevPage && result.page - 5 >= 1){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1,schoolYear)}><i className="fa-solid fa-angles-left"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+    }
+    
+    if (result.hasPrevPage){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1),schoolYear)}><i className="fa-solid fa-angle-left"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+    }
+    
+    paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+    
+    if (result.hasNextPage){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1),schoolYear)}><i className="fa-solid fa-angle-right"></i></button>)    
+    }else{
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+    }
+    
+    if (result.hasNextPage && result.page + 5 <= result.totalPages){
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages),schoolYear)}><i className="fa-solid fa-angles-right"></i></button>)    
+    }else{
+        paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+    }
+    return paginate_tmp
+}
+  
+function showPaginate(paginate){
+  const template = (
+      <ul className='pagination justify-content-center mt-3'>
+          {paginate.map((item,index)=>{
+              return (
+                  <li key={index} className="page-item">{item}</li>
+              )
+          })}
+      </ul>
+  )
+  setPaginateBtn(template)
+}
+function clickPage(pageSelected,commentYear){
+  console.log("clicked",pageSelected,commentYear)
+  // const yearSelected = commentYear
+  // console.log("yearSelected",yearSelected)
+  const body = {
+    schoolYear: commentYear,
+    page: pageSelected,
+    clubID: item._id,
+  };
+  console.log("body in click page",body)
+  get_review(body, token, schoolID).then((res) => {
+  console.log("afterClickPage",res);
+  displayReview(res.data.docs);
+  const paginate_tmp = generate(res.data,commentYear)
+  showPaginate(paginate_tmp)
+
+})
+}        
+  return (
+    <>
+      <div className="modal" id={item.clubName}>
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className=" modal-header d-flex justify-content-between h2">
+              <div className="modal-title d-flex text-lg">
+                <div className="d-flex">
+                  <span ref={clubNameInModal}></span>
+                </div>
               </div>
+              <div>
+                <button
+                  className="btn-close m-0 "
+                  data-bs-dismiss="modal"
+                ></button>
+              </div>
+            </div>
+            <div className=" modal-body">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span>ความพึงพอใจ</span>
+                  <span className="m-3">{voteClub()}</span>
+                </div>
+                <div className="d-flex  justify-content-center align-items-center">
+                  <div>ปีการศึกษา</div>
+                  <span>
+                    <div className="dropdown p-3">
+                      <button
+                        className="btn btn-light dropdown-toggle"
+                        type="button"
+                        id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        {/* เปลี่ยน ค.ศ. เป็น พ.ศ. */}
+                        {commentYear}
+                      </button>
+                      <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {schedule.map((ev, i) => {
+                          return (
+                            <li key={i}>
+                              <a className="dropdown-item" href="#" onClick={(e) => {handleDropdown(e,ev.schoolYear);}}>
+                                {/* เปลี่ยน ค.ศ. เป็น พ.ศ. */}
+                                {ev.schoolYear}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </span>
+                  <span ref={teacherName}>
+                  </span>
+                </div>
+              </div>
+            
+              <form>
+                <div className="mb-3">
+                  <label className="form-label">เขียนรีวิว</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    defaultValue={""}
+                    ref={own_comment}
+                  >
+                  </textarea>
+                </div>
+                <button type="submit" className="btn btn-primary" ref={btn_review} onClick={(ev) => {handleReview(ev);}}>รีวิว</button>
+                <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
+                <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
+              </form>
+              {backendComments}
+              {paginateBtn}
             </div>
           </div>
         </div>
-        
-        <button
-          className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target={`#${item.clubName}`}
-          onClick={(ev) => clickModal(item,ev)}
-        >
-          รีวิว
-        </button>
-      </>
+      </div>
+
+      <button
+        className="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target={`#${item.clubName}`}
+        onClick={(ev) => clickModal(item, ev)}
+      >รีวิว</button>
+    </>
   );
 }
