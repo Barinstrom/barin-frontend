@@ -9,7 +9,7 @@ import {
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
 export default function Review({ item, schoolID, schedule }) {
-  // console.log("clubinfo", item);
+  // console.log("clubinfo", item)
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [vote, setVote] = useState("");
