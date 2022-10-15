@@ -47,11 +47,9 @@ export default function TimeConfig({ school_data, schoolID }) {
 		if (timeDateDefault){
 			school_data.schedule.forEach((e) => {
 				if (school_data.nowSchoolYear == e.schoolYear) {
-					console.log(e)
 					const [dateEndOfShoolYear, timeEndOfShoolYear] = e.endOfSchoolYear.split("T")
 					const [dateEndOfRegister, timeEndOfRegister] = e.endOfRegisterDate.split("T")
 					const [dateRegister, timeRegister] = e.registerDate.split("T")
-					
 					
 					schoolYear.current.value = JSON.stringify(e)
 					endOfSchoolYear.current.defaultValue = dateEndOfShoolYear
@@ -68,7 +66,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 
 	useEffect(() => {
-		//console.log(school_data.nowSchoolYear)
+		//console.log(school_data)
 		if (school_data.nowSchoolYear) {
 			setNowYear(have_nowYear)
 		}
@@ -200,7 +198,6 @@ export default function TimeConfig({ school_data, schoolID }) {
 	}
 
 	function taskConfirm2(ev){
-		// ภายในนี้จะมีการส่งข้อมูลด้วย
 		ev.preventDefault()
 
 		// const body = {

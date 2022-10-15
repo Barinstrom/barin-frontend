@@ -1,44 +1,82 @@
 import React, { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import { useRouter } from "next/router";
+import { get_data } from "../../utils/auth";
+import { forget_password } from "../../utils/unauth";
+import Cookies from "universal-cookie"
 import styles from "../../styles/admin.module.css"
 import OwnClub from "../../components/teacher/ownClub"
 import StdList from "../../components/teacher/stdList"
-import Cookies from "universal-cookie"
-import { get_data } from "../../utils/auth";
-import { get_all_schoolID } from "../../utils/unauth"
 import Error from "next/error";
 import Reload from '../../components/reload'
-import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
-
-export default function Student({ schoolID }) {
+export default function Teacher({ schoolID }) {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
 	const hamberger = useRef()
 	const dropdown = useRef()
 	const router = useRouter()
-	/* ตัวแปรเก็บค่า timer */
 	let timer;
+
+	const cookies = new Cookies();
+	const token = cookies.get("token")
 	
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [data_school,setData_school] = useState()
 	const [countBtn,SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
-	const [chooseBtnStart,setchooseBtnStart] = useState(false)
-
+	const [chooseBtnStart,setchooseBtnStart] = useState(
+		{
+			componentReady:0,
+			checkStatus:false
+		}
+	)
+	const [checkReadyComponent, setCheckReadyComponent] = useState(false)
+	const [saveEmail, setSaveEmail] = useState("")
 
 	useEffect(() => {
-		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
-			if (!data_school.paymentStatus) {
-				for (let i = 0; i < 2; i++) {
-					optionBtn.current[i].hidden = true
-				}
-			} 
+		if (chooseBtnStart.checkStatus){
+			
+			optionBtn.current[chooseBtnStart.componentReady].classList.add("nowclick");
+			SetCountBtn(chooseBtnStart.componentReady)
 		}
 	},[chooseBtnStart])
+	
+	useEffect(() => {
+		if (checkReadyComponent){
+			const component = window.localStorage.getItem("displayComponent")
+			if (!component){
+				setchooseBtnStart({
+					componentReady:0,
+					checkStatus:true
+				})
+			}else{
+				setchooseBtnStart({
+					componentReady:parseInt(component),
+					checkStatus:true
+				})
+			}
+		}
+	}, [checkReadyComponent])
 
+	function changeComponent(num) {
+		if (num == 0) {
+			SetCountBtn(0)
+		} else if (num == 1) {
+			SetCountBtn(1)
+		} 
+		for (let i=0;i<=1;i++){
+			if (i == num){
+				optionBtn.current[i].classList.add("nowclick")
+			}else{
+				optionBtn.current[i].classList.remove("nowclick")
+			}
+		}
+		nav.current.classList.remove("active");
+		hamberger.current.classList.remove("hamactive");
+	}
+	
 	useEffect(() => {
 		if (readyTime){
 			controllTime("start");
@@ -53,61 +91,40 @@ export default function Student({ schoolID }) {
 	},[readyTime])
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
-		Promise.all([get_data(token,schoolID)])
-			.then(result => {
-				
-				if (result[0][1]) {
-					const data_tmp = result[0][0].data._doc
-					console.log(result[0][0])
-					const role = result[0][0].data.role
-					if (role !== "teacher") {
-						setDisplayFirst(false)
-					}
-					
-					else if (data_tmp) {
-						if (data_tmp.schoolID != schoolID) {
+		if (schoolID) {
+			get_data(token, schoolID)
+				.then(result => {
+					if (result[1]) {
+						const data_tmp = result[0].data._doc
+						const role = result[0].data.role
+						const email = result[0].data.email
+						if (role !== "teacher") {
 							setDisplayFirst(false)
 						}
-						else {
-							setDisplayFirst(true)
-							setData_school(data_tmp)
-							setchooseBtnStart(true)
-							setReadyTime(true)
+					
+						else if (data_tmp) {
+							if (data_tmp.schoolID != schoolID) {
+								setDisplayFirst(false)
+							}
+							else {
+								setDisplayFirst(true)
+								setData_school(data_tmp)
+								setReadyTime(true)
+								setSaveEmail(email)
+								setCheckReadyComponent(true)
+							}
+						} else {
+							setDisplayFirst(false)
 						}
-					}else{
-						setDisplayFirst(false)
 					}
-				}
-				else {
-					if (result[0][0].response.status === 401) {
-						setDisplayFirst(false)
+					else {
+						if (result[0].response.status !== 200) {
+							setDisplayFirst(false)
+						}
 					}
-				}
-				
-		})
-	},[])
-
-
-	function changeComponent(num) {
-		if (num == 0) {
-			SetCountBtn(0)
-		} else if (num == 1) {
-			SetCountBtn(1)
-		} 
-		
-		for (let i=0;i<=1;i++){
-			if (i === num){
-				optionBtn.current[i].classList.add("nowclick")
-			}else{
-				optionBtn.current[i].classList.remove("nowclick")
-			}
+				})
 		}
-		nav.current.classList.remove("active");
-		hamberger.current.classList.remove("hamactive");
-	}
+	},[schoolID])
 
 	/* ฟังชันก์ set เวลาให้นับแบบ real timer */
 	function controllTime(check) {
@@ -121,19 +138,6 @@ export default function Student({ schoolID }) {
 		} else {
 			clearInterval(timer);
 		}
-	}
-
-	let component = null
-	if (!data_school) {
-		component = <Error statusCode={404} />
-	}
-	else if (!data_school.paymentStatus) {
-		component = <Error statusCode={404} />
-	}
-	else if (countBtn === 0){
-		component = <OwnClub school_data={data_school} schoolID={schoolID} />
-	}else if (countBtn === 1){
-		component = <StdList school_data={data_school} schoolID={schoolID} />
 	}
 
 	/* แสดง dropdown */
@@ -150,25 +154,68 @@ export default function Student({ schoolID }) {
 	}
 
 	function logOut() {
-		const cookies = new Cookies();
-		//console.log(cookies.get("token"))
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
 		router.replace(`/${schoolID}`)
 	}
 
-	function forgetPassword() {
-		const cookies = new Cookies();
-		const token = cookies.get("token")
+	async function forgetPassword() {
+		if (!saveEmail) {
+			Swal.fire(
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
+		}
 
-		router.replace(`/forgotPass`)
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0208bb",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
+		})
 	}
 	
 	const clickHamberger = () => {
 		hamberger.current.classList.toggle("hamactive");
 		nav.current.classList.toggle("active");
 	};
+
+	let component = null
+	if (countBtn === 0){
+		component = <OwnClub school_data={data_school} schoolID={schoolID} />
+	}else if (countBtn === 1){
+		component = <StdList school_data={data_school} schoolID={schoolID} />
+	}
 
 	const teacher_page =  (
 			<>
@@ -298,7 +345,7 @@ export default function Student({ schoolID }) {
 									ref={el => optionBtn.current[1] = el}
 								>
 									<i className="fa-solid fa-magnifying-glass me-2"></i>
-									<span>รายชื่อนักเรียนม</span>
+									<span>รายชื่อนักเรียน</span>
 								</div>
 							</li>
 	
@@ -316,9 +363,8 @@ export default function Student({ schoolID }) {
 			</>
 		)
 	
-	console.log("re-render")
-
-	if (displayFirst === "loading") { 
+	
+if (displayFirst === "loading") { 
 		return <Reload />
 	}
 	else if (displayFirst) {
@@ -330,16 +376,9 @@ export default function Student({ schoolID }) {
 }
 
 export async function getStaticPaths() {
-  const schoolPathAll = await get_all_schoolID();
-  
-  const schoolPathGenerate = schoolPathAll.data
-  const all_path = schoolPathGenerate.map((e) => {
-		return { params: e }
-	})
-  
-  return {
-		paths: all_path,
-		fallback: false,
+	return {
+		paths: [],
+		fallback: true,
 	};
 }
 
@@ -350,4 +389,3 @@ export async function getStaticProps(context) {
 		revalidate: 1,
 	};
 }
-

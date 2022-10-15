@@ -1,25 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
-import { get_pending } from '../../utils/system_admin/system';
+import React, {useEffect,useState,useRef} from 'react';
+import {useRouter} from 'next/router';
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
-
+import { get_pending,sys_edit_school } from '../../utils/system_admin/system';
 
 export default function Pending() {
+	const router = useRouter()
+	
 	const [reloadTable, setReloadTable] = useState(false)
 	const [data, setData] = useState([])
 	const [paginate, setPaginate] = useState([])
 	const [displayError, setDisplayError] = useState(false)
+	const [schoolID,setSchoolID] = useState()
+	
 	const search = useRef()
-
 	const schoolName = useRef()
-	const schoolID = useRef()
 	const urlCertificateDocument = useRef()
-	// const urlLogo = useRef()
+	const editUrlCertificateDocument = useRef()
+	const urlLogo = useRef()
 	const headCertificateDocument = useRef()
+
+	const cookies = new Cookies();
+	const token = cookies.get("token");
 
 	useEffect(() => {
 		window.localStorage.removeItem("searchPending")
@@ -27,30 +30,44 @@ export default function Pending() {
 
 		const body = {"page": 1}
 		window.localStorage.setItem("pagePending", 1)
-
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
+		
 		get_pending(body, token).then(result => {
 			console.log(result)
 			if (!result) {
 				setDisplayError(true)
 			} else {
-				const paginate_tmp = generate(result)
+				const paginate_tmp = generate(result.data)
 				setDisplayError(false)
-				showData(result.docs)
+				showData(result.data.docs)
 				showPaginate(paginate_tmp)
 			}
 		})
 	}, [])
+
+	function editUrlCertificateDocumentencodeImageFileAsURL(ev) {
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			editUrlCertificateDocument.current.src = reader.result;
+		};
+	}
+
+	function urlLogoencodeImageFileAsURL(ev) {
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			urlLogo.current.src = reader.result;
+		};
+	}
 
 	async function clickReset(ev) {
 		ev.preventDefault()
 		window.localStorage.removeItem("searchPending")
 		search.current.value = ""
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_pending({ "page": 1 }, token)
 
 		if (!result) {
@@ -78,8 +95,6 @@ export default function Pending() {
 			}
 		}
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_pending(body, token)
 
 		if (!result) {
@@ -122,9 +137,6 @@ export default function Pending() {
 		}
 		window.localStorage.setItem("pagePending", page)
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		setReloadTable(true)
 		const result = await get_pending(body, token)
 		setReloadTable(false)
@@ -158,8 +170,8 @@ export default function Pending() {
 						<tr>
 							<th style={{ width: "100px" }}>schoolID</th>
 							<th style={{ width: "300px" }}>schoolName</th>
-							<th style={{ width: "300px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-							<th style={{ width: "300px" }} className="text-center text-md-end"><span className='me-0 me-md-3'>check and approve</span></th>
+							<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
+							<th style={{ width: "200px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -169,26 +181,29 @@ export default function Pending() {
 								<tr key={index}>
 									<td><span>{item.schoolID}</span></td>
 									<td><span>{item.schoolName}</span></td>
-									<td className="text-end">
+									<td className="text-center">
 										<span className={`certificate`}
 											onClick={() => getUrlCertificateDocument(item)}
 											data-bs-toggle="modal"
 											data-bs-target="#urlCertificateDocument"
 										>กดเพื่อดู certificate</span>
 									</td>
-									<td className="text-end">
-										<div className='d-flex flex-column flex-md-row justify-content-end '>
-											<button className='btn btn-sm btn-success me-md-1'
-												onClick={() => approveSchool(item)}
-											>
-												approve
-											</button>
-											<button className='btn btn-sm btn-danger mt-1 mt-md-0 ms-md-1'
-												onClick={() => notApproveSchool(item)}
-											>
-												not approve
-											</button>
-										</div>
+									<td className="d-flex flex-column flex-lg-row justify-content-end">
+										<button className="btn btn-sm btn-warning me-1 mt-1 mt-md-0"
+											onClick={() => getDetails(item)}
+											data-bs-toggle="modal"
+											data-bs-target="#approveModal"
+										>แก้ไขข้อมูล</button>
+										<button className='btn btn-sm btn-success me-1 mt-1 mt-md-0'
+											onClick={() => approveSchool(item)}
+										>
+											approve
+										</button>
+										<button className='btn btn-sm btn-danger me-1 mt-1 mt-md-0'
+											onClick={() => notApproveSchool(item)}
+										>
+											not approve
+										</button>
 									</td>
 								</tr>
 							)
@@ -217,27 +232,58 @@ export default function Pending() {
 
 	function getDetails(item) {
 		schoolName.current.value = item.schoolName
-		schoolID.current.value = item.schoolID
+		setSchoolID(item.schoolID)
+		urlLogo.current.src = item.urlLogo
+		editUrlCertificateDocument.current.src = item.urlCertificateDocument
 	}
 
 	function getUrlCertificateDocument(item) {
+		// console.log(item)
 		urlCertificateDocument.current.src = item.urlCertificateDocument
 		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
     }
     
     function approveSchool(item) {
-        //console.log(item)
+        console.log(item)
         Swal.fire({
             title: 'คุณต้องการยืนยันว่า Approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "#0047a3",
             confirmButtonText: 'ยืนยัน',
 
             showCancelButton: true,
             cancelButtonText: "cancel",
             cancelButtonColor: "#d93333",
 		}).then((result) => {
-			//console.log(result)
+			if (result.isConfirmed){
+				const body = {
+					schoolID: item.schoolID,
+					schoolName: item.schoolName,
+					status:"approve"
+				}
+				
+				sys_edit_school(token,body).then(result => {
+					if (result){
+						Swal.fire({
+							icon: 'success',
+							title: 'ทำการ approve สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}else{
+						Swal.fire({
+							icon: 'error',
+							title: 'ทำการ approve ไม่สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}
+				})
+			}
 		})
 	}
 	
@@ -246,23 +292,79 @@ export default function Pending() {
         Swal.fire({
             title: 'คุณต้องการยืนยันว่า Not approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "#0047a3",
             confirmButtonText: 'ยืนยัน',
 
             showCancelButton: true,
             cancelButtonText: "ยกเลิก",
             cancelButtonColor: "#d93333",
         }).then((result) => {
-            // then(() => {
-            //     console.log(result)
-            //     if (result.isConfirmed) {
-            //         Swal.fire('ทำรายการสำเร็จ', '', 'success')
-            //     }
-            // })
+            if (result.isConfirmed){
+				const body = {
+					schoolID: item.schoolID,
+					schoolName: item.schoolName,
+					status:"not_approve"
+				}
+				
+				sys_edit_school(token,body).then(result => {
+					if (result){
+						Swal.fire({
+							icon: 'success',
+							title: 'ทำการ not approve สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#0047a3"
+					}).then(res => {
+							router.reload()
+					})
+					}else{
+						Swal.fire({
+							icon: 'error',
+							title: 'ทำการ not approve ไม่สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}
+				})
+			}
         })
     }
 
-    const reload = (
+	function Edit_school(ev) {
+		ev.preventDefault();
+		const body = {
+			schoolID: schoolID,
+			schoolName: schoolName.current.value,
+			urlLogo: urlLogo.current.src,
+			urlCertificateDocument: editUrlCertificateDocument.current.src
+		}
+		sys_edit_school(token,body).then(result => {
+			if (result){
+				Swal.fire({
+					icon: 'success',
+					title: 'แก้ไขข้อมูลสำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#009431",
+					confirmButtonText: 'ok',
+				}).then(() => {
+					router.reload()
+				})
+			}else{
+				Swal.fire({
+					icon: 'error',
+					title: 'แก้ไขข้อมูลไม่สำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#d1000a",
+					confirmButtonText: 'ok',
+				}).then(() => {
+					router.reload()
+				})
+			}
+		})
+	}
+
+  const reload = (
 		<main style={{ height: "400px" }}>
 			<div className="d-flex justify-content-center h-100 align-items-center">
 				<div className="fs-4">loading ...</div>
@@ -307,18 +409,34 @@ export default function Pending() {
 										<label className="form-label">School Name</label>
 										<input type="text" className='form-control' ref={schoolName} />
 									</div>
-									<div className="col-12 mt-2">
-										<label className="form-label">School ID</label>
-										<input type="text" className='form-control' ref={schoolID} />
-									</div>
-									{/* <div className="col-12">
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid d-block' style={{width:"300px"}} ref={urlLogo} />
+										</div>
+										
 										<label className="form-label">UrL Logo</label>
-										<img ref={urlLogo} />
-									</div> */}
+										<input
+											className="form-control"
+											type="file"
+											onChange={(ev) => urlLogoencodeImageFileAsURL(ev)}
+										/>
+									</div> 
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid' style={{width:"100%"}} ref={editUrlCertificateDocument} />
+										</div>
+										
+										<label className="form-label">Url CertificateDocument</label>
+										<input
+											className="form-control" type="file"
+											onChange={(ev) => editUrlCertificateDocumentencodeImageFileAsURL(ev)}
+										/>
+									</div> 
 
 								</div>
 							</div>
 							<div className='modal-footer'>
+								<button className='btn btn-success' onClick={(ev) => Edit_school(ev)}>แก้ไขข้อมูล</button>
 								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
 							</div>
 						</div>

@@ -8,9 +8,10 @@ import axios from "axios";
 const Url = "https://barinapi.tawanchai.com";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
-// แก้ไขข้อมูล club
-export async function update_club(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-club";
+
+// แสดง ownclub
+export async function get_teacher_ownclubs(token, schoolID) {
+  const apiUrl = stagingUrl + String(schoolID) + "/teacher/ownclubs";
 
   try {
     const result = await axios({
@@ -19,8 +20,7 @@ export async function update_club(data, token, schoolID) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=UTF-8",
       },
-      method: "patch",
-      data: JSON.stringify(data),
+      method: "get",
       timeout: 10000
     })
     return result
@@ -30,25 +30,31 @@ export async function update_club(data, token, schoolID) {
   }
 };
 
+// ดูรายชื่อนร.ทั้งหมด
+export async function get_all_stdlist(data,token, schoolID) {
+  const apiUrl = stagingUrl + String(schoolID) + "/club/students/name";
 
-// ตัดเกรด
-export async function update_study_status(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-study-status";
+  const params = new URLSearchParams()
 
+  params.append("clubID", data.clubID)
+
+  const params_success = apiUrl + `?${params}`
+  console.log(params_success)
   try {
     const result = await axios({
-      url: apiUrl,
+      method: "get",
+      url: params_success,
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json;charset=UTF-8",
+        'Content-Type': 'application/json'
       },
-      method: "patch",
-      data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
-  } catch (err) {
+    console.log(result)
+    return [true,result]
+  }
+  catch (err) {
     console.log(err)
-    return false
+    return [false,err]
   }
 };

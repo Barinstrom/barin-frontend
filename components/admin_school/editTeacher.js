@@ -1,8 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
+import React ,{ useEffect,useRef,useState } from 'react';
 import Swal from 'sweetalert2';
 import Cookies from 'universal-cookie';
 import ErrorPage from "next/error";
@@ -43,7 +40,6 @@ export default function EditTeacher({ school_data,schoolID }) {
         window.localStorage.setItem("pageEditTeacher",1)
         
         paginationTeacher(body,token,schoolID).then(result => {
-            console.log(result)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -59,7 +55,6 @@ export default function EditTeacher({ school_data,schoolID }) {
 		firstname.current.setAttribute("user-id",ev.target.getAttribute("data-bs-id"))
         firstname.current.value = item.firstname
         lastname.current.value = item.lastname
-        //email.current.value = item.email
         tel.current.value = item.tel
     }
 
@@ -78,19 +73,20 @@ export default function EditTeacher({ school_data,schoolID }) {
                     icon: 'error',
                     title: 'แก้ไขข้อมูลไม่สำเร็จ',
                     showConfirmButton:true,
-                    confirmButtonColor:"#ce0303"
+                    confirmButtonColor:"#d1000a"
                 })
                 return
             }else if (result_update.status === 200){
                 Swal.fire({
                     icon: 'success',
-                    title: 'แก้ไขข้อมูลเสร็จสิ้น',
+                    title: 'แก้ไขข้อมูลสำเร็จ',
                     showConfirmButton:true,
                     confirmButtonColor:"#009431"
                 })
+                
                 const body = {
                     "page":window.localStorage.getItem("pageEditTeacher"),
-                    "info":window.localStorage.getItem("searchEditTeacher")
+                    "query":window.localStorage.getItem("searchEditTeacher")
                 }
                 
                 const result = await paginationTeacher(body,token,schoolID)
@@ -103,7 +99,7 @@ export default function EditTeacher({ school_data,schoolID }) {
                         window.localStorage.setItem("pageEditTeacher",result.data.totalPages)
                         const body = {
                             "page":window.localStorage.getItem("pageEditTeacher"),
-                            "info":window.localStorage.getItem("searchEditTeacher")
+                            "query":window.localStorage.getItem("searchEditTeacher")
                         }
                         
                         const result_new = await paginationTeacher(body,token,schoolID)
@@ -152,11 +148,9 @@ export default function EditTeacher({ school_data,schoolID }) {
         }
     }
     
-    /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
         let body
-        
         if (!search.current.value){
             window.localStorage.removeItem("searchEditTeacher")
             body = {"page":1}
@@ -186,27 +180,19 @@ export default function EditTeacher({ school_data,schoolID }) {
         const paginate_tmp = []
         if (result.hasPrevPage){
             paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-1)}><i className="fa-solid fa-angle-left"></i></button>)
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-        }
-        
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page-1)}><i className="fa-solid fa-angle-left"></i></button>)    
-        }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
         }
         
         paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
         
         if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.page+1)}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+1)}><i className="fa-solid fa-angle-right"></i></button>)    
+            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
         }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-        }
-
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
             paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
         }
         return paginate_tmp
@@ -328,10 +314,6 @@ export default function EditTeacher({ school_data,schoolID }) {
 									<label className="form-label">นามสกุล</label>
 									<input type="text" className="form-control" ref={lastname}/>
 								</div>
-								{/* <div className="col-12">
-									<label className="form-label">email</label>
-									<input type="email" className="form-control"  ref={email}/>
-								</div> */}
 								<div className="col-12">
 									<label className="form-label">โทรศัพท์มือถือ</label>
 									<input type="tel" className="form-control"  ref={tel}/>

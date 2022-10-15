@@ -16,7 +16,7 @@ export default function StudentList({schoolID}) {
   const [displayError,setDisplayError] = useState(false)
   const [reloadTable,setReloadTable] = useState(false)
   const [clubName,setClubName] = useState(null)
-
+  
   const cookies = new Cookies();
 	const token = cookies.get("token");
 
@@ -30,35 +30,38 @@ export default function StudentList({schoolID}) {
   )
   
   useEffect(() => {
-    window.localStorage.removeItem("pageListStudent")
-    window.localStorage.removeItem("clubIDStudentList")
+
+    if (schoolID) {
+      window.localStorage.removeItem("pageListStudent")
+      window.localStorage.removeItem("clubIDStudentList")
     
-    //console.log(router.query)
-    window.localStorage.setItem("pageListStudent",1)
-    window.localStorage.setItem("clubIDStudentList",router.query.clubID)
-    const body = {
-      "page":1,
-      "clubID":String(window.localStorage.getItem("clubIDStudentList"))
-    }
-    
-    Promise.all([get_name_clubs(token,schoolID),get_students_inclub(body,token,schoolID)])
-    .then(result => {
-      generateDropdown(result[0].data)
-      //console.log(result[1])
-      
-      if (!result[1]){
-        setDisplayError(true)
-        setLoading(false)
-      }else{
-        const paginate_tmp = generate(result[1].data)
-        setDisplayError(false)
-        showData(result[1].data.docs)
-        showPaginate(paginate_tmp)
-        setClubName(router.query.clubName)
-        setLoading(false)
+      //console.log(router.query)
+      window.localStorage.setItem("pageListStudent", 1)
+      window.localStorage.setItem("clubIDStudentList", router.query.clubID)
+      const body = {
+        "page": 1,
+        "clubID": String(window.localStorage.getItem("clubIDStudentList"))
       }
-    })
-  },[])
+      Promise.all([get_name_clubs(token, schoolID), get_students_inclub(body, token, schoolID)])
+        .then(result => {
+          console.log(result[0])
+          generateDropdown(result[0].data)
+          //console.log(result[1])
+      
+          if (!result[1]) {
+            setDisplayError(true)
+            setLoading(false)
+          }else {
+            const paginate_tmp = generate(result[1].data)
+            setDisplayError(false)
+            showData(result[1].data.docs)
+            showPaginate(paginate_tmp)
+            setClubName(router.query.clubName)
+            setLoading(false)
+          }
+        })
+    }
+  },[schoolID])
 
   // fetch ข้อมูลใหม่ตาม club
   function chooseFetchClub(clubID) {
@@ -80,9 +83,9 @@ export default function StudentList({schoolID}) {
         setDisplayError(false)
         showData(result[1].data.docs)
         showPaginate(paginate_tmp)
-
-        for (e of result[0].data){
-          if (clubID === e.clubID){
+        
+        for (let e of result[0].data){
+          if (clubID === e._id){
             setClubName(e.clubName)
             break
           }
@@ -94,11 +97,11 @@ export default function StudentList({schoolID}) {
 
   function generateDropdown(clubs){
     const tmp = (
-      <div>
+      <>
         {clubs.map((e,i) => {
           return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
         })}
-      </div>
+      </>
     )
     setDropdown(tmp)
   }
@@ -141,7 +144,7 @@ export default function StudentList({schoolID}) {
     
     window.localStorage.setItem("pageListStudent",page)
     setReloadTable(true)
-    const result = await paginationStudent(body)
+    const result = await get_students_inclub(body, token, schoolID)
     setReloadTable(false)
     
     if (!result){
@@ -220,6 +223,7 @@ function showPaginate(paginate){
           {reloadTable ? reload : data}
         </div>
         {paginate}
+        <button className='btn btn-primary' onClick={() => router.push(`/${schoolID}/admin_school`)}>กลับหน้า admin</button>
       </main>
     )
   }
@@ -227,24 +231,29 @@ function showPaginate(paginate){
 }
 
 export async function getStaticPaths() {
-  const schoolPathAll = await get_all_schoolID();
-  
-  const schoolPathGenerate = schoolPathAll.data
-  const all_path = schoolPathGenerate.map((e) => {
-		return { params: e }
-	})
-  
-  return {
-		paths: all_path,
-		fallback: false,
+	return {
+		paths: [],
+		fallback: true,
 	};
 }
 
 export async function getStaticProps(context) {
-	const schoolID = context.params.schoolID
+	const schoolID_param = context.params.schoolID
+	const schoolPathAll = await get_all_schoolID();
+	console.log("context",context)
 	
-  return {
-		props: { schoolID},
-		revalidate: 1,
-	};
+	const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
+	if (school_path_data) {
+		let schoolID = school_path_data.schoolID
+		return {
+			props: { schoolID },
+			revalidate: 1,
+		}
+	}
+	else {
+		return {
+			notFound: true,
+			revalidate: 1,
+		}
+	}
 }

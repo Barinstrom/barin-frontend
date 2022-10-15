@@ -31,8 +31,7 @@ export default function EditClub({ school_data,schoolID }) {
     
     const cookie = new Cookies()
     const token = cookie.get("token")
-    // console.log(token)
-
+    
     const reload = (
         <main style={{ height: "400px" }}>
             <div className="d-flex justify-content-center h-100 align-items-center">
@@ -49,10 +48,10 @@ export default function EditClub({ school_data,schoolID }) {
             "page":1,
         }
         window.localStorage.setItem("pageEditClub",1)
+
         
         paginationClub(body, token, schoolID).then(result => {
-            // console.log(result.data)
-            
+            console.log(result)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -65,7 +64,6 @@ export default function EditClub({ school_data,schoolID }) {
     },[])
 
     function detailInfo(item, ev) {
-        // console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
@@ -83,10 +81,16 @@ export default function EditClub({ school_data,schoolID }) {
         teacherFirstName.current.value = "--------"
         teacherLastName.current.value = "---------"
         get_teachers_inclub(item, token, schoolID).then(result => {
+            
             if (!result){
                 teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
                 teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
-            }else if (result.data.length >= 1) {
+            }
+            else if (!result.data) {
+                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (result.data.length >= 1) {
                 teacherFirstName.current.value = result.data[0].firstname
                 teacherLastName.current.value = result.data[0].lastname
             }else {
@@ -252,7 +256,6 @@ export default function EditClub({ school_data,schoolID }) {
         setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
         setReloadTable(false)
-        // console.log(result.data)
         if (!result){
             setDisplayError(true)
         }else{
@@ -331,16 +334,12 @@ export default function EditClub({ school_data,schoolID }) {
     if (!school_data.paymentStatus) {
         return <ErrorPage statusCode={404} />;
     }else if (displayError){
-        return (
-            <>
-                <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
-            </>
-        )
+        return <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
     }else{
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">แก้ไขข้อมูลคลับ</div>
+                    <div className="text-center fs-1 mb-3">แก้ไขข้อมูลชุมนุม</div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>

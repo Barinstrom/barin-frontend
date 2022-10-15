@@ -23,6 +23,7 @@ export async function register(data) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return [true,result]
 	}
 	catch(err){
@@ -51,6 +52,7 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return result
 	}
 	catch(err){
@@ -62,9 +64,7 @@ export async function checkLogin(data){
 
 // forgot pass
 export async function forget_password(data) {
-	// url success
 	const apiUrl = stagingUrl + "/forgotpassword";
-	// console.log(data)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -75,7 +75,6 @@ export async function forget_password(data) {
 			},
 			timeout: 10000
 		})
-		console.log(result)
 		return result
 	}
 	catch(err){
@@ -107,7 +106,7 @@ export async function reset_password(data) {
 };
 
 
-// reset pass
+// get_all_schoolID
 export async function get_all_schoolID() {
 	const apiUrl = stagingUrl + "/getAllSchoolID";
 	
@@ -123,7 +122,30 @@ export async function get_all_schoolID() {
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
+	}
+};
+
+
+// activate check
+export async function is_activate(data) {
+	const apiUrl = stagingUrl + "/activate";
+
+	try {
+		const result = await axios({
+			url: apiUrl,
+			method: "post",
+			data: JSON.stringify(data),
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			timeout: 10000
+		})
+		return [result, true]
+	}
+	catch (err) {
+		console.log(err)
+		return [err, false]
 	}
 };

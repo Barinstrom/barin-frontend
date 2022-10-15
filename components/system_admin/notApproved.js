@@ -3,17 +3,28 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
-import { get_not_approved } from '../../utils/system_admin/system';
+import { get_not_approved,sys_edit_school } from '../../utils/system_admin/system';
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
-
+import {useRouter} from 'next/router';
 
 export default function NotApproved() {
+    const router = useRouter()
     const [reloadTable,setReloadTable] = useState(false)
 	const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
     const [displayError,setDisplayError] = useState(false)
     const search = useRef()
+
+    const schoolName = useRef()
+	const [schoolID,setSchoolID] = useState()
+	const urlCertificateDocument = useRef()
+	const editUrlCertificateDocument = useRef()
+	const urlLogo = useRef()
+	const headCertificateDocument = useRef()
+
+	const cookies = new Cookies();
+	const token = cookies.get("token");
 
     useEffect(()=>{
         window.localStorage.removeItem("searchNotApproved")
@@ -23,9 +34,6 @@ export default function NotApproved() {
             "page" : 1
         }
         window.localStorage.setItem("pageNotApproved",1)
-        
-        const cookies = new Cookies();
-		const token = cookies.get("token");
         
         get_not_approved(body,token).then(result => {
             console.log(result)
@@ -54,8 +62,7 @@ export default function NotApproved() {
         window.localStorage.removeItem("searchNotApproved")
         search.current.value = ""
 
-        const cookies = new Cookies();
-		const token = cookies.get("token");
+
         const result = await get_not_approved({"page":1},token)
         
         if (!result){
@@ -83,8 +90,6 @@ export default function NotApproved() {
             }
         }
         
-        const cookies = new Cookies();
-		const token = cookies.get("token");
         const result = await get_not_approved(body,token)
         
         if (!result){
@@ -126,9 +131,7 @@ export default function NotApproved() {
             "query":window.localStorage.getItem("searchNotApproved")
         }
         window.localStorage.setItem("pageNotApproved",page)
-        
-        const cookies = new Cookies();
-        const token = cookies.get("token");
+    
         
         setReloadTable(true)
         const result = await get_not_approved(body, token)
@@ -147,13 +150,23 @@ export default function NotApproved() {
     function showData(result){
         const template = (
             <>
+                <style jsx>{`
+					.certificate{
+						cursor: pointer;
+						color:#4794e1;
+					}
+					.certificate:hover{
+						text-decoration: underline;
+					}
+				`}</style>
                 <div className='table-responsive'>
                 <table className='table table-striped align-middle'>
                 <thead>
                     <tr>
-                        <th style={{width:"100px"}}>schoolID</th>
-                        <th style={{width:"400px"}}>schoolName</th>
-                        <th style={{width:"400px"}} className="text-end"><span className='me-2'>Approve</span></th>
+                        <th style={{ width: "100px" }}>schoolID</th>
+								<th style={{ width: "400px" }}>schoolName</th>
+								<th style={{ width: "150px" }} className="text-center"><span className=''>certificate</span></th>
+								<th style={{ width: "150px" }} className="text-center"><span className=''>จัดการโรงเรียน</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -162,8 +175,24 @@ export default function NotApproved() {
                             <tr key={index}>
                             <td><span>{item.schoolID}</span></td>
                             <td><span>{item.schoolName}</span></td>
-                            <td className="text-end">
-                                <button className='btn btn-primary' 
+                            <td className="text-center">
+                                <span className={`certificate`}
+                                    onClick={() => getUrlCertificateDocument(item)}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#urlCertificateDocument"
+                                >กดเพื่อดู certificate</span>
+                            </td>
+                            <td className="d-flex flex-column flex-md-row justify-content-end">
+                                <button className='btn btn-sm btn-warning me-1 mt-1 mt-md-0'
+                                    onClick={() => getDetails(item)}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#approveModal"
+                                >
+                                    แก้ไขข้อมูล
+                                </button>
+                            {/* </td>
+                            <td className="text-end"> */}
+                                <button className='btn btn-sm btn-success me-1 mt-1 mt-md-0' 
                                     onClick={()=> approveSchool(item)}>
                                     approve
                                 </button>
@@ -194,23 +223,91 @@ export default function NotApproved() {
         setPaginate(template)
     }
 
-    function approveSchool(item){
-        //console.log(item)
-		Swal.fire({
-            title: 'คุณต้องการยืนยันว่า approve โรงเรียนนี้ใช่หรือไม่',
+    function approveSchool(item) {
+        console.log(item)
+        Swal.fire({
+            title: 'คุณต้องการยืนยันว่า Approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
-            confirmButtonColor:"#3085d6",
-            confirmButtonText:'ยืนยัน',
-            
+            confirmButtonColor: "#0047a3",
+            confirmButtonText: 'ยืนยัน',
+
             showCancelButton: true,
-            cancelButtonText:"ยกเลิก",
-            cancelButtonColor:"#d93333",
-        }).then((result) => {
-            console.log(result)
-            if (result.isConfirmed) {
-              Swal.fire('ทำรายการสำเร็จ', '', 'success')
-            }
-          })
+            cancelButtonText: "cancel",
+            cancelButtonColor: "#d93333",
+		}).then((result) => {
+			if (result.isConfirmed){
+				const body = {
+					schoolID: item.schoolID,
+					schoolName: item.schoolName,
+					status:"approve"
+				}
+				
+				sys_edit_school(token,body).then(result => {
+					if (result){
+						Swal.fire({
+							icon: 'success',
+							title: 'ทำการ approve สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}else{
+						Swal.fire({
+							icon: 'error',
+							title: 'ทำการ approve ไม่สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}
+				})
+			}
+		})
+	}
+
+function getDetails(item) {
+		schoolName.current.value = item.schoolName
+		setSchoolID(item.schoolID)
+		urlLogo.current.src = item.urlLogo
+		editUrlCertificateDocument.current.src = item.urlCertificateDocument
+	}
+
+	function getUrlCertificateDocument(item) {
+		urlCertificateDocument.current.src = item.urlCertificateDocument
+		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
+	}
+
+	function Edit_school(ev) {
+		ev.preventDefault();
+		const body = {
+			schoolID: schoolID,
+			schoolName: schoolName.current.value,
+			urlLogo: urlLogo.current.src,
+			urlCertificateDocument: editUrlCertificateDocument.current.src
+		}
+		sys_edit_school(token,body).then(result => {
+					if (result){
+						Swal.fire({
+							icon: 'success',
+							title: 'ทำการแก้ไขสำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#0047a3"
+					}).then(res => {
+							router.reload()
+					})
+					}else{
+						Swal.fire({
+							icon: 'error',
+							title: 'ทำการแก้ไขไม่สำเร็จ',  
+							showConfirmButton:true,
+							confirmButtonColor:"#00a30b"
+						}).then(res => {
+							router.reload()
+					})
+					}
+				})
 	}
 
     if (displayError){
@@ -235,6 +332,82 @@ export default function NotApproved() {
                     </div>
                     {paginate}
                 </div>
+
+
+                <div className="modal fade" id="approveModal">
+					<div className="modal-dialog">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title">รายละเอียดโรงเรียน</h3>
+								<button className='btn-close' data-bs-dismiss="modal"></button>
+							</div>
+							<div className='modal-body'>
+								<div className="row">
+									<div className="col-12">
+										<label className="form-label">School Name</label>
+										<input type="text" className='form-control' ref={schoolName} />
+									</div>
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid d-block' style={{width:"300px"}} ref={urlLogo} />
+										</div>
+										
+										<label className="form-label">UrL Logo</label>
+										<input
+											className="form-control"
+											type="file"
+											id="formFile"
+											onChange={(ev) => urlLogoencodeImageFileAsURL(ev)}
+										/>
+									</div> 
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid' style={{width:"100%"}} ref={editUrlCertificateDocument} />
+										</div>
+										
+										<label className="form-label">Url CertificateDocument</label>
+										<input
+											className="form-control" type="file"
+											id="formFile" 
+											onChange={(ev) => editUrlCertificateDocumentencodeImageFileAsURL(ev)}
+										/>
+									</div> 
+
+								</div>
+							</div>
+							<div className='modal-footer'>
+								<button className='btn btn-success' onClick={(ev) => Edit_school(ev)}>แก้ไขข้อมูล</button>
+								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+                <div className="modal fade" id="urlCertificateDocument">
+					<div className="modal-dialog">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title" ref={headCertificateDocument}></h3>
+								<button className='btn-close' data-bs-dismiss="modal"></button>
+							</div>
+							<div className='modal-body'>
+								<div className="row">
+			
+									<div className="col-12">
+										<div className='d-flex flex-column align-items-center'>
+											<img className='img-fluid' ref={urlCertificateDocument} />
+										</div>
+									</div>
+									{/* <div className="col-12">
+										<label className="form-label">UrL Logo</label>
+										<img ref={urlLogo} />
+									</div> */}
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
             </>
         )
     }

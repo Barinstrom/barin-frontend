@@ -26,7 +26,7 @@ export async function get_student_ownclub(token, schoolID) {
     })
     return result
   } catch (err) {
-    console.log(err.message)
+    console.log(err)
     return false
   }
 };

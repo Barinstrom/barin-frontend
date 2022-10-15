@@ -1,26 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useRef } from 'react';
-import { get_approved } from '../../utils/system_admin/system';
+import React, {useEffect,useState,useRef} from 'react';
+import {useRouter} from 'next/router';
 import Cookies from "universal-cookie";
 import Link from 'next/link';
 import Swal from 'sweetalert2';
+import { get_approved,sys_edit_school } from '../../utils/system_admin/system';
 
 
 export default function Aprroved() {
+	const router = useRouter()
 	const [reloadTable, setReloadTable] = useState(false)
 	const [data, setData] = useState([])
 	const [paginate, setPaginate] = useState([])
 	const [displayError, setDisplayError] = useState(false)
+	
 	const search = useRef()
-
 	const schoolName = useRef()
-	const schoolID = useRef()
-	const urlCertificateDocument = useRef()
-	// const urlLogo = useRef()
+	const urlLogo = useRef()
+	const editUrlCertificateDocument = useRef()
+	
 	const headCertificateDocument = useRef()
+	const urlCertificateDocument = useRef()
+
+	const cookies = new Cookies();
+	const token = cookies.get("token");
 
 	useEffect(() => {
 		window.localStorage.removeItem("searchAprroved")
@@ -31,18 +34,14 @@ export default function Aprroved() {
 		}
 		window.localStorage.setItem("pageAprroved", 1)
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		get_approved(body, token).then(result => {
 			console.log(result)
 			if (!result) {
 				setDisplayError(true)
 			} else {
-				console.log(result.docs)
-				const paginate_tmp = generate(result)
+				const paginate_tmp = generate(result.data)
 				setDisplayError(false)
-				showData(result.docs)
+				showData(result.data.docs)
 				showPaginate(paginate_tmp)
 			}
 		})
@@ -62,8 +61,6 @@ export default function Aprroved() {
 		window.localStorage.removeItem("searchAprroved")
 		search.current.value = ""
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_approved({ "page": 1 }, token)
 
 		if (!result) {
@@ -91,8 +88,6 @@ export default function Aprroved() {
 			}
 		}
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
 		const result = await get_approved(body, token)
 
 		if (!result) {
@@ -135,9 +130,6 @@ export default function Aprroved() {
 		}
 		window.localStorage.setItem("pageAprroved", page)
 
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		setReloadTable(true)
 		const result = await get_approved(body, token)
 		setReloadTable(false)
@@ -166,45 +158,42 @@ export default function Aprroved() {
 				`}</style>
 				
 				<div className='table-responsive'>
-					<table className='table table-sm table-striped align-middle  border '>
+					<table className='table table-sm align-middle'>
 						<thead>
 							<tr>
-								<th style={{ width: "200px" }}>schoolID</th>
-								<th style={{ width: "200px" }}>schoolName</th>
-								<th style={{ width: "200px" }} className="text-center">สวมลอย</th>
-								<th style={{ width: "200px" }} className="text-end"><span className='me-0 me-sm-4'>certificate</span></th>
-								<th style={{ width: "200px" }} className="text-center text-sm-end"><span className=''>แก้ไขข้อมูล</span></th>
+								<th style={{ width: "100px" }}>schoolID</th>
+								<th style={{ width: "400px" }}>schoolName</th>
+								<th style={{ width: "150px" }} className="text-center"><span>certificate</span></th>
+								<th style={{ width: "150px" }} className="text-center"><span className='ms-0 ms-xl-5'>จัดการโรงเรียน</span></th>
 							</tr>
 						</thead>
 						<tbody>
 							{result.map((item, index) => {
-								console.log(item)
 								return (
 									<tr key={index}>
 										<td><span>{item.schoolID}</span></td>
 										<td><span>{item.schoolName}</span></td>
+										
 										<td className="text-center">
-											<Link href={{
-												pathname: `/system_admin/${item.schoolID}`,
-											}}>
-											<a className='btn btn-sm btn-secondary'>สวมรอย</a>
-											</Link>
-										</td>
-										<td className="text-end">
 											<span className={`certificate`}
 												onClick={() => getUrlCertificateDocument(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#urlCertificateDocument"
 											>กดเพื่อดู certificate</span>
 										</td>
-										<td className="text-end">
-											<button className='btn btn-sm btn-warning'
+										<td className="d-flex flex-column flex-xl-row justify-content-end">
+											<button className='btn btn-sm btn-warning me-0 me-xl-2 mb-2 mb-xl-0'
 												onClick={() => getDetails(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#approveModal"
 											>
 												แก้ไขข้อมูล
 											</button>
+											<Link href={{
+												pathname: `/system_admin/${item.schoolID}`,
+											}}>
+												<a className='btn btn-sm btn-secondary'>สวมรอย</a>
+											</Link>
 										</td>
 									</tr>
 								)
@@ -235,12 +224,69 @@ export default function Aprroved() {
 
 	function getDetails(item) {
 		schoolName.current.value = item.schoolName
-		schoolID.current.value = item.schoolID
+		schoolName.current.setAttribute("data-schoolID",item.schoolID)
+		urlLogo.current.src = item.urlLogo
+		editUrlCertificateDocument.current.src = item.urlCertificateDocument
 	}
 
 	function getUrlCertificateDocument(item) {
 		urlCertificateDocument.current.src = item.urlCertificateDocument
 		headCertificateDocument.current.innerText = "Certificate Doc of " + String(item.schoolName)
+	}
+
+	function editUrlCertificateDocumentencodeImageFileAsURL(ev) {
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			editUrlCertificateDocument.current.src = reader.result;
+		};
+	}
+
+	function urlLogoencodeImageFileAsURL(ev) {
+		
+		let file = ev.target.files[0];
+		let reader = new FileReader();
+		
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			urlLogo.current.src = reader.result;
+		};
+		
+	}
+
+	function update_school(ev) {
+		ev.preventDefault();
+		const body = {
+			schoolID: schoolName.current.getAttribute("data-schoolID"),
+			schoolName: schoolName.current.value,
+			urlLogo: urlLogo.current.src,
+			urlCertificateDocument: editUrlCertificateDocument.current.src
+		}
+		
+		sys_edit_school(token,body).then(result => {
+			if (result){
+				Swal.fire({
+					icon: 'success',
+					title: 'แก้ไขข้อมูลสำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#009431",
+					confirmButtonText: 'ok',
+				}).then(() => {
+					router.reload()
+				})
+			}else{
+				Swal.fire({
+					icon: 'error',
+					title: 'แก้ไขข้อมูลไม่สำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#d1000a",
+					confirmButtonText: 'ok',
+				}).then(() => {
+					router.reload()
+				})
+			}
+		})
 	}
 
 	if (displayError) {
@@ -267,7 +313,7 @@ export default function Aprroved() {
 				</div>
 
 				<div className="modal fade" id="approveModal">
-					<div className="modal-dialog">
+					<div className="modal-dialog modal-dialog-scrollable">
 						<div className='modal-content'>
 							<div className='modal-header'>
 								<h3 className="modal-title">รายละเอียดโรงเรียน</h3>
@@ -279,27 +325,41 @@ export default function Aprroved() {
 										<label className="form-label">School Name</label>
 										<input type="text" className='form-control' ref={schoolName} />
 									</div>
-									<div className="col-12 mt-2">
-										<label className="form-label">School ID</label>
-										<input type="text" className='form-control' ref={schoolID} />
-									</div>
-									{/* <div className="col-12">
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid d-block' style={{width:"300px"}} ref={urlLogo} />
+										</div>
+										
 										<label className="form-label">UrL Logo</label>
-										<img ref={urlLogo} />
-									</div> */}
+										<input
+											className="form-control"
+											type="file"
+											onChange={(ev) => urlLogoencodeImageFileAsURL(ev)}
+										/>
+									</div> 
+									<div className="col-12 mt-3">
+										<div className='d-flex justify-content-center'>
+											<img className='img-fluid' style={{width:"100%"}} ref={editUrlCertificateDocument} />
+										</div>
+										<label className="form-label">Url CertificateDocument</label>
+										<input
+											className="form-control" type="file"
+											onChange={(ev) => editUrlCertificateDocumentencodeImageFileAsURL(ev)}
+										/>
+									</div> 
 
 								</div>
 							</div>
 							<div className='modal-footer'>
+								<button className='btn btn-success' onClick={(ev) => update_school(ev)}>แก้ไขข้อมูล</button>
 								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-								{/* <button className='btn btn-success' data-bs-dismiss="modal" onClick={() => applyClub()}>สมัครชุมนุม</button> */}
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div className="modal fade" id="urlCertificateDocument">
-					<div className="modal-dialog">
+					<div className="modal-dialog modal-dialog-scrollable">
 						<div className='modal-content'>
 							<div className='modal-header'>
 								<h3 className="modal-title" ref={headCertificateDocument}></h3>
@@ -307,17 +367,11 @@ export default function Aprroved() {
 							</div>
 							<div className='modal-body'>
 								<div className="row">
-			
 									<div className="col-12">
 										<div className='d-flex flex-column align-items-center'>
 											<img className='img-fluid' ref={urlCertificateDocument} />
 										</div>
 									</div>
-									{/* <div className="col-12">
-										<label className="form-label">UrL Logo</label>
-										<img ref={urlLogo} />
-									</div> */}
-
 								</div>
 							</div>
 						</div>

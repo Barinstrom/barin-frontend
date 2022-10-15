@@ -10,12 +10,10 @@ const Url = "https://barinapi.tawanchai.com";
 const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
 
 
-// เพิ่มข้อมูลนักเรียน 1 คน role admin_school
+// เพิ่มข้อมูลนักเรียน 1 คน
 export async function add_student(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
-	// console.log("url =", apiUrl)
-	// console.log(JSON.stringify(data))
-	
+	console.log(data,token,schoolID)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -27,7 +25,7 @@ export async function add_student(data,token,schoolID) {
 			data: JSON.stringify(data),
 			timeout: 10000
 		})
-		return result
+		return true
 	} catch (err) {
 		console.log(err)
 		return false
@@ -50,7 +48,9 @@ export async function add_students(data,token,schoolID) {
 			data: JSON.stringify(data),
 			timeout: 10000
 		})
-		return result
+		// ตรงนี้สำเร็จ status 200 แต่ รีเทินค่า [] กลับมา ไม่มีข้อมูลใน database
+		//console.log(result)
+		return true
 	} catch (err) {
 		console.log(err)
 		return false
@@ -62,7 +62,7 @@ export async function add_students(data,token,schoolID) {
 export async function add_club(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-club";
 	
-		try {
+	try {
 		const result = await axios({
 			url: apiUrl,
 			headers: {
@@ -73,8 +73,7 @@ export async function add_club(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		console.log("add_club res = ",result)
-		return result
+		return true
 	} catch (err) {
 		console.log(err)
 		return false
@@ -82,7 +81,7 @@ export async function add_club(data,token,schoolID) {
 };
 
 
-// เพิ่มคลับ หลายคลับ
+// เพิ่มคลับ หลายคลับ 
 export async function add_clubs(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-clubs";
 	
@@ -97,7 +96,7 @@ export async function add_clubs(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 100000
 		})
-		console.log("add_club res = ",result)
+		// ยังไม่ได้เทส
 		return result
 	} catch (err) {
 		console.log(err)
@@ -109,7 +108,6 @@ export async function add_clubs(data,token,schoolID) {
 // เพิ่ม 1 ครู
 export async function add_teacher(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-teacher";
-
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -121,18 +119,16 @@ export async function add_teacher(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		return result
+		return true
 	} catch (err) {
 		console.log(err)
 		return false
 	}
-
 };
 
-// เพิ่มครู หลายคน
+// เพิ่มครูหลายคน
 export async function add_teachers(data,token,schoolID) {
 	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
-	//console.log("data = ",data)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -144,9 +140,8 @@ export async function add_teachers(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		return result
+		return true
 	} catch (err) {
-
 		console.log(err)
 		return false
 	}

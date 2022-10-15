@@ -65,6 +65,7 @@ export async function get_school(token,schoolID) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return result
 	} catch (err) {
 		console.log(err)
@@ -115,7 +116,6 @@ export async function get_students_inclub(data, token, schoolID) {
 	}
 	
 	const params_success = apiUrl + `?${params}`
-	console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
@@ -123,12 +123,11 @@ export async function get_students_inclub(data, token, schoolID) {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			method: "get",
 			timeout: 10000
 		})
 		return result
 	} catch (err) {
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };
@@ -211,8 +210,6 @@ export async function paginationClub(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	//console.log(params)
-	
 	try {
 		const result = await axios({
 			method:"get",
@@ -223,10 +220,11 @@ export async function paginationClub(data,token,schoolID) {
 			},
 			timeout:10000
 		})
+		console.log(result)
 		return result
 	}
 	catch(err){
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

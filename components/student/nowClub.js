@@ -61,7 +61,7 @@ export default function Nowclub({schoolID}) {
 		const token = cookie.get("token")
 		
 		get_student_ownclub(token,schoolID).then(result => {
-			console.log(result.data.clubs)
+			console.log(result)
 
 			let clubs;
 			if (!result){

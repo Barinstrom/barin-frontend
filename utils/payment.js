@@ -44,7 +44,7 @@ export async function stripe(token) {
 		})
 		return result
 	} catch (err) {
-		console.log(err)
+		//console.log(err)
 		return false
 	}
 }

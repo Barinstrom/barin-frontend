@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import styles from "../../styles/admin.module.css";
 import Approved from "../../components/system_admin/approved";
 import NotApproved from "../../components/system_admin/notApproved";
@@ -7,11 +6,12 @@ import Pending from "../../components/system_admin/pending";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
 import { get_data } from "../../utils/auth";
+import { forget_password } from "../../utils/unauth";
 import Reload from '../../components/reload'
 import Error from "next/error";
+import Swal from "sweetalert2"
 
-
-export default function Student({ schoolID }) {
+export default function System() {
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -20,27 +20,30 @@ export default function Student({ schoolID }) {
 	const router = useRouter()
 	/* ตัวแปรเก็บค่า timer */
 	let timer;
+	
+	const cookie = new Cookies();
+	const token = cookie.get("token")
 
 	//const [data_school, setData_school] = useState()
 	const [displayFirst, setDisplayFirst] = useState("loading")
 	const [countBtn, SetCountBtn] = useState(0)
 	const [readyTime, setReadyTime] = useState(false)
 	const [chooseBtnStart, setchooseBtnStart] = useState(false)
+	const [saveEmail, setSaveEmail] = useState("")
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const token = cookies.get("token");
-
 		Promise.all([get_data(token)])
 			.then(result => {
 				if (result[0][1]) {
 					const data_tmp = result[0][0].data._doc
 					const role = result[0][0].data.role
+					const email = result[0][0].data.email
 					if (role !== "host") {
 						setDisplayFirst(false)
 					}else if (data_tmp) {
 						setDisplayFirst(true)
 						//setData_school(data_tmp)
+						setSaveEmail(email)
 						setchooseBtnStart(true)
 						setReadyTime(true)
 					} else {
@@ -129,26 +132,63 @@ export default function Student({ schoolID }) {
 	}
 
 	function logOut() {
-		const cookies = new Cookies();
-		//console.log(cookies.get("token"))
-		cookies.remove("token", { path: `${schoolID}` })
-		cookies.remove("token", { path: "/" })
-
+		cookie.remove("token", { path: "/" })
 		router.replace("/")
 	}
 
-	function forgetPassword() {
-		router.replace(`/forgotPass`)
+	async function forgetPassword() {
+		if (!saveEmail) {
+			Swal.fire(
+				'ไม่พบอีเมลล์ของท่าน',
+				'กรุณาลอง login ใหม่อีกครั้ง',
+				'warning'
+			)
+			return
+		}
+
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0208bb",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "ยกเลิก",
+			cancelButtonColor: "#d93333",
+		}).then((result) => {
+			if (result.isConfirmed){
+				const body = { "email": saveEmail }
+				forget_password(body).then((result) => {
+					if (!result) {
+						Swal.fire({
+							icon: 'error',
+							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+							showConfirmButton: true,
+							confirmButtonColor: "#d1000a",
+							confirmButtonText: 'ok',
+						})
+					} else {
+						Swal.fire({
+							icon: 'success',
+							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+							showConfirmButton: true,
+							confirmButtonColor: "#009431",
+							confirmButtonText: 'ok',
+						})
+					}
+				})
+			}
+		})	
 	}
 
 
 	let component = null
 	if (countBtn === 0) {
-		component = <Pending/>
+		component = <Pending />
 	} else if (countBtn === 1) {
-		component = <Approved/>
+		component = <Approved />
 	} else {
-		component = <NotApproved/>
+		component = <NotApproved />
 	}
 
 	if (displayFirst === "loading") {
@@ -243,9 +283,7 @@ export default function Student({ schoolID }) {
 								<span className={`${styles.logo_bell}`}>
 									<i className="fa-regular fa-bell"></i>
 								</span>
-								<span className={`${styles.user_name} ms-1`}>
-									{/* {data.data.userId} */}
-								</span>
+								<span className={`${styles.user_name} ms-1`}></span>
 
 								<div className={`${styles.logo}`}>
 									<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
@@ -299,7 +337,7 @@ export default function Student({ schoolID }) {
 
 				{/* ส่วน component มาแสดงผล */}
 				<main className={styles.content}>
-					<div className="container border">
+					<div className="container">
 						{component}
 					</div>
 				</main>
