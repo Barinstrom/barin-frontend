@@ -5,8 +5,10 @@ import { paginationClub } from '../../utils/auth';
 import { register_club,get_student_ownclub,drop_club } from '../../utils/student/student';
 import Cookies from 'universal-cookie';
 import Swal from 'sweetalert2';
+import Review from './reviewmodal';
 
-export default function EditClub({schoolID }) {
+
+export default function EditClub({schoolID ,scheduled}) {
     const [reloadTable,setReloadTable] = useState(false)
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
@@ -230,6 +232,7 @@ export default function EditClub({schoolID }) {
                                     >ดูรายละเอียด
                                     </button>
                                 </td>
+                                <td><Review item={item} schoolID={schoolID} schedule={scheduled} /></td>
                             </tr>
                         )
                     })}

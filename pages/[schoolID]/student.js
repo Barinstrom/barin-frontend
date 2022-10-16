@@ -195,7 +195,7 @@ export default function Student({ schoolID }) {
 	if (countBtn === 0){
 		component = <Nowclub schoolID={schoolID}/>
 	}else if (countBtn === 1){
-		component = <Searchclub schoolID={schoolID}/>
+		component = <Searchclub schoolID={schoolID} scheduled={schedule}/>
 	}else{
 		console.log(schedule)
 		component = <Pastclub schoolID={schoolID} schedule={schedule}/>

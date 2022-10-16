@@ -9,7 +9,7 @@ import {
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
 export default function Review({ item, schoolID, schedule }) {
-  // console.log("clubinfo", item)
+  // console.log("clubinfo", item,schedule,schoolID)
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [vote, setVote] = useState("");
@@ -53,12 +53,13 @@ export default function Review({ item, schoolID, schedule }) {
       page: 1,
       clubID: item._id,
     };
+    console.log("body.clubID",body.clubID)
     get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
       // ถ้าเคยรีวิวแล้ว  
       if (res) {
         own_comment.current.value = res.data.textReview;
         setOwnCommentData(res.data);
-        // console.log("ownReview", res.data);
+        console.log("ownReview", res.data);
         if (res.data.satisfiedLevel === "พอใจ") {
           setLike(true);
           setDislike(false);
@@ -78,8 +79,11 @@ export default function Review({ item, schoolID, schedule }) {
       //
     });
     //รีวิวปีปัจจุบัน
+    console.log("body",body)
     get_review(body, token, schoolID).then((res) => {
+      console.log("get review",res.data)
       displayReview(res.data.docs);
+
       const paginate_tmp = generate(res.data,new Date().getFullYear())
       showPaginate(paginate_tmp)
     });
@@ -148,7 +152,7 @@ export default function Review({ item, schoolID, schedule }) {
       satisfiedLevel: vote,
     };
     // console.log("ข้อมูลที่รีวิว",data)
-    const schoolID = "stamp";
+    // const schoolID = "stamp";
     ev.preventDefault();
     if (!vote) {
       Swal.fire({
