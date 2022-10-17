@@ -1,19 +1,12 @@
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
-
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // ดึงข้อมูลที่เกี่ยวข้องกะคนนั้น
 export async function get_data(token) {
 	// console.log(token,schoolID)
-	const apiUrl = stagingUrl + "school/get-status";
+	const apiUrl = stagingUrl + "/school/get-status";
 	try{
 		const result = await axios({
 			method:"get",
@@ -34,7 +27,7 @@ export async function get_data(token) {
 // ดึงข้อมูลของทุกคน
 export async function get_userdata(token, schoolID) {
 	// console.log(token,schoolID)
-	const apiUrl = stagingUrl + String(schoolID) + "/user";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/user";
 	try{
 		const result = await axios({
 			method:"get",
@@ -55,7 +48,7 @@ export async function get_userdata(token, schoolID) {
 
 // ดึงข้อมูลโรงเรียน
 export async function get_school(token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/get-school";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/get-school";
 	try{
 		const result = await axios({
 			url: apiUrl,
@@ -77,7 +70,7 @@ export async function get_school(token,schoolID) {
 
 // /club/teachers
 export async function get_teachers_inclub(data,token, schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/club/teachers";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/teachers";
 	const params = new URLSearchParams()
 
 	if (data._id) {
@@ -105,7 +98,7 @@ export async function get_teachers_inclub(data,token, schoolID) {
 
 // /club/students
 export async function get_students_inclub(data, token, schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/club/students";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/students";
 	const params = new URLSearchParams()
 	
 	if (data.clubID) {
@@ -134,7 +127,7 @@ export async function get_students_inclub(data, token, schoolID) {
 
 // pagination Student
 export async function paginationStudent(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/students";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/students";
 	const params = new URLSearchParams()
 	
 	if (data.page){
@@ -166,7 +159,7 @@ export async function paginationStudent(data,token,schoolID) {
 
 // pagination Teacher 
 export async function paginationTeacher(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/teachers";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/teachers";
 	const params = new URLSearchParams()
 	
 	if (data.page){
@@ -199,7 +192,7 @@ export async function paginationTeacher(data,token,schoolID) {
 
 // pagination Club
 export async function paginationClub(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/clubs";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/clubs";
 	const params = new URLSearchParams()
 	
 	if (data.page){

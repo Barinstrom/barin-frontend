@@ -1,16 +1,10 @@
 import axios from "axios";
 
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // แก้ไขข้อมูล club
 export async function update_club(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-club";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/update-club";
 
   try {
     const result = await axios({
@@ -33,7 +27,7 @@ export async function update_club(data, token, schoolID) {
 
 // ตัดเกรด
 export async function update_study_status(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-study-status";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/update-study-status";
 
   try {
     const result = await axios({

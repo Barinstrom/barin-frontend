@@ -1,18 +1,12 @@
 import Cookies from "universal-cookie";
 import axios from "axios"
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com"
 
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // register
 export async function register(data) {
 	const apiUrl = stagingUrl + "/register";
-	
+
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -23,15 +17,15 @@ export async function register(data) {
 			},
 			timeout: 10000
 		})
-		return [result,true]
+		return [result, true]
 	}
-	catch(err){
+	catch (err) {
 		console.log(err)
-		return [err,false]
+		return [err, false]
 	}
 };
 
-export async function checkLogin(data){
+export async function checkLogin(data) {
 	const apiUrl = stagingUrl + "/login";
 	try {
 		const result = await axios({
@@ -43,11 +37,11 @@ export async function checkLogin(data){
 			},
 			timeout: 10000
 		})
-		return [result,true]
+		return [result, true]
 	}
-	catch(err){
+	catch (err) {
 		console.log(err)
-		return [err,false]
+		return [err, false]
 	}
 }
 
@@ -67,7 +61,7 @@ export async function forget_password(data) {
 		})
 		return result
 	}
-	catch(err){
+	catch (err) {
 		console.log(err)
 		return false
 	}
@@ -76,7 +70,7 @@ export async function forget_password(data) {
 // reset pass
 export async function reset_password(data) {
 	const apiUrl = stagingUrl + "/updatepassword";
-	
+
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -87,11 +81,11 @@ export async function reset_password(data) {
 			},
 			timeout: 10000
 		})
-		return [result,true]
+		return [result, true]
 	}
-	catch(err){
+	catch (err) {
 		console.log(err)
-		return [err,false]
+		return [err, false]
 	}
 };
 
@@ -99,7 +93,7 @@ export async function reset_password(data) {
 // get_all_schoolID
 export async function get_all_schoolID() {
 	const apiUrl = stagingUrl + "/getAllSchoolID";
-	
+
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -111,7 +105,7 @@ export async function get_all_schoolID() {
 		})
 		return result
 	}
-	catch(err){
+	catch (err) {
 		console.log(err)
 		return false
 	}

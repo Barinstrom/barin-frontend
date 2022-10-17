@@ -1,17 +1,10 @@
 import axios from "axios";
 
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
-
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // แสดง ownclub
 export async function get_teacher_ownclubs(token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/teacher/ownclubs";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/teacher/ownclubs";
 
   try {
     const result = await axios({
@@ -32,7 +25,7 @@ export async function get_teacher_ownclubs(token, schoolID) {
 
 // ดูรายชื่อนร.ทั้งหมด
 export async function get_all_stdlist(data,token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/club/students/name";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/students/name";
 
   const params = new URLSearchParams()
 

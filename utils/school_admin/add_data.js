@@ -1,18 +1,12 @@
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 
 // เพิ่มข้อมูลนักเรียน 1 คน
 export async function add_student(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-student";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-student";
 	console.log(data,token,schoolID)
 	try {
 		const result = await axios({
@@ -35,7 +29,7 @@ export async function add_student(data,token,schoolID) {
 
 // เพิ่มข้อมูลนักเรียนหลายคน admin_school
 export async function add_students(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-students";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-students";
 	
 	try {
 		const result = await axios({
@@ -58,7 +52,7 @@ export async function add_students(data,token,schoolID) {
 
 // เพิ่ม 1 คลับ
 export async function add_club(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-club";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-club";
 	
 	try {
 		const result = await axios({
@@ -81,7 +75,7 @@ export async function add_club(data,token,schoolID) {
 
 
 export async function add_clubs(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-clubs";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-clubs";
 	
 		try {
 		const result = await axios({
@@ -105,7 +99,7 @@ export async function add_clubs(data,token,schoolID) {
 
 // เพิ่ม 1 ครู
 export async function add_teacher(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-teacher";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teacher";
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -126,7 +120,7 @@ export async function add_teacher(data,token,schoolID) {
 
 // เพิ่มครูหลายคน
 export async function add_teachers(data,token,schoolID) {
-	const apiUrl = stagingUrl + String(schoolID) + "/add-teachers";
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-teachers";
 	try {
 		const result = await axios({
 			url: apiUrl,

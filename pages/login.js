@@ -70,7 +70,7 @@ export default function Login() {
           }).then(() => {
             router.push("/" + "system_admin")
           })
-        }else if ((result.data.role === "teacher" || result.data.role ===  "student")){
+        }else {
           Swal.fire({
             icon: 'info',
             title: 'เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง'+'\n'+'กำลังนำท่านสู่เส้นทางที่ถูกต้อง', 
@@ -79,18 +79,19 @@ export default function Login() {
           }).then(() => {
             router.push("/" + String(result.data.schoolID))
           })
-        }else {
-          cookie.set("token",result.data.token)
-          Swal.fire({
-						icon: 'success',
-						title: 'เข้าสู่ระบบสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-          })
-          .then(() => {
-            router.push("/" + String(result.data.schoolID) + "/admin_school")
-          })
         }
+        // else {
+        //   cookie.set("token",result.data.token)
+        //   Swal.fire({
+				// 		icon: 'success',
+				// 		title: 'เข้าสู่ระบบสำเร็จ',
+				// 		showConfirmButton:true,
+				// 		confirmButtonColor:"#009431"
+        //   })
+        //   .then(() => {
+        //     router.push("/" + String(result.data.schoolID) + "/admin_school")
+        //   })
+        // }
       }
 		}
   }

@@ -48,7 +48,7 @@ export default function ForgotPass() {
     const result = await reset_password(body);
 
     spin.current.classList.add("d-none");
-    //console.log(result[1])
+    console.log(result)
     
     if (!result[1]) {
       Swal.fire({
@@ -65,6 +65,8 @@ export default function ForgotPass() {
         showConfirmButton:true,
         confirmButtonColor:"#009431"
       })
+      if (result[0].data.schoolID == "all") router.replace("/")
+      else  router.replace("/" + result[0].data.schoolID)
     }
   } 
   

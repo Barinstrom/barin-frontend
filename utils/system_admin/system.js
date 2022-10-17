@@ -1,12 +1,6 @@
 import axios from "axios";
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com"
 
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // data school
 export async function get_school_data(schoolID,token) {

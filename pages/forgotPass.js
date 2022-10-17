@@ -47,6 +47,7 @@ export default function ForgotPass() {
         confirmButtonText: 'ok',
       })
     } else {
+      console.log(result)
       Swal.fire({
         icon: 'success',
         title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
@@ -54,6 +55,8 @@ export default function ForgotPass() {
         confirmButtonColor: "#009431",
         confirmButtonText: 'ok',
       })
+      if (result.data.schoolID == "all") router.replace("/")
+      else router.replace("/" + result.data.schoolID)
     }
   } 
   

@@ -1,18 +1,12 @@
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-/* url ของจริง */
-//https://barinapi.tawanchai.com
-/* url เทส */
-//https://barin-backend-staging.herokuapp.com
-/* url domain หลักของ backend เก็บใส่ตัวแปรเอาไว้แล้วนำไปใช้ต่อ */
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 
 // แสดง ownclub
 export async function get_student_ownclub(token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/student/ownclub";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/student/ownclub";
 
   try {
     const result = await axios({
@@ -33,7 +27,7 @@ export async function get_student_ownclub(token, schoolID) {
 
 // แสดง ownclub
 export async function get_student_pastclub(token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/student/pastclubs";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/student/pastclubs";
   try {
     const result = await axios({
       url: apiUrl,
@@ -53,7 +47,7 @@ export async function get_student_pastclub(token, schoolID) {
 
 // สมัครชุมนุม club
 export async function register_club(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/register-club";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/register-club";
 
   try {
     const result = await axios({
@@ -75,7 +69,7 @@ export async function register_club(data, token, schoolID) {
 
 // drop club
 export async function drop_club(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/drop-club";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/drop-club";
 
   try {
     const result = await axios({
@@ -97,7 +91,7 @@ export async function drop_club(data, token, schoolID) {
 
 // get-review
 export async function get_review(body, token, schoolID) {
-  const apiUrl = stagingUrl + schoolID + "/get-review";
+  const apiUrl = stagingUrl + "/" + schoolID + "/get-review";
   try {
     const result = await axios({
       method: "get",
@@ -118,7 +112,7 @@ export async function get_review(body, token, schoolID) {
 
 // post-review
 export async function post_review(data, token, schoolID) {
-  const apiUrl = stagingUrl + schoolID + "/add-review";
+  const apiUrl = stagingUrl + "/" + schoolID + "/add-review";
 
   try {
     const result = await axios({
@@ -140,7 +134,7 @@ export async function post_review(data, token, schoolID) {
 }
 // get-own-review
 export async function get_own_review(body, token, schoolID) {
-  const apiUrl = stagingUrl + schoolID + "/get-own-review";
+  const apiUrl = stagingUrl + "/" + schoolID + "/get-own-review";
   try {
     const result = await axios({
       method: "get",
@@ -160,7 +154,7 @@ export async function get_own_review(body, token, schoolID) {
 }
 // update-own-review
 export async function update_own_review(data, token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/update-review";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/update-review";
 
   try {
     const result = await axios({
@@ -182,7 +176,7 @@ export async function update_own_review(data, token, schoolID) {
 
 // club-teachers
 export async function get_club_teachers(body,token, schoolID) {
-  const apiUrl = stagingUrl + String(schoolID) + "/club/teachers";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/teachers";
   try {
     const result = await axios({
       url: apiUrl,

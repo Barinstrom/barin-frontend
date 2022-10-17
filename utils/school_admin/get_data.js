@@ -1,13 +1,11 @@
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-
-const Url = "https://barinapi.tawanchai.com/";
-const stagingUrl = "https://barin-backend-staging.herokuapp.com/"
+const stagingUrl = process.env.NEXT_PUBLIC_API
 
 // ดึงชื่อ clubs ทั้งหมด
 export async function get_name_clubs(token, schoolID) {
-    const apiUrl = stagingUrl + String(schoolID) + "/clubs-name";
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/clubs-name";
   
     try {
       const result = await axios({

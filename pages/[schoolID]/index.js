@@ -90,7 +90,19 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               })
               router.push("/" + String(result[0].data.schoolID) + "/" + result[0].data.role)
 
-            }else if (result[0].data.role === "admin" || result[0].data.role === "host"){
+            }
+            else if (result[0].data.role === "admin") {
+              const cookie = new Cookies();
+              cookie.set("token", result[0].data.token);
+              Swal.fire({
+                icon: "success",
+                title: "เข้าสู่ระบบสำเร็จ",
+                showConfirmButton: true,
+                confirmButtonColor: "#009431",
+              })
+              router.push("/" + String(result[0].data.schoolID) + "/admin_school")
+            }
+            else if (result[0].data.role === "host") {
                 Swal.fire({
                   icon: "info",
                   title:"เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" +"\n" +"กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
