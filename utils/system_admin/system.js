@@ -124,6 +124,7 @@ export async function get_not_approved(data,token) {
 // edit info school
 export async function sys_edit_school(token,data) {
 	const apiUrl = stagingUrl + "/update-school";
+	console.log(data)
 	try {
 		const response = await axios({
 			method:"patch",

@@ -101,9 +101,9 @@ export default function ForgotPass() {
             <button className={styles.login_btn} onClick={(ev) => clickForm(ev)}>ลืมรหัสผ่าน</button>
           </div>
           <div className='mt-3 d-flex flex-column align-items-center'>
-          <Link href="/">
+          {/* <Link href="/">
             <button className={styles.comeback_btn}>กลับสู่หน้าหลัก</button>
-          </Link>
+          </Link> */}
           
           </div>
 

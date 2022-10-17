@@ -6,13 +6,39 @@ import Swal from "sweetalert2";
 import { add_club,add_clubs } from "../../utils/school_admin/add_data";
 import {paginationTeacher} from '../../utils/auth'
 import AllowAddClub from "./allowAddClub";
+import { CSVLink } from "react-csv";
 
 export default function InsertClub({ school_data, schoolID }) {
 	/* hook state */
 	const [clubImg, setClubImg] = useState("");
 	const [csvFile, setCsvFile] = useState("");
 	const [allowRegisterClubTeacher,setAllowRegisterClubTeacher] = useState(true)
-	const [loading,setLoading] = useState(true)
+	const [loading, setLoading] = useState(true)
+	
+	/* CSV */
+	const headers = [
+		{ label: "clubName", key: "clubName" },
+		{ label: "groupID", key: "groupID" },
+		{ label: "clubInfo", key: "clubInfo" },
+		{ label: "category", key: "category" },
+		{ label: "day", key: "day" },
+		{ label: "schedule", key: "schedule" },
+		{ label: "limit", key: "limit" },
+		{ label: "schoolYear", key: "schoolYear" },
+		{ label: "firstname", key: "firstname" },
+		{ label: "lastname", key: "lastname" },
+	];
+	const tmpdata = [
+		{
+			clubName: "", groupID: "", clubInfo: "", category: "", day: "",
+			schedule: "", limit: "", schoolYear: "", firstname: "", lastname: ""
+		}
+	];
+	const csvReport = {
+		data: tmpdata,
+		headers: headers,
+		filename: 'students_example.csv'
+	};
 
 	/* hook ref */
 	const clubName = useRef()
@@ -254,6 +280,9 @@ export default function InsertClub({ school_data, schoolID }) {
 					<div className="card-body">
 						<h5 className="card-title">เพิ่มข้อมูลของชุมนุม 1 ชุมนุม</h5>
 						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมแค่ 1 ชุมนุม คุณไม่จำเป็นต้องสร้างไฟล์ csv สามารถกรอกแบบฟอร์มได้เลย</p>
+						<div className="btn btn-outline-secondary">
+							<CSVLink {...csvReport}>ตัวอย่างไฟล์ CSV</CSVLink>
+						</div>
 					</div>
 					<div className="card-footer">
 						<div className="d-flex justify-content-end">

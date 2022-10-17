@@ -89,7 +89,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 		const body = {
 			schoolID:schoolID,
 			schoolName: schoolNameInput.current.value,
-			logo: picture
+			urlLogo: picture
 		};
 
 		const result =  await admin_edit_school(token,body)
@@ -189,7 +189,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 						height: 15rem;
 						width: 15rem;
 						border-radius: 10%;
-						object-fit: cover;
+						object-fit: contain;
 					}
 					
 				`}</style>

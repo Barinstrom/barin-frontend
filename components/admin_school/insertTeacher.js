@@ -4,12 +4,28 @@ import ErrorPage from "next/error";
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
 import { add_teacher, add_teachers } from "../../utils/school_admin/add_data";
+import { CSVLink } from "react-csv";
 
 export default function InsertTeacher({ school_data,schoolID }) {
 	const [csvFile, setCsvFile] = useState("");
 	const form = useRef()
 	const cookies = new Cookies();
 	const token = cookies.get("token");
+
+	const headers = [
+		{ label: "firstname", key: "firstname" },
+		{ label: "lastname", key: "lastname" },
+		{ label: "email", key: "email" },
+		{ label: "tel", key: "tel" },
+	];
+	const tmpdata = [
+		{ firstname: "", lastname: "", email: "",tel: "" }
+	];
+	const csvReport = {
+		data: tmpdata,
+		headers: headers,
+		filename: 'teachers_example.csv'
+	};
 
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
@@ -140,6 +156,9 @@ export default function InsertTeacher({ school_data,schoolID }) {
 				<div className="card-body">
 					<h5 className="card-title">เพิ่มข้อมูลของคุณครูหลายคน</h5>
 					<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลคุณครูหลายคน สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการใส่ไฟล์ในนี้ได้เลย</p>
+					<div className="btn btn-outline-secondary">
+						<CSVLink {...csvReport}>ตัวอย่างไฟล์ CSV</CSVLink>
+					</div>
 				</div>
 				<div className="card-footer">
 					<form>

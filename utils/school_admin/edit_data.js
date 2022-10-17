@@ -101,7 +101,7 @@ export async function update_teacher(data, token, schoolID) {
 
 // edit school_data
 export async function admin_edit_school(token,data){
-  const apiUrl = stagingUrl + "/update-school";
+  const apiUrl = stagingUrl + "update-school";
   try {
     const response = await axios({
       method:"patch",
@@ -113,6 +113,7 @@ export async function admin_edit_school(token,data){
       timeout:10000,
       data:JSON.stringify(data)
     })
+    console.log(response)
     return true
   }catch(err) {
     console.log(err);
