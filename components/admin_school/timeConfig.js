@@ -3,12 +3,15 @@ import { useRef,useState,useEffect } from "react";
 import ErrorPage from 'next/error'
 import Cookies from "universal-cookie";
 import { set_schedule } from "../../utils/school_admin/edit_data";
+import Swal from "sweetalert2";
+import { useRouter } from "next/router";
 
 export default function TimeConfig({ school_data, schoolID }) {
 	// 2022-09-26T00:15:00.000+00:00
 	// "2022-09-26 11:00:00"
 	// console.log(school_data)
 	// school_data.nowSchoolYear = 2021
+	const router = useRouter()
 
 	// ปีการศึกษา
 	const schoolYear = useRef();
@@ -171,30 +174,91 @@ export default function TimeConfig({ school_data, schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		async function set_schedule_async() {
-			console.log("sent_data",sent_data)
-			const result = await set_schedule(sent_data, token, schoolID)
-			console.log(result)
-			if (result.data.success) {
-				console.log("success")
-				// window.location.replace("/" + schoolID +"/admin_school")
-			}
-		}
-	
-		set_schedule_async()
+		Swal.fire({
+			title: 'คุณต้องการแก้ไขเวลาลงทะเบียนใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
 
-		resetData()
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return set_schedule(sent_data, token, schoolID)
+			},
+			allowOutsideClick: () => !Swal.isLoading()
+
+		}).then((result) => {
+			if (result.isConfirmed) {
+				if (!result.value) {
+					Swal.fire({
+						icon: 'error',
+						title: 'แก้ไขข้อมูลไม่สำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#d1000a",
+						confirmButtonText: 'ok',
+					})
+				}
+				else if (result.value.data.success) {
+					Swal.fire({
+						icon: 'success',
+						title: 'แก้ไขข้อมูลสำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431",
+						confirmButtonText: 'ok',
+					}).then(() => {
+						router.reload()
+					})
+				}
+			} else {
+				
+			}
+		})
+
+		// async function set_schedule_async() {
+		// 	console.log("sent_data",sent_data)
+		// 	const result = await set_schedule(sent_data, token, schoolID)
+		// 	console.log(result)
+		// 	if (!result) {
+		// 		Swal.fire({
+		// 			icon: 'error',
+		// 			title: 'แก้ไขข้อมูลไม่สำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#d1000a",
+		// 			confirmButtonText: 'ok',
+		// 		})
+		// 	}
+		// 	else if (result.data.success) {
+		// 		Swal.fire({
+		// 			icon: 'success',
+		// 			title: 'แก้ไขข้อมูลสำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#009431",
+		// 			confirmButtonText: 'ok',
+		// 		}).then(() => {
+		// 			router.reload()
+		// 		})
+				
+		// 	}
+		// }
 	
-		for (let i =0 ;i<form.current.elements.length;i++){
-			if (form.current.elements[i].nodeName === "BUTTON" ) {
-				continue
-			}
-			else if (form.current.elements[i].nodeName === "SELECT") {
-				form.current.elements[i].disabled = false
-				continue
-			}
-			form.current.elements[i].disabled = true
-		}
+		// set_schedule_async()
+
+		// resetData()
+	
+		// for (let i =0 ;i<form.current.elements.length;i++){
+		// 	if (form.current.elements[i].nodeName === "BUTTON" ) {
+		// 		continue
+		// 	}
+		// 	else if (form.current.elements[i].nodeName === "SELECT") {
+		// 		form.current.elements[i].disabled = false
+		// 		continue
+		// 	}
+		// 	form.current.elements[i].disabled = true
+		// }
+	
 	}
 
 	function taskConfirm2(ev){
@@ -221,21 +285,79 @@ export default function TimeConfig({ school_data, schoolID }) {
 		const cookies = new Cookies();
 		const token = cookies.get("token");
 
-		async function set_schedule_async() {
-			
-			const result = await set_schedule(sent_data, token, schoolID)
-			console.log(result)
-			if (!result) {
-				console.log("error")
+		Swal.fire({
+			title: 'คุณต้องการแก้ไขเวลาลงทะเบียนใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return set_schedule(sent_data, token, schoolID)
+			},
+			allowOutsideClick: () => !Swal.isLoading()
+
+		}).then((result) => {
+			if (result.isConfirmed) {
+				if (!result.value) {
+					Swal.fire({
+						icon: 'error',
+						title: 'แก้ไขข้อมูลไม่สำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#d1000a",
+						confirmButtonText: 'ok',
+					})
+				}
+				else if (result.value.data.success) {
+					Swal.fire({
+						icon: 'success',
+						title: 'แก้ไขข้อมูลสำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431",
+						confirmButtonText: 'ok',
+					}).then(() => {
+						router.reload()
+					})
+				}
+			} else {
+
 			}
-			else if (result.data.success) {
-				console.log("success")
-				// window.location.replace("/" + schoolID + "/admin_school")
-			}
+		})
+
+
+		// async function set_schedule_async() {
 			
-		}
+		// 	const result = await set_schedule(sent_data, token, schoolID)
+		// 	console.log(result)
+		// 	if (!result) {
+		// 		Swal.fire({
+		// 			icon: 'error',
+		// 			title: 'แก้ไขข้อมูลไม่สำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#d1000a",
+		// 			confirmButtonText: 'ok',
+		// 		})
+		// 	}
+		// 	else if (result.data.success) {
+		// 		Swal.fire({
+		// 			icon: 'success',
+		// 			title: 'แก้ไขข้อมูลสำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#009431",
+		// 			confirmButtonText: 'ok',
+		// 		}).then(() => {
+		// 			router.reload()
+		// 		})
+				
+		// 	}
+			
+		// }
 		
-		set_schedule_async()
+		// set_schedule_async()
 	}
 
 	const have_nowYear = (

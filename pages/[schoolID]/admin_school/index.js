@@ -184,7 +184,7 @@ export default function Admin({ schoolID }) {
 		cookies.remove("token",{path:"/"})
 		cookies.remove("token", { path: "/login" })
 		
-		router.replace("/login")
+		router.replace("/"+schoolID)
 	}
 
 	async function forgetPassword() {
