@@ -80,11 +80,20 @@ export default function Student({ schoolID }) {
 
 	useEffect(() => {
 		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
+			const component_now = localStorage.getItem('component');
+			console.log(component_now)
+			if (component_now) {
+				changeComponent(component_now)
+				optionBtn.current[component_now].classList.add("nowclick");
+			}
+			else {
+				optionBtn.current[0].classList.add("nowclick");
+			}
 		}
 	},[chooseBtnStart]);
 
 	function changeComponent(num) {
+		localStorage.setItem('component', num);
 		if (num == 0) {
 			SetCountBtn(0)
 		}else if (num == 1) {
@@ -142,6 +151,7 @@ export default function Student({ schoolID }) {
 		cookies.remove("token", { path: `${schoolID}` })
 		cookies.remove("token", { path: "/" })
 
+		localStorage.removeItem('component');
 		router.replace(`/${schoolID}`)
 	}
 

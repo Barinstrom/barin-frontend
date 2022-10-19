@@ -92,29 +92,71 @@ export default function SchoolData({ school_data, schoolID, email }) {
 			urlLogo: picture
 		};
 
-		const result =  await admin_edit_school(token,body)
+		Swal.fire({
+			title: 'คุณต้องการเปลี่ยนแปลงข้อมูลของโรงเรียนใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return admin_edit_school(token, body)
+			},
+			allowOutsideClick: () => !Swal.isLoading()
+
+		}).then((result) => {
+			if (result.isConfirmed) {
+				if (result.value) {
+					Swal.fire({
+						icon: 'success',
+						title: 'แก้ไขข้อมูลสำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431",
+						confirmButtonText: 'ok',
+					}).then(() => {
+						router.reload()
+					})
+				} else {
+					Swal.fire({
+						icon: 'error',
+						title: 'แก้ไขข้อมูลไม่สำเร็จ\nกรุณาลองอีกครั้ง',
+						showConfirmButton: true,
+						confirmButtonColor: "#d1000a",
+						confirmButtonText: 'ok',
+					}).then(() => {
+						// router.reload()
+					})
+				}
+			} else {
+
+			}
+		})
 		
-		if (result){
-			Swal.fire({
-				icon: 'success',
-				title: 'แก้ไขข้อมูลสำเร็จ',
-				showConfirmButton: true,
-				confirmButtonColor: "#009431",
-				confirmButtonText: 'ok',
-			}).then(() => {
-				router.reload()
-			})
-		}else{
-			Swal.fire({
-				icon: 'error',
-				title: 'แก้ไขข้อมูลไม่สำเร็จ',
-				showConfirmButton: true,
-				confirmButtonColor: "#d1000a",
-				confirmButtonText: 'ok',
-			}).then(() => {
-				router.reload()
-			})
-		}
+		// if (result){
+		// 	Swal.fire({
+		// 		icon: 'success',
+		// 		title: 'แก้ไขข้อมูลสำเร็จ',
+		// 		showConfirmButton: true,
+		// 		confirmButtonColor: "#009431",
+		// 		confirmButtonText: 'ok',
+		// 	}).then(() => {
+		// 		router.reload()
+		// 	})
+		// }else{
+		// 	Swal.fire({
+		// 		icon: 'error',
+		// 		title: 'แก้ไขข้อมูลไม่สำเร็จ',
+		// 		showConfirmButton: true,
+		// 		confirmButtonColor: "#d1000a",
+		// 		confirmButtonText: 'ok',
+		// 	}).then(() => {
+		// 		router.reload()
+		// 	})
+		// }
 	}
 	
 	useEffect(() => {

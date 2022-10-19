@@ -159,9 +159,6 @@ export default function TimeConfig({ school_data, schoolID }) {
 	function taskConfirm(ev){
 		// ภายในนี้จะมีการส่งข้อมูลด้วย
 		ev.preventDefault()
-		btnCancel.current.classList.add("d-none")
-		btnConfirm.current.classList.add("d-none")
-		btnEdit.current.classList.remove("d-none")
 
 		const sent_data = {
 			schoolID: schoolID,
@@ -209,6 +206,9 @@ export default function TimeConfig({ school_data, schoolID }) {
 						confirmButtonColor: "#009431",
 						confirmButtonText: 'ok',
 					}).then(() => {
+						btnCancel.current.classList.add("d-none")
+						btnConfirm.current.classList.add("d-none")
+						btnEdit.current.classList.remove("d-none")
 						router.reload()
 					})
 				}
@@ -216,62 +216,11 @@ export default function TimeConfig({ school_data, schoolID }) {
 				
 			}
 		})
-
-		// async function set_schedule_async() {
-		// 	console.log("sent_data",sent_data)
-		// 	const result = await set_schedule(sent_data, token, schoolID)
-		// 	console.log(result)
-		// 	if (!result) {
-		// 		Swal.fire({
-		// 			icon: 'error',
-		// 			title: 'แก้ไขข้อมูลไม่สำเร็จ',
-		// 			showConfirmButton: true,
-		// 			confirmButtonColor: "#d1000a",
-		// 			confirmButtonText: 'ok',
-		// 		})
-		// 	}
-		// 	else if (result.data.success) {
-		// 		Swal.fire({
-		// 			icon: 'success',
-		// 			title: 'แก้ไขข้อมูลสำเร็จ',
-		// 			showConfirmButton: true,
-		// 			confirmButtonColor: "#009431",
-		// 			confirmButtonText: 'ok',
-		// 		}).then(() => {
-		// 			router.reload()
-		// 		})
-				
-		// 	}
-		// }
-	
-		// set_schedule_async()
-
-		// resetData()
-	
-		// for (let i =0 ;i<form.current.elements.length;i++){
-		// 	if (form.current.elements[i].nodeName === "BUTTON" ) {
-		// 		continue
-		// 	}
-		// 	else if (form.current.elements[i].nodeName === "SELECT") {
-		// 		form.current.elements[i].disabled = false
-		// 		continue
-		// 	}
-		// 	form.current.elements[i].disabled = true
-		// }
-	
 	}
 
 	function taskConfirm2(ev){
 		ev.preventDefault()
 
-		// const body = {
-		// 	schoolYear:schoolYear.current.value,
-		// 	endOfSchoolYear:endOfSchoolYear.current.value ,
-		// 	endOfRegisterDate:endOfRegisterDate.current.value,
-		// 	endOfRegisterTime:endOfRegisterTime.current.value,
-		// 	registerTime:registerTime.current.value,
-		// 	registerDate:registerDate.current.value
-		// }
 		const sent_data = {
 			schoolID: schoolID,
 			schoolYear: schoolYear2.current.value,
@@ -327,37 +276,6 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 			}
 		})
-
-
-		// async function set_schedule_async() {
-			
-		// 	const result = await set_schedule(sent_data, token, schoolID)
-		// 	console.log(result)
-		// 	if (!result) {
-		// 		Swal.fire({
-		// 			icon: 'error',
-		// 			title: 'แก้ไขข้อมูลไม่สำเร็จ',
-		// 			showConfirmButton: true,
-		// 			confirmButtonColor: "#d1000a",
-		// 			confirmButtonText: 'ok',
-		// 		})
-		// 	}
-		// 	else if (result.data.success) {
-		// 		Swal.fire({
-		// 			icon: 'success',
-		// 			title: 'แก้ไขข้อมูลสำเร็จ',
-		// 			showConfirmButton: true,
-		// 			confirmButtonColor: "#009431",
-		// 			confirmButtonText: 'ok',
-		// 		}).then(() => {
-		// 			router.reload()
-		// 		})
-				
-		// 	}
-			
-		// }
-		
-		// set_schedule_async()
 	}
 
 	const have_nowYear = (

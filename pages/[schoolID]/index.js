@@ -19,6 +19,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       const cookie = new Cookies();
       cookie.remove("token", { path: "/" })
       cookie.remove("token", { path: `/${schoolID}` })
+      cookie.remove("token", { path: "/system_admin" })
+      localStorage.removeItem('component');
 		}
   },[schoolID]);
 
@@ -86,7 +88,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               showConfirmButton: true,
               confirmButtonColor: "#0076d1",
             })
-            router.push("/" +  String(result[0].data.schoolID));
+            if (result[0].data.schoolID === "all") router.push("/login");
+            else  router.push("/" +  String(result[0].data.schoolID));
           }
           else {
             if (result[0].data.role === "teacher" || result[0].data.role === "student"){

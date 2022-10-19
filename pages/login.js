@@ -16,7 +16,10 @@ export default function Login() {
   
   useEffect(() => {
     cookie.remove("token", { path: "/" })
+    // cookie.remove("token", { path: `/${schoolID}` })
     cookie.remove("token", { path: "/system_admin" })
+    
+    localStorage.removeItem('component');
   },[])
 
   async function clickLogin(ev){

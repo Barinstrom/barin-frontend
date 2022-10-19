@@ -35,13 +35,22 @@ export default function Admin({ schoolID }) {
 	const [ispaid, setIspaid] = useState("")
 	const [isapprove, setIsapprove] = useState("")
 	const [saveEmail, setSaveEmail] = useState("")
+	// const [component, setComponent] = useState(<Reload />)
 
 	const cookies = new Cookies();
 	const token = cookies.get("token");
 
 	useEffect(() => {
-		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
+		if (chooseBtnStart) {
+			const component_now = localStorage.getItem('component');
+			console.log(component_now)
+			if (component_now) {
+				changeComponent(component_now)
+				optionBtn.current[component_now].classList.add("nowclick");
+			}
+			else {
+				optionBtn.current[0].classList.add("nowclick");
+			}
 		}
 	},[chooseBtnStart])
 
@@ -108,6 +117,7 @@ export default function Admin({ schoolID }) {
 	}
 	
 	function changeComponent(num) {
+		localStorage.setItem('component', num);
 		if (num == 0) {
 			SetCountBtn(0)
 		} else if (num == 1) {
@@ -184,6 +194,8 @@ export default function Admin({ schoolID }) {
 		cookies.remove("token",{path:"/"})
 		cookies.remove("token", { path: "/login" })
 		
+		localStorage.removeItem('component');
+
 		router.replace("/"+schoolID)
 	}
 

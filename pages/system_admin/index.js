@@ -78,7 +78,15 @@ export default function System() {
 
 	useEffect(() => {
 		if (chooseBtnStart) {
-			optionBtn.current[0].classList.add("nowclick");
+			const component_now = localStorage.getItem('component');
+			console.log(component_now)
+			if (component_now) {
+				changeComponent(component_now)
+				optionBtn.current[component_now].classList.add("nowclick");
+			}
+			else {
+				optionBtn.current[0].classList.add("nowclick");
+			}
 		}
 	}, [chooseBtnStart]);
 
@@ -90,6 +98,7 @@ export default function System() {
 	}
 
 	function changeComponent(num) {
+		localStorage.setItem('component', num);
 		if (num == 0) {
 			SetCountBtn(0)
 		} else if (num == 1) {
@@ -136,6 +145,8 @@ export default function System() {
 
 	function logOut() {
 		cookie.remove("token", { path: "/" })
+		cookie.remove("token", { path: "/system_admin" })
+		localStorage.removeItem('component');
 		router.replace("/")
 	}
 

@@ -34,7 +34,15 @@ export default function Admin({ schoolID }) {
 
 	useEffect(() => {
 		if (chooseBtnStart){
-			optionBtn.current[0].classList.add("nowclick");
+			const component_now = localStorage.getItem('component_sys');
+			console.log(component_now)
+			if (component_now) {
+				changeComponent(component_now)
+				optionBtn.current[component_now].classList.add("nowclick");
+			}
+			else {
+				optionBtn.current[0].classList.add("nowclick");
+			}
 		}
 	},[chooseBtnStart])
 
@@ -103,6 +111,7 @@ export default function Admin({ schoolID }) {
 	}
 	
 	function changeComponent(num) {
+		localStorage.setItem('component_sys', num);
 		if (num == 0) {
 			SetCountBtn(0)
 		} else if (num == 1) {
@@ -175,12 +184,9 @@ export default function Admin({ schoolID }) {
 	};
 
 	function logOut(){
-		const cookies = new Cookies();
-		console.log(cookies.get("token"))
-		cookies.remove("token",{path:`${schoolID}`})
-		cookies.remove("token",{path:"/"})
+		localStorage.removeItem('component_sys');
 
-		router.replace("/")
+		router.replace("/system_admin")
 	}
 
 	function forgetPassword(){
@@ -291,7 +297,7 @@ export default function Admin({ schoolID }) {
 							<div className={`${styles.logo}`}>
 								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
-									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
+									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">กลับสู่หน้าผู้ดูแล</span></li>
 									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
 									<li style={{ cursor: "pointer" }} onClick={OutRoleAdmin}><span className="dropdown-item">ออกจากการสวมรอย</span></li>
 								</ul>
