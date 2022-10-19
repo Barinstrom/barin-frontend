@@ -111,6 +111,13 @@ export default function NotApproved() {
 		}
 
 		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+		for (let i=1;i<=3;i++){
+			if ( i !== 3  && result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
+			}else if (result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+		}
 
 		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
@@ -157,11 +164,25 @@ export default function NotApproved() {
 						text-decoration: underline;
 					}
 
-                    .allbtn{
+                    .edit_btn{
 						border:none;
-						background-color:#2f3d20;
+						background-color:#7c3d09;
 						color:white;
-						border-radius:3px;
+						border-radius:4px;
+					}
+
+					.approve_btn{
+						border:none;
+						background-color:#11620e;
+						color:white;
+						border-radius:4px;
+					}
+
+					.notapprove_btn{
+						border:none;
+						background-color:#881b1b;
+						color:white;
+						border-radius:4px;
 					}
 				`}</style>
                 <div className='table-responsive'>
@@ -188,14 +209,14 @@ export default function NotApproved() {
                                 >กดเพื่อดู certificate</span>
                             </td>
                             <td className="d-flex flex-column flex-md-row justify-content-end">
-                                <button className='allbtn me-0 me-lg-1'
+                                <button className='edit_btn me-0 me-lg-1'
                                     onClick={() => getDetails(item)}
                                     data-bs-toggle="modal"
                                     data-bs-target="#approveModal"
                                 >
                                     แก้ไขข้อมูล
                                 </button>
-                            <button className='allbtn mt-1 mt-lg-0' 
+                            <button className='approve_btn mt-1 mt-lg-0' 
                                     onClick={()=> approveSchool(item)}>
                                     อนุมัติ
                                 </button>
@@ -359,8 +380,8 @@ function getDetails(item) {
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
                                     <input type="text" className='form-control' ref={search}></input>
-                                    <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                                    <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
                             {reloadTable ? reload  : data}

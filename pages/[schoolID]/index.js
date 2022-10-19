@@ -46,21 +46,27 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       };
 
       spin.current.classList.remove("d-none");
-      const result = await checkLogin(body);
+      const [result,status] = await checkLogin(body);
       spin.current.classList.add("d-none");
-
-      if (!result) {
+      
+      if (!status) {
+        let content = ""
+        if (result.response.data === "Email or password is not correct."){
+          content = "อีเมลล์หรือรหัสผ่านผิด"
+        }else{
+          content = "เกิดข้อผิดพลาด" + "\n" + "ทำการเข้าสู่ระบบใหม่อีกครั้ง"
+        }
         Swal.fire({
           icon: "error",
-          title: "ข้อมูลไม่ถูกต้อง",
+          title: content,
           showConfirmButton: true,
           confirmButtonColor: "#d1000a",
         });
         return;
       } else {
-        // console.log(result)
-        const check_data = await get_data(result[0].data.token);
-        // console.log(check_data)
+        //console.log(result)
+        const check_data = await get_data(result.data.token);
+        //console.log(check_data)
         if (!check_data[1]) {
           Swal.fire({
             icon: "error",
@@ -81,48 +87,54 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
             });
             return;
           }
-          else if (result[0].data.schoolID != schoolID) {
+          else if (result.data.schoolID != schoolID) {
             Swal.fire({
               icon: "info",
               title: "เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" + "\n" + "กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
               showConfirmButton: true,
               confirmButtonColor: "#0076d1",
+            }).then(() => {
+              if (result[0].data.schoolID === "all"){
+                router.push("/login");
+              }else{
+                router.push("/" +  String(result.data.schoolID));
+              }  
             })
-            if (result[0].data.schoolID === "all") router.push("/login");
-            else  router.push("/" +  String(result[0].data.schoolID));
           }
           else {
-            if (result[0].data.role === "teacher" || result[0].data.role === "student"){
+            if (result.data.role === "teacher" || result.data.role === "student"){
               const cookie = new Cookies();
-              cookie.set("token", result[0].data.token);
+              cookie.set("token", result.data.token);
               Swal.fire({
                 icon: "success",
                 title: "เข้าสู่ระบบสำเร็จ",
                 showConfirmButton: true,
                 confirmButtonColor: "#009431",
+              }).then(() => {
+                router.push("/" + String(result.data.schoolID) + "/" + result.data.role)
               })
-              router.push("/" + String(result[0].data.schoolID) + "/" + result[0].data.role)
-
             }
-            else if (result[0].data.role === "admin") {
+            else if (result.data.role === "admin") {
               const cookie = new Cookies();
-              cookie.set("token", result[0].data.token);
+              cookie.set("token", result.data.token);
               Swal.fire({
                 icon: "success",
                 title: "เข้าสู่ระบบสำเร็จ",
                 showConfirmButton: true,
                 confirmButtonColor: "#009431",
+              }).then(() => {
+                router.push("/" + String(result.data.schoolID) + "/admin_school")
               })
-              router.push("/" + String(result[0].data.schoolID) + "/admin_school")
             }
-            else if (result[0].data.role === "host") {
-                Swal.fire({
-                  icon: "info",
-                  title:"เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" +"\n" +"กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
-                  showConfirmButton: true,
-                  confirmButtonColor: "#0076d1",
-                })
+            else if (result.data.role === "host") {
+              Swal.fire({
+                icon: "info",
+                title:"เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" +"\n" +"กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
+                showConfirmButton: true,
+                confirmButtonColor: "#0076d1",
+              }).then(() => {
                 router.push("/login");
+              })
             }
           }
         }

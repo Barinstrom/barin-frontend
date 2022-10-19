@@ -85,7 +85,7 @@ export async function drop_club(data, token, schoolID) {
     return true
   } catch (err) {
     console.log(err)
-    return false
+    return [err,false]
   }
 };
 

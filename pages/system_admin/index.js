@@ -79,7 +79,7 @@ export default function System() {
 	useEffect(() => {
 		if (chooseBtnStart) {
 			const component_now = localStorage.getItem('component');
-			console.log(component_now)
+			//console.log(component_now)
 			if (component_now) {
 				changeComponent(component_now)
 				optionBtn.current[component_now].classList.add("nowclick");

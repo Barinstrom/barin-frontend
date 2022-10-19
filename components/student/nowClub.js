@@ -33,15 +33,22 @@ export default function Nowclub({schoolID}) {
 			},
 			allowOutsideClick: false,
 		}).then(res => {
+			const [result,status] = res.value
 			if (res.isConfirmed){
-				if (!res.value){
+				if (!status){
+					let content = ""
+					if (result.response.data.error === "not in register time"){
+						content = "ไม่อยู่ในช่วงเวลาถอนชุมนุม"
+					}else{
+						content = "ถอนชุมนุมไม่สำเร็จ"
+					}
 					Swal.fire({
 						icon: 'error',
-						title: "ถอนชุมนุมไม่สำเร็จ",
+						title: content,
 						showConfirmButton:true,
 						confirmButtonColor:"#d1000a"
 					}).then(() => {
-						router.reload()
+						return
 					})
 				}else{
 					Swal.fire({
@@ -64,7 +71,7 @@ export default function Nowclub({schoolID}) {
 		const token = cookie.get("token")
 		
 		get_student_ownclub(token,schoolID).then(result => {
-			console.log(result)
+			//console.log(result)
 			let clubs;
 			if (!result){
 				clubs = (

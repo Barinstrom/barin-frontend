@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Swal from 'sweetalert2';
 import { get_approved,sys_edit_school } from '../../utils/system_admin/system';
 
-
 export default function Aprroved() {
 	const router = useRouter()
 	const [reloadTable, setReloadTable] = useState(false)
@@ -29,9 +28,7 @@ export default function Aprroved() {
 		window.localStorage.removeItem("searchAprroved")
 		window.localStorage.removeItem("pageAprroved")
 
-		const body = {
-			"page": 1
-		}
+		const body = {"page": 1}
 		window.localStorage.setItem("pageAprroved", 1)
 
 		get_approved(body, token).then(result => {
@@ -71,7 +68,7 @@ export default function Aprroved() {
 			showPaginate(paginate_tmp)
 		}
 	}
-
+	
 	async function clickAccept(ev) {
 		ev.preventDefault()
 		let body
@@ -101,6 +98,8 @@ export default function Aprroved() {
 
 	function generate(result) {
 		const paginate_tmp = []
+		//console.log(result)
+
 		if (result.hasPrevPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
@@ -110,6 +109,14 @@ export default function Aprroved() {
 		}
 
 		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
+
+		for (let i=1;i<=3;i++){
+			if ( i !== 3  && result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
+			}else if (result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+		}
 
 		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
@@ -155,13 +162,6 @@ export default function Aprroved() {
 						text-decoration: underline;
 					}
 
-					.allbtn{
-						border:none;
-						background-color:#2f3d20;
-						color:white;
-						border-radius:3px;
-					}
-
 					.all_taga{
 						border:none;
 						background-color:#2f3d20;
@@ -169,6 +169,20 @@ export default function Aprroved() {
 						border-radius:3px;
 						text-decoration:none;
 						padding:0 5px;
+					}
+
+					.edit_btn{
+						border:none;
+						background-color:#7c3d09;
+						color:white;
+						border-radius:4px;
+					}
+
+					.approve_btn{
+						border:none;
+						background-color:#3c4b4d;
+						color:white;
+						border-radius:4px;
 					}
 				`}</style>
 				
@@ -197,7 +211,7 @@ export default function Aprroved() {
 											>กดเพื่อดู certificate</span>
 										</td>
 										<td className="d-flex flex-column flex-lg-row justify-content-end">
-											<button className='allbtn me-0 me-lg-2'
+											<button className='edit_btn me-0 me-lg-2'
 												onClick={() => getDetails(item)}
 												data-bs-toggle="modal"
 												data-bs-target="#approveModal"
@@ -316,8 +330,8 @@ export default function Aprroved() {
 								<div className='input-group'>
 									<span className="input-group-text">ค้นหา</span>
 									<input type="text" className='form-control' ref={search}></input>
-									<button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-									<button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
 								</div>
 							</form>
 							{reloadTable ? reload : data}

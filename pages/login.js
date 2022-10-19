@@ -83,18 +83,6 @@ export default function Login() {
             router.push("/" + String(result.data.schoolID))
           })
         }
-        // else {
-        //   cookie.set("token",result.data.token)
-        //   Swal.fire({
-				// 		icon: 'success',
-				// 		title: 'เข้าสู่ระบบสำเร็จ',
-				// 		showConfirmButton:true,
-				// 		confirmButtonColor:"#009431"
-        //   })
-        //   .then(() => {
-        //     router.push("/" + String(result.data.schoolID) + "/admin_school")
-        //   })
-        // }
       }
 		}
   }

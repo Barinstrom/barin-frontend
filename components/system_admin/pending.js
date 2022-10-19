@@ -117,6 +117,14 @@ export default function Pending() {
 
 		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
 
+		for (let i=1;i<=3;i++){
+			if ( i !== 3  && result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
+			}else if (result.page + i <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+		}
+
 		if (result.hasNextPage) {
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
 			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
@@ -161,12 +169,27 @@ export default function Pending() {
 						text-decoration: underline;
 					}
 
-					.allbtn{
+					.edit_btn{
 						border:none;
-						background-color:#2f3d20;
+						background-color:#7c3d09;
 						color:white;
-						border-radius:3px;
+						border-radius:4px;
 					}
+
+					.approve_btn{
+						border:none;
+						background-color:#11620e;
+						color:white;
+						border-radius:4px;
+					}
+
+					.notapprove_btn{
+						border:none;
+						background-color:#881b1b;
+						color:white;
+						border-radius:4px;
+					}
+					
 				`}</style>
 				
 				<div className='table-responsive'>
@@ -193,17 +216,17 @@ export default function Pending() {
 										>กดเพื่อดู certificate</span>
 									</td>
 									<td className="d-flex flex-column flex-lg-row justify-content-end">
-										<button className="allbtn me-1 mt-1"
+										<button className="edit_btn me-1 mt-1"
 											onClick={() => getDetails(item)}
 											data-bs-toggle="modal"
 											data-bs-target="#approveModal"
 										>แก้ไขข้อมูล</button>
-										<button className='allbtn me-1 mt-1'
+										<button className='approve_btn me-1 mt-1'
 											onClick={() => approveSchool(item)}
 										>
 											อนุมัติ
 										</button>
-										<button className='allbtn me-1 mt-1'
+										<button className='notapprove_btn me-1 mt-1'
 											onClick={() => notApproveSchool(item)}
 										>
 											ไม่อนุมัติ
@@ -277,7 +300,7 @@ export default function Pending() {
 							title: 'ทำการ approve สำเร็จ',  
 							showConfirmButton:true,
 							confirmButtonColor:"#0047a3"
-					}).then(res => {
+					}).then(() => {
 							router.reload()
 					})
 				}
@@ -287,7 +310,7 @@ export default function Pending() {
 							title: 'ทำการ approve ไม่สำเร็จ',  
 							showConfirmButton:true,
 							confirmButtonColor:"#00a30b"
-						}).then(res => {
+						}).then(() => {
 							router.reload()
 					})
 				}
@@ -334,52 +357,50 @@ export default function Pending() {
             cancelButtonText: "ยกเลิก",
             cancelButtonColor: "#d93333",
         }).then((result) => {
+			if (result.isConfirmed) {
+				Swal.fire({
+					title: 'กรุณาใส่ข้อความที่จะส่งไปบอกผู้สมัครใช้งานระบบ',
+					input: 'text',
+					inputAttributes: {
+						autocapitalize: 'off'
+					},
+					showCancelButton: true,
+					confirmButtonText: 'ส่งอีเมล',
+					showLoaderOnConfirm: true,
+					preConfirm: (msg) => {
+						return sys_edit_school(token, {
+							schoolID: item.schoolID,
+							schoolName: item.schoolName,
+							status: "not_approve",
+							msg:msg
+						})
+					},
+					allowOutsideClick: () => !Swal.isLoading()
+				}).then((result) => {
 					if (result.isConfirmed) {
-
+						//console.log(result)
+						if (result.value) {
 							Swal.fire({
-								title: 'กรุณาใส่ข้อความที่จะส่งไปบอกผู้สมัครใช้งานระบบ',
-								input: 'text',
-								inputAttributes: {
-									autocapitalize: 'off'
-								},
-								showCancelButton: true,
-								confirmButtonText: 'ส่งอีเมล',
-								showLoaderOnConfirm: true,
-								preConfirm: (msg) => {
-									return sys_edit_school(token, {
-										schoolID: item.schoolID,
-										schoolName: item.schoolName,
-										status: "not_approve",
-										msg:msg
-									})
-								},
-								allowOutsideClick: () => !Swal.isLoading()
-							}).then((result) => {
-								if (result.isConfirmed) {
-									console.log(result)
-									if (result.value) {
-										Swal.fire({
-												icon: 'success',
-												title: 'ทำการ not approve สำเร็จ',  
-												showConfirmButton:true,
-												confirmButtonColor:"#0047a3"
-										}).then(res => {
-												router.reload()
-										})
-									}
-									else {
-										Swal.fire({
-												icon: 'error',
-												title: 'ทำการ not approve ไม่สำเร็จ',  
-												showConfirmButton:true,
-												confirmButtonColor:"#00a30b"
-											}).then(res => {
-												router.reload()
-										})
-									}
-								}
+								icon: 'success',
+								title: 'ทำการ not approve สำเร็จ',  
+								showConfirmButton:true,
+								confirmButtonColor:"#0047a3"
+							}).then(() => {
+								router.reload()
 							})
+						}else {
+							Swal.fire({
+									icon: 'error',
+									title: 'ทำการ not approve ไม่สำเร็จ',  
+									showConfirmButton:true,
+									confirmButtonColor:"#00a30b"
+								}).then(() => {
+									router.reload()
+							})
+						}
 					}
+				})
+			}
         })
     }
 
@@ -438,8 +459,8 @@ export default function Pending() {
 								<div className='input-group'>
 									<span className="input-group-text">ค้นหา</span>
 									<input type="text" className='form-control' ref={search}></input>
-									<button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-									<button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
 								</div>
 							</form>
 							{reloadTable ? reload : data}
