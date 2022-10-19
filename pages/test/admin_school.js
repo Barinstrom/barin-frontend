@@ -6,7 +6,7 @@ export default function Admin_schooltest() {
   )
 }
 
-
+// KUY
 
 // import React, { useEffect, useRef, useState } from "react";
 // import Link from "next/link";
