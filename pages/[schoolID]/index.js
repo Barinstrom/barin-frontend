@@ -94,7 +94,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               showConfirmButton: true,
               confirmButtonColor: "#0076d1",
             }).then(() => {
-              if (result[0].data.schoolID === "all"){
+              console.log(result)
+              if (result.data.schoolID === "all"){
                 router.push("/login");
               }else{
                 router.push("/" +  String(result.data.schoolID));
