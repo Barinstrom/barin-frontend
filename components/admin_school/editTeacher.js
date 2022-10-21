@@ -43,6 +43,7 @@ export default function EditTeacher({ school_data,schoolID }) {
             if (!result){
                 setDisplayError(true)
             }else{
+                console.log(result)
                 const paginate_tmp = generate(result.data)
                 setDisplayError(false)
                 showData(result.data.docs)
@@ -178,23 +179,51 @@ export default function EditTeacher({ school_data,schoolID }) {
     
     function generate(result){
         const paginate_tmp = []
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)-1)}><i className="fa-solid fa-angle-left"></i></button>)
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-        }
-        
-        paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-        
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(parseInt(result.page)+1)}><i className="fa-solid fa-angle-right"></i></button>)    
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
-        }
+        if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (parseInt(result.page) === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{parseInt(result.page)}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (parseInt(result.page) > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{parseInt(result.page)}</button>)
+			for (let i=1;i<=2;i++){
+				if (parseInt(result.page) + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page))+i)}>{parseInt(result.page)+i}</button>)
+				}
+			}
+			
+			if (parseInt(result.page) + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (parseInt(result.page) !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
+		}
         return paginate_tmp
     }
 
@@ -224,32 +253,40 @@ export default function EditTeacher({ school_data,schoolID }) {
     function showData(result){
         const template = (
             <div className='table-responsive'>
-            <table className='table align-middle'>
-                <thead>
-                    <tr>
-                        <th style={{width:"500px"}}>ชื่อ-นามสกุล</th>
-                        <th className='text-end' style={{width:"500px",marginRight:"10px"}}><span style={{marginRight:"3px"}}>รายละเอียด</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {result.map((item,index) => {
-                        return (
-                            <tr key={index}>
-                                <td>{item.firstname} {item.lastname}</td>
-                                <td className='text-end'>
-                                    <button className='btn btn-info btn-sm' 
-                                        onClick={(ev) => detailInfo(item,ev)}
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editTeacherModal"
-                                        data-bs-id={item.userID}
-                                        >รายละเอียด
-                                    </button>
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                <style jsx>{`
+					.detailinfo_btn{
+						border:none;
+						background-color:#004d99;
+						color:white;
+						border-radius:4px;
+					}
+				`}</style>
+                <table className='table align-middle'>
+                    <thead>
+                        <tr>
+                            <th style={{width:"500px"}}>ชื่อ-นามสกุล</th>
+                            <th className='text-end' style={{width:"500px",marginRight:"10px"}}><span style={{marginRight:"3px"}}>รายละเอียด</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {result.map((item,index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{item.firstname} {item.lastname}</td>
+                                    <td className='text-end'>
+                                        <button className='btn detailinfo_btn btn-sm' 
+                                            onClick={(ev) => detailInfo(item,ev)}
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editTeacherModal"
+                                            data-bs-id={item.userID}
+                                            >รายละเอียด
+                                        </button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
             </div>
         )
         setData(template)
@@ -278,15 +315,15 @@ export default function EditTeacher({ school_data,schoolID }) {
         return (
             <>
                 <div>
-                    <h3 className="text-center fs-1 mb-3">แก้ไขข้อมูลครู</h3>
+                    <h3 className="text-center display-6 mb-3">แก้ไขข้อมูลของคุณครู</h3>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
                                     <input type="text" className='form-control' ref={search}></input>
-                                    <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                                    <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                                    <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
                         </div>
@@ -321,8 +358,8 @@ export default function EditTeacher({ school_data,schoolID }) {
                                 </form>
                             </div>
                             <div className='modal-footer'>
-                                <button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn btn-success' data-bs-dismiss="modal" onClick={()=> updateTeacher()}>ตกลง</button>
+                            <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
+                                <button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
                             </div>
                         </div>
                     </div>

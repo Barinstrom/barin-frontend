@@ -53,7 +53,7 @@ export async function add_students(data,token,schoolID) {
 // เพิ่ม 1 คลับ
 export async function add_club(data,token,schoolID) {
 	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-club";
-	
+	console.log()
 	try {
 		const result = await axios({
 			url: apiUrl,

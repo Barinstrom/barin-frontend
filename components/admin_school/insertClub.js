@@ -21,8 +21,8 @@ export default function InsertClub({ school_data, schoolID }) {
 		{ label: "groupID", key: "groupID" },
 		{ label: "clubInfo", key: "clubInfo" },
 		{ label: "category", key: "category" },
-		{ label: "day", key: "day" },
-		{ label: "schedule", key: "schedule" },
+		// { label: "day", key: "day" },
+		// { label: "schedule", key: "schedule" },
 		{ label: "limit", key: "limit" },
 		{ label: "schoolYear", key: "schoolYear" },
 		{ label: "firstname", key: "firstname" },
@@ -30,14 +30,16 @@ export default function InsertClub({ school_data, schoolID }) {
 	];
 	const tmpdata = [
 		{
-			clubName: "", groupID: "", clubInfo: "", category: "", day: "",
-			schedule: "", limit: "", schoolYear: "", firstname: "", lastname: ""
+			clubName: "", groupID: "", clubInfo: "", category: "",
+			// day: "",
+			// schedule: "",
+			limit: "", schoolYear: "", firstname: "", lastname: ""
 		}
 	];
 	const csvReport = {
 		data: tmpdata,
 		headers: headers,
-		filename: 'students_example.csv'
+		filename: 'clubs_example.csv'
 	};
 
 	/* hook ref */
@@ -52,6 +54,7 @@ export default function InsertClub({ school_data, schoolID }) {
 	const startTime = useRef()
 	const endTime = useRef()
 	const urlPicture = useRef()
+	const day = useRef()
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
@@ -94,24 +97,29 @@ export default function InsertClub({ school_data, schoolID }) {
 	
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
-		const result = []
-		text = text.trim()
-        const tmp = text.split("\n")
-		const heads = tmp[0].split(",")
+			const result = []
+			console.log(text)
+			text = text.trim()
+			const tmp = text.split("\n")
+			const heads = tmp[0].split(",")
         
-        for (let i=1;i<tmp.length;i++){
-            const line = tmp[i].split(",")
-            const object = {}
+		for (let i=1;i<tmp.length;i++){
+			const line = tmp[i].split(",")
+			const object = {}
 			for (let j=0;j<heads.length;j++){
-                if (line[j] === ""){
-                    return "data is undefined"
-                }else{
-                    object[heads[j].trim()] = line[j].trim()
-                }
-            }
-            result.push(object)
-        }
-		return result
+					if (line[j] === ""){
+							return "data is undefined"
+					}else{
+							object[heads[j].trim()] = line[j].trim()
+					}
+			}
+				// console.log(object)
+			// const str_temp = object.day + " " + object.schedule
+			// object.schedule = [str_temp]
+				result.push(object)
+			}
+			
+			return result
     }
     
     const submit = (ev) => {
@@ -210,10 +218,10 @@ export default function InsertClub({ school_data, schoolID }) {
 		}else {
 			const body = {
 				...tmp,
-				"schedule":[startTime.current.value + "-" + endTime.current.value],
+				"schedule":[day.current.value + " " + startTime.current.value + "-" + endTime.current.value],
 				"urlPicture":clubImg
 			}
-			
+			console.log(body)
 			const result = await add_club(body,token,schoolID);
 			if (!result){
 				Swal.fire({
@@ -255,12 +263,31 @@ export default function InsertClub({ school_data, schoolID }) {
 		return <AllowAddClub/>
 	}else{
 		return (
-			<>
-				<div className="text-center fs-1">InsertClub</div>
+			<div>
+				<style jsx>{`
+					.submit_btn{
+						border:none;
+						background-color:#11620e;
+						color:white;
+						border-radius:4px;
+					}
+
+					.insertinfo_btn{
+						border:none;
+						background-color:#004d99;
+						color:white;
+						border-radius:4px;
+					}
+				`}</style>
+				<div className="text-center display-6">เพิ่มข้อมูลของชุมนุม</div>
 				<div className="card mt-5">
 					<div className="card-body">
-						<h5 className="card-title">เพิ่มข้อมูลของชุมนุมหลายชุมนุม</h5>
-						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมหลายชุมนุม สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการใส่ไฟล์ในนี้ได้เลย</p>
+						<h4 className="card-title">เพิ่มข้อมูลของชุมนุมหลายชุมนุม</h4>
+						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมหลายชุมนุม สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการอัพโหลดไฟล์ใส่ในนี้ได้เลย</p>
+						<div className="card-text">สามารถดาวโหลดไฟล์ CSV ตัวอย่างโดยทำการกดลิงค์ด้านล่าง</div>
+						<div>
+							<CSVLink {...csvReport}>ตัวอย่างไฟล์ CSV</CSVLink>
+						</div>
 					</div>
 					<div className="card-footer">
 						<form>
@@ -270,7 +297,7 @@ export default function InsertClub({ school_data, schoolID }) {
 									accept='.csv'
 									onChange={(ev) => {setCsvFile(ev.target.files[0])
 								}}/>
-								<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
+								<button type="submit" className="btn submit_btn" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 							</div>
 						</form>
 					</div>
@@ -278,15 +305,12 @@ export default function InsertClub({ school_data, schoolID }) {
 	
 				<div className="card mt-5">
 					<div className="card-body">
-						<h5 className="card-title">เพิ่มข้อมูลของชุมนุม 1 ชุมนุม</h5>
+						<h4 className="card-title">เพิ่มข้อมูลของชุมนุม 1 ชุมนุม</h4>
 						<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลชุมนุมแค่ 1 ชุมนุม คุณไม่จำเป็นต้องสร้างไฟล์ csv สามารถกรอกแบบฟอร์มได้เลย</p>
-						<div className="btn btn-outline-secondary">
-							<CSVLink {...csvReport}>ตัวอย่างไฟล์ CSV</CSVLink>
-						</div>
 					</div>
 					<div className="card-footer">
 						<div className="d-flex justify-content-end">
-							<button  className="btn btn-primary" data-bs-target="#insertModalClub" data-bs-toggle="modal">ใส่ข้อมูล</button>
+							<button  className="btn insertinfo_btn" data-bs-target="#insertModalClub" data-bs-toggle="modal">ใส่ข้อมูล</button>
 						</div>
 					</div>
 				</div>
@@ -325,6 +349,7 @@ export default function InsertClub({ school_data, schoolID }) {
 										<label className="form-label">รายละเอียดชุมนุม</label>
 										<textarea className="form-control" rows="3" ref={clubInfo}></textarea>
 									</div>
+									
 									<div className="col-sm-6">
 										<label className="form-label">จำนวนนักเรียนสูงสุด</label>
 										<input type="number" className="form-control" ref={limit}/>
@@ -332,6 +357,18 @@ export default function InsertClub({ school_data, schoolID }) {
 									<div className="col-sm-6">
 										<label className="form-label">ปีการศึกษา</label>
 										<input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
+									</div>
+									<div className="col-12">
+										<label className="form-label">วันที่สอน</label>
+										<select className="form-select" aria-label="Default select example" ref={day}>
+											<option value="วันจันทร์">วันจันทร์</option>
+											<option value="วันอังคาร">วันอังคาร</option>
+											<option value="วันพุธ">วันพุธ</option>
+											<option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+											<option value="วันศุกร์">วันศุกร์</option>
+											<option value="วันเสาร์">วันเสาร์</option>
+											<option value="วันอาทิตย์">วันอาทิตย์</option>
+										</select>
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">เวลาเริ่ม</label>
@@ -359,7 +396,7 @@ export default function InsertClub({ school_data, schoolID }) {
 						</div>
 					</div>
 				</div>
-			</>
+			</div>
 		);
 	}
 }

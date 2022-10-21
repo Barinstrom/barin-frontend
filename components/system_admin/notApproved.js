@@ -59,6 +59,7 @@ export default function NotApproved() {
     async function clickReset(ev){
         ev.preventDefault()
         window.localStorage.removeItem("searchNotApproved")
+		window.localStorage.setItem("pageNotApproved",1)
         search.current.value = ""
 
         const result = await get_not_approved({"page":1},token)
@@ -79,9 +80,11 @@ export default function NotApproved() {
         
         if (!search.current.value){
             window.localStorage.removeItem("searchNotApproved")
+			window.localStorage.setItem("pageNotApproved",1)
             body = {"page":1}
         }else{
             window.localStorage.setItem("searchNotApproved",search.current.value)
+			window.localStorage.setItem("pageNotApproved",1)
             body = {
                 "page":1,
                 "query":window.localStorage.getItem("searchNotApproved")
@@ -102,29 +105,50 @@ export default function NotApproved() {
     
     function generate(result){
         const paginate_tmp = []
-        if (result.hasPrevPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-		}
-
-		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-		for (let i=1;i<=3;i++){
-			if ( i !== 3  && result.page + i <= result.totalPages){
-				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
-			}else if (result.page + i <= result.totalPages){
+        if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (result.page === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{result.page}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (result.page > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
 				paginate_tmp.push(<button className='page-link disabled'>...</button>)
 			}
-		}
 
-		if (result.hasNextPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{result.page}</button>)
+			for (let i=1;i<=2;i++){
+				if (result.page + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page)+i)}>{result.page+i}</button>)
+				}
+			}
+			
+			if (result.page + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (result.page !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
 		}
 		return paginate_tmp
     }
@@ -137,7 +161,6 @@ export default function NotApproved() {
         }
         window.localStorage.setItem("pageNotApproved",page)
     
-        
         setReloadTable(true)
         const result = await get_not_approved(body, token)
         setReloadTable(false)
@@ -257,7 +280,7 @@ export default function NotApproved() {
 
             showCancelButton: true,
             cancelButtonText: "cancel",
-						cancelButtonColor: "#d93333",
+			cancelButtonColor: "#d93333",
 						
 					showLoaderOnConfirm: true,
 					preConfirm: (test) => {
@@ -275,51 +298,24 @@ export default function NotApproved() {
 				console.log(result)
 				if (result.value) {
 					Swal.fire({
-							icon: 'success',
-							title: 'ทำการ approve สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#0047a3"
-					}).then(res => {
-							router.reload()
+						icon: 'success',
+						title: 'ทำการ approve สำเร็จ',  
+						showConfirmButton:true,
+						confirmButtonColor:"#0047a3"
+					}).then(() => {
+						router.reload()
 					})
 				}
 				else {
 					Swal.fire({
-							icon: 'error',
-							title: 'ทำการ approve ไม่สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
-							router.reload()
+						icon: 'error',
+						title: 'ทำการ approve ไม่สำเร็จ',  
+						showConfirmButton:true,
+						confirmButtonColor:"#00a30b"
+					}).then(() => {
+						router.reload()
 					})
 				}
-				// const body = {
-				// 	schoolID: item.schoolID,
-				// 	schoolName: item.schoolName,
-				// 	status:"approve"
-				// }
-				
-				// sys_edit_school(token,body).then(result => {
-				// 	if (result){
-				// 		Swal.fire({
-				// 			icon: 'success',
-				// 			title: 'ทำการ approve สำเร็จ',  
-				// 			showConfirmButton:true,
-				// 			confirmButtonColor:"#00a30b"
-				// 		}).then(res => {
-				// 			router.reload()
-				// 	})
-				// 	}else{
-				// 		Swal.fire({
-				// 			icon: 'error',
-				// 			title: 'ทำการ approve ไม่สำเร็จ',  
-				// 			showConfirmButton:true,
-				// 			confirmButtonColor:"#00a30b"
-				// 		}).then(res => {
-				// 			router.reload()
-				// 	})
-				// 	}
-				// })
 			}
 		})
 	}

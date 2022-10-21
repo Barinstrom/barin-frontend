@@ -76,9 +76,12 @@ export async function get_teachers_inclub(data,token, schoolID) {
 	if (data._id) {
 		params.append("clubID", data._id)
 	}
+	if (data.schoolYear) {
+		params.append("schoolYear", data.schoolYear)
+	}
 
 	const params_success = apiUrl + `?${params}`
-	//console.log(params_success)
+	console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
@@ -91,7 +94,7 @@ export async function get_teachers_inclub(data,token, schoolID) {
 		})
 		return result
 	} catch (err) {
-		console.log(err.message)
+		console.log(err)
 		return false
 	}
 };

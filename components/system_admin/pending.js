@@ -35,6 +35,7 @@ export default function Pending() {
 			if (!result) {
 				setDisplayError(true)
 			} else {
+				// console.log(result.data)
 				const paginate_tmp = generate(result.data)
 				setDisplayError(false)
 				showData(result.data.docs)
@@ -65,6 +66,7 @@ export default function Pending() {
 	async function clickReset(ev) {
 		ev.preventDefault()
 		window.localStorage.removeItem("searchPending")
+		window.localStorage.setItem("pagePending", 1)
 		search.current.value = ""
 
 		const result = await get_pending({ "page": 1 }, token)
@@ -85,9 +87,11 @@ export default function Pending() {
 
 		if (!search.current.value) {
 			window.localStorage.removeItem("searchPending")
+			window.localStorage.setItem("pagePending", 1)
 			body = { "page": 1 }
 		} else {
 			window.localStorage.setItem("searchPending", search.current.value)
+			window.localStorage.setItem("pagePending", 1)
 			body = {
 				"page": 1,
 				"query": window.localStorage.getItem("searchPending")
@@ -107,30 +111,50 @@ export default function Pending() {
 
 	function generate(result) {
 		const paginate_tmp = []
-		if (result.hasPrevPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-		}
-
-		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-
-		for (let i=1;i<=3;i++){
-			if ( i !== 3  && result.page + i <= result.totalPages){
-				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
-			}else if (result.page + i <= result.totalPages){
+		if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (result.page === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{result.page}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (result.page > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
 				paginate_tmp.push(<button className='page-link disabled'>...</button>)
 			}
-		}
 
-		if (result.hasNextPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{result.page}</button>)
+			for (let i=1;i<=2;i++){
+				if (result.page + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page)+i)}>{result.page+i}</button>)
+				}
+			}
+			
+			if (result.page + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (result.page !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
 		}
 		return paginate_tmp
 	}
@@ -197,17 +221,25 @@ export default function Pending() {
 					<thead>
 						<tr>
 							<th style={{ width: "100px" }}>schoolID</th>
-							<th style={{ width: "300px" }}>schoolName</th>
+							<th style={{ width: "250px" }}>schoolName</th>
+							<th style={{ width: "100px" }} className="text-center">Payment Date</th>
 							<th style={{ width: "150px" }} className="text-center"><span>certificate</span></th>
 							<th style={{ width: "200px" }} className="text-center"><span>จัดการโรงเรียน</span></th>
 						</tr>
 					</thead>
 					<tbody>
-						{result.map((item, index) => {
+							{result.map((item, index) => {
+								// console.log(item)
+								const date1 = new Date(item.paymentDate);
+								const date2 = new Date();
+								const diffTime = Math.abs(date2 - date1);
+								const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+								// console.log(diffDays + " days");
 							return (
 								<tr key={index}>
 									<td><span>{item.schoolID}</span></td>
 									<td><span>{item.schoolName}</span></td>
+									<td className="text-center text-danger"><span>{diffDays + " days"}</span></td>
 									<td className="text-center">
 										<span className={`certificate`}
 											onClick={() => getUrlCertificateDocument(item)}
@@ -314,33 +346,7 @@ export default function Pending() {
 							router.reload()
 					})
 				}
-				// const body = {
-				// 	schoolID: item.schoolID,
-				// 	schoolName: item.schoolName,
-				// 	status:"approve"
-				// }
 				
-				// sys_edit_school(token,body).then(result => {
-				// 	if (result){
-				// 		Swal.fire({
-				// 			icon: 'success',
-				// 			title: 'ทำการ approve สำเร็จ',  
-				// 			showConfirmButton:true,
-				// 			confirmButtonColor:"#00a30b"
-				// 		}).then(res => {
-				// 			router.reload()
-				// 	})
-				// 	}else{
-				// 		Swal.fire({
-				// 			icon: 'error',
-				// 			title: 'ทำการ approve ไม่สำเร็จ',  
-				// 			showConfirmButton:true,
-				// 			confirmButtonColor:"#00a30b"
-				// 		}).then(res => {
-				// 			router.reload()
-				// 	})
-				// 	}
-				// })
 			}
 		})
 	}

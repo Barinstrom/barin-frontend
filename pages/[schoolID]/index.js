@@ -53,7 +53,10 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
         let content = ""
         if (result.response.data === "Email or password is not correct."){
           content = "อีเมลล์หรือรหัสผ่านผิด"
-        }else{
+        }else if( result.response.data === "Email is not activated"){
+          content = "กรุณาทำการยืนยันอีเมลก่อน"
+        }
+        else {
           content = "เกิดข้อผิดพลาด" + "\n" + "ทำการเข้าสู่ระบบใหม่อีกครั้ง"
         }
         Swal.fire({
@@ -66,7 +69,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       } else {
         //console.log(result)
         const check_data = await get_data(result.data.token);
-        //console.log(check_data)
+        console.log(check_data)
         if (!check_data[1]) {
           Swal.fire({
             icon: "error",
@@ -78,7 +81,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
         }
         
         else {
-          if (check_data[0].data._doc.paymentStatus !== "success" || check_data[0].data._doc.status !== "approve"){
+          if (check_data[0].data.role !== "admin" && (check_data[0].data._doc.paymentStatus !== "success" || check_data[0].data._doc.status !== "approve")){
             Swal.fire({
               icon: "error",
               title: "โรงเรียนยังไม่เปิดใช้งาน",
@@ -87,7 +90,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
             });
             return;
           }
-          else if (result.data.schoolID != schoolID) {
+          else
+            if (result.data.schoolID != schoolID) {
             Swal.fire({
               icon: "info",
               title: "เข้าสู่ระบบด้วยเส้นทางที่ไม่ถูกต้อง" + "\n" + "กำลังนำท่านสู่เส้นทางที่ถูกต้อง",
@@ -171,8 +175,8 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               <div className={styles.logo}>
                 <img src={urlLogo}></img>
               </div>
-              <div className={styles.barin_strom}>
-                <span>{schoolName}</span>
+              <div className={`${styles.barin_strom}`}>
+                <div className={`${styles.spanx}`} >{schoolName}</div>
               </div>
             </div>
           </aside>

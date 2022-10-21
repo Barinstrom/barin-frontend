@@ -1,5 +1,5 @@
 import React from "react"
-import { useState,useEffect} from "react"
+import { useState,useEffect,useRef} from "react"
 import { get_teacher_ownclubs, get_all_stdlist } from "../../utils/teacher/teacher_getdata";
 import { update_study_status } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
@@ -8,6 +8,11 @@ import { CSVLink } from "react-csv";
 import Swal from "sweetalert2";
 
 export default function StdList({schoolID}){
+    const firstname = useRef()
+    const lastname = useRef()
+    const classYear = useRef()
+    const enteredYear = useRef()
+    const tel = useRef()
     
     const headers = [
         { label: "firstname", key: "firstname" },
@@ -124,8 +129,12 @@ export default function StdList({schoolID}){
 	}, [])
 
 	function detailTest(item){
-		//console.log(item)
-	}
+        firstname.current.innerText = "ชื่อ: " + item.firstname
+        lastname.current.innerText = "นามสกุล: " + item.lastname
+        classYear.current.innerText = "ชั้นปีที่: " + item.classYear
+        enteredYear.current.innerText = "ปีที่เข้ารับการศึกษา: " + item.enteredYear
+        tel.current.innerText = "เบอร์โทรศัพท์: " + item.tel
+    }
     
     function generate(result){
         console.log(result)
@@ -195,7 +204,7 @@ export default function StdList({schoolID}){
                         return (
                             <tr key={i}>
                                 <td>{e.firstname} {e.lastname}</td>
-                                <td className="text-center"><button className='btn btn-sm btn-info' onClick={()=> detailTest(e)}>รายละเอียด</button></td>
+                                <td className="text-center"><button className='btn btn-sm btn-info' onClick={()=> detailTest(e)} data-bs-toggle="modal" data-bs-target="#modalStudentListbyTeacher">รายละเอียด</button></td>
                             </tr>
                         )
                     })}
@@ -338,7 +347,6 @@ export default function StdList({schoolID}){
         reader.onloadend = async () => {
             const text = reader.result;
             const doc = stringtoObject(text)
-            // console.log(doc)
             if (doc === "data is undefined") {
                 Swal.fire({
                     icon: 'warning',
@@ -456,8 +464,28 @@ export default function StdList({schoolID}){
                         </div>
                     </div>
                 </div>
+
+                <div className="modal fade" id="modalStudentListbyTeacher">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h3 className="text-center">ข้อมูลนักเรียน</h3>
+                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div className="modal-body">
+                                <div>
+                                    <p ref={firstname}></p>
+                                    <p ref={lastname}></p>
+                                    <p ref={classYear}></p>
+                                    <p ref={enteredYear}></p>
+                                    <p ref={tel}></p>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
-        
         )
     }
     
