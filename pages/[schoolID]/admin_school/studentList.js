@@ -1,13 +1,32 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import { useEffect,useState} from 'react'
+import { useEffect, useState , useRef} from 'react'
 import Cookies from 'universal-cookie'
 import {get_students_inclub } from '../../../utils/auth'
 import Reload from '../../../components/reload'
 import { get_all_schoolID } from '../../../utils/unauth'
 import { get_name_clubs } from '../../../utils/school_admin/get_data'
+import { get_all_stdlist } from '../../../utils/teacher/teacher_getdata'
+import { CSVLink } from "react-csv";
 
 export default function StudentList({schoolID}) {
+  const firstname = useRef()
+  const lastname = useRef()
+  const classYear = useRef()
+  const enteredYear = useRef()
+  const tel = useRef()
+
+  const headers = [
+    { label: "firstname", key: "firstname" },
+    { label: "lastname", key: "lastname" },
+    { label: "classYear", key: "classYear" },
+    { label: "status", key: "status" },
+  ];
+
+  const tmpdata = [
+      { firstname: "tmp", lastname: "tmp", classYear: 0 }
+  ];
+
   const router = useRouter()
   const [loading,setLoading] = useState(true)
   const [dropdown,setDropdown] = useState([])
@@ -16,9 +35,22 @@ export default function StudentList({schoolID}) {
   const [displayError,setDisplayError] = useState(false)
   const [reloadTable,setReloadTable] = useState(false)
   const [clubName,setClubName] = useState(null)
+  const [csvData,setCsvData] = useState()
+  const [allDataErr, setAllDataErr] = useState(true)
+  const [csvReport, setCsvReport] = useState({
+    data: tmpdata,
+    headers: headers,
+    filename: 'tmpdata.csv'
+})
   
   const cookies = new Cookies();
 	const token = cookies.get("token");
+
+  const still_loding = (
+    <div className="py-2">
+        <div className="d-inline-block">กำลังดาวโหลด โปรดรอสักครู่</div>
+    </div>
+)
 
   const reload = (
     <main style={{height:"400px"}}>
@@ -30,24 +62,21 @@ export default function StudentList({schoolID}) {
   )
   
   useEffect(() => {
-
     if (schoolID) {
       window.localStorage.removeItem("pageListStudent")
       window.localStorage.removeItem("clubIDStudentList")
-    
-      //console.log(router.query)
       window.localStorage.setItem("pageListStudent", 1)
       window.localStorage.setItem("clubIDStudentList", router.query.clubID)
       const body = {
         "page": 1,
         "clubID": String(window.localStorage.getItem("clubIDStudentList"))
       }
+      
       Promise.all([get_name_clubs(token, schoolID), get_students_inclub(body, token, schoolID)])
         .then(result => {
           console.log(result[0])
           generateDropdown(result[0].data)
-          //console.log(result[1])
-      
+          
           if (!result[1]) {
             setDisplayError(true)
             setLoading(false)
@@ -64,8 +93,11 @@ export default function StudentList({schoolID}) {
   },[schoolID])
 
   // fetch ข้อมูลใหม่ตาม club
-  function chooseFetchClub(clubID) {
-    //console.log(clubID)
+  function chooseFetchClub(e) {
+    const clubID = e._id
+    const clubName = e.clubName
+    router.push(`/${schoolID}/admin_school/studentList?clubID=${clubID}&clubName=${clubName}`)
+    
     const body = {"page":1,"clubID":clubID}
     
     window.localStorage.setItem("pageListStudent",1)
@@ -74,7 +106,6 @@ export default function StudentList({schoolID}) {
     setLoading(true)
     Promise.all([get_name_clubs(token,schoolID),get_students_inclub(body,token,schoolID)])
     .then(result => {
-      
       if (!result[1]){
         setDisplayError(true)
         setLoading(false)
@@ -96,10 +127,11 @@ export default function StudentList({schoolID}) {
   }
 
   function generateDropdown(clubs){
+    console.log(clubs)
     const tmp = (
       <>
         {clubs.map((e,i) => {
-          return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(`${e._id}`)}>{e.clubName}</li>
+          return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(e)}>{e.clubName}</li>
         })}
       </>
     )
@@ -107,31 +139,53 @@ export default function StudentList({schoolID}) {
   }
 
   function generate(result){
+      //console.log(result)
       const paginate_tmp = []
-      if (result.hasPrevPage && result.page - 5 >= 1){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
+      
+      if (result.totalPages <= 6){
+        for (let i=1;i<=result.totalPages;i++){
+          if (parseInt(result.page) === i){
+            paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{parseInt(result.page)}</button>)
+          }else{
+            paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+          }
+        }
       }else{
+        if (result.hasPrevPage) {
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+        } else {
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-      }
-      
-      if (result.hasPrevPage){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
-      }else{
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-      }
-      
-      paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-      
-      if (result.hasNextPage){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
-      }else{
+        }
+    
+        if (parseInt(result.page) > 3){
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
+          paginate_tmp.push(<button className='page-link disabled'>...</button>)
+        }
+  
+        paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{parseInt(result.page)}</button>)
+        for (let i=1;i<=2;i++){
+          if (parseInt(result.page) + i < result.totalPages){
+            paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page))+i)}>{parseInt(result.page)+i}</button>)
+          }
+        }
+        
+        if (parseInt(result.page) + 3 <= result.totalPages){
+          paginate_tmp.push(<button className='page-link disabled'>...</button>)
+        }
+  
+        if (parseInt(result.page) !== result.totalPages){
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+        }
+        
+        if (result.hasNextPage) {
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+          paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+        } else {
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-      }
-
-      if (result.hasNextPage && result.page + 5 <= result.totalPages){
-          paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages))}><i className="fa-solid fa-angles-right"></i></button>)    
-      }else{
           paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+        }
       }
       return paginate_tmp
   }
@@ -161,25 +215,32 @@ export default function StudentList({schoolID}) {
 
   function showData(result){
     const template = (
-      <table className='table text-center'>
-        <thead className='table-dark'>
-          <tr>
-            <th>ชื่อ</th>
-            <th>นามสกุล</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {result.map((item,index) => {
-            return (
-              <tr key={index}>
-                  <td>{item.firstname}</td>
-                  <td>{item.lastname}</td>
+      <table className='table align-middle'>
+          <style jsx>{`
+            .detailinfo_btn{
+              border:none;
+              background-color:#004d99;
+              color:white;
+              border-radius:4px;
+            }
+          `}</style>
+          <thead>
+              <tr>
+                  <th style={{width:"1000px"}}><span className="ms-0 ms-md-4">ชื่อ-นามสกุล</span></th>
+                  <th className="text-center" style={{width:"200px"}}>รายละเอียด</th>
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+              {result.map((e,i) => {
+                  return (
+                      <tr key={i}>
+                          <td>{e.firstname} {e.lastname}</td>
+                          <td className="text-center"><button className='btn btn-sm detailinfo_btn' onClick={()=> detailTest(e)} data-bs-toggle="modal" data-bs-target="#modalStudentListbyAdmin">รายละเอียด</button></td>
+                      </tr>
+                  )
+              })}
+          </tbody>
+      </table> 
     )
     setData(template)
 }
@@ -199,34 +260,124 @@ function showPaginate(paginate){
     setPaginate(template)
 }
 
-  if (loading){
-    return <Reload/>
-  }else if (displayError){
-    return (
-      <main className='container p-3'>
-          <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
-      </main>
-    )
-  }else{
-    return (
-      <main className='container p-3'>
-        <h3 className='text-center'>ดูรายชื่อนักเรียนของชุมนุม {clubName}</h3>
-        <div className='btn-group dropdown'>
-          <button className='btn btn-secondary'>ชุมนุม</button>
-          <button className='btn btn-secondary dropdown-toggle dropdown-toggle-split' data-bs-toggle="dropdown"></button>
-          <ul className='dropdown-menu'>
-            {dropdown}
-          </ul>
-        </div>
-  
-        <div className='mt-4'>
-          {reloadTable ? reload : data}
-        </div>
-        {paginate}
-        <button className='btn btn-primary' onClick={() => router.push(`/${schoolID}/admin_school`)}>กลับหน้า admin</button>
-      </main>
-    )
+function detailTest(item) {
+  firstname.current.innerText = "ชื่อ: " + item.firstname
+  lastname.current.innerText = "นามสกุล: " + item.lastname
+  classYear.current.innerText = "ชั้นปีที่: " + item.classYear
+  enteredYear.current.innerText = "ปีที่เข้ารับการศึกษา: " + item.enteredYear
+  tel.current.innerText = "เบอร์โทรศัพท์: " + item.tel
+}
+
+function getAllStdList() {
+  setAllDataErr(true)
+  console.log(String(window.localStorage.getItem("clubIDStudentList")))
+  const data = {
+      clubID : String(window.localStorage.getItem("clubIDStudentList"))
   }
+  
+  get_all_stdlist(data, token, schoolID).then((res) => {
+      if (res[0]) {
+          //console.log(res[1])
+          if (res[1].data.length === 0){
+              setAllDataErr(false)
+              setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
+          }else{
+              setCsvReport ({
+                  data: res[1].data,
+                  headers: headers,
+                  filename: window.localStorage.getItem("clubidStdentListOwnTeacher") + '.csv'
+              })
+              setAllDataErr(false)
+              setCsvData(<CSVLink {...csvReport}>Export to CSV</CSVLink>)
+          }
+      }
+      else {
+          setAllDataErr(false)
+          setCsvData(<div className="fs-5">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>)
+      }
+  })
+}
+
+if (loading){
+  return <Reload/>
+}else if (displayError){
+  return (
+    <main className='container p-3'>
+        <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
+    </main>
+  )
+}else{
+  return (
+    <main className='container p-3'>
+        <style jsx>{`
+          .comeback_btn{
+						border:none;
+						background-color:#18a5af;
+						color:white;
+						border-radius:4px;
+					}
+
+          .csv_btn{
+						border:none;
+						background-color:#9d18af;
+						color:white;
+						border-radius:4px;
+					}
+        `}</style>
+      <h3 className='text-center mb-3 mt-3'>ดูรายชื่อนักเรียนของชุมนุม {clubName}</h3>
+      <div className='btn-group dropdown'>
+        <button className='btn btn-dark'>ชุมนุม</button>
+        <button className='btn btn-dark dropdown-toggle dropdown-toggle-split' data-bs-toggle="dropdown"></button>
+        <ul className='dropdown-menu'>
+          {dropdown}
+        </ul>
+      </div>
+      <div className="btn-group">
+        <button className='btn comeback_btn ms-2' onClick={() => router.push(`/${schoolID}/admin_school`)}>กลับหน้า admin</button>
+      </div>
+      <button className='btn csv_btn ms-2' data-bs-target="#modal_csvAdmin" data-bs-toggle="modal"  onClick={() => getAllStdList()}>csv รายชื่อ</button>
+
+      <div className='mt-4'>
+        {reloadTable ? reload : data}
+      </div>
+      {paginate}
+      <div className="modal fade" id="modalStudentListbyAdmin">
+          <div className="modal-dialog">
+              <div className="modal-content">
+                  <div className="modal-header">
+                      <h3 className="text-center">ข้อมูลนักเรียน</h3>
+                      <button className="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div className="modal-body">
+                      <div>
+                          <p ref={firstname}></p>
+                          <p ref={lastname}></p>
+                          <p ref={classYear}></p>
+                          <p ref={enteredYear}></p>
+                          <p ref={tel}></p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div className="modal fade" id="modal_csvAdmin">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+                <h3 className="text-center">ดาวโหลด csv รายชื่อนักเรียน</h3>
+                <button className="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div className="modal-body">
+              <div className="fs-5">ชุมนุม {clubName}</div>
+                  {allDataErr ? still_loding : csvData }
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
   
 }
 

@@ -2,8 +2,7 @@ import React from "react";
 import { useState,useRef,useEffect } from "react";
 import { useRouter } from "next/router";
 import { register } from "../utils/unauth";
-import CaptchaTest from "../components/captcha";
-import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
+// import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 
 import Swal from "sweetalert2";
 
@@ -13,11 +12,11 @@ export default function Register() {
 	const [file, setfile] = useState("");
 	const tagForm = useRef([]);
 	const click_check = useRef();
-	const captcha = useRef();
+	// const captcha = useRef();
 
-	useEffect(() => {
-		loadCaptchaEnginge(6); 
-	})
+	// useEffect(() => {
+	// 	loadCaptchaEnginge(6); 
+	// })
 
 	function checkFile(file) {
 		window.open().document.write(`<img src="${file}"></img>`);
@@ -45,25 +44,25 @@ export default function Register() {
 		const tel = tagForm.current[5].value;
 		const characterEnglish = /^[A-Za-z0-9]*$/;
 
-		let user_captcha = captcha.current.value;
+		// let user_captcha = captcha.current.value;
 
-		if (validateCaptcha(user_captcha)===true) {
-				// alert('Captcha Matched');
-				// loadCaptchaEnginge(6); 
-				// document.getElementById('user_captcha_input').value = "";
-		}
+		// if (validateCaptcha(user_captcha)===true) {
+		// 		// alert('Captcha Matched');
+		// 		// loadCaptchaEnginge(6); 
+		// 		// document.getElementById('user_captcha_input').value = "";
+		// }
 
-		else {
-			Swal.fire({
-				icon: 'warning',
-				title: 'captcha ไม่ถูกต้อง',
-				showConfirmButton: true,
-				confirmButtonColor: "#f7a518",
-				confirmButtonText: 'ok',
-			})
-			captcha.current.value = "";
-			return;
-		}
+		// else {
+		// 	Swal.fire({
+		// 		icon: 'warning',
+		// 		title: 'captcha ไม่ถูกต้อง',
+		// 		showConfirmButton: true,
+		// 		confirmButtonColor: "#f7a518",
+		// 		confirmButtonText: 'ok',
+		// 	})
+		// 	captcha.current.value = "";
+		// 	return;
+		// }
 
 		if (!characterEnglish.test(schoolID)) {
 			Swal.fire({
@@ -118,7 +117,7 @@ export default function Register() {
 				preConfirm: () => {
 					return register(will_data);
 				},
-				allowOutsideClick: () => !Swal.isLoading()
+				allowOutsideClick: false
 		
 			}).then((result) => {
 				if (result.isConfirmed) {
@@ -126,7 +125,7 @@ export default function Register() {
 					if (!result.value[1]) {
 						Swal.fire({
 							icon: 'error',
-							title: result.value[].response.data,  
+							title: result.value[0].response.data,  
 							showConfirmButton:true,
 							confirmButtonColor:"#ce0303"
 						})
@@ -135,7 +134,7 @@ export default function Register() {
 					else {
 						Swal.fire({
 							icon: 'success',
-							title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมลล์' + '\n' + 'เพื่อยืนยันอีเมลล์',
+							title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมล' + '\n' + 'เพื่อยืนยันอีเมล',
 							showConfirmButton:true,
 							confirmButtonColor:"#009431"
 						}).then(() => {
@@ -220,7 +219,7 @@ export default function Register() {
 							
 							<div className="col-12">
 								<label className="form-label">
-									อีเมลล์ (สำหรับ login และยืนยัน)
+									อีเมล (สำหรับ login และยืนยัน)
 								</label>
 								<input
 									type="email"
@@ -305,13 +304,13 @@ export default function Register() {
 									</p>
 								</label>
 							</div>
-							<div className="col-12">
+							{/* <div className="col-12">
 									<LoadCanvasTemplate />
 							</div>
 
 							<div className="col-12">
 									<input className="form-control" placeholder="Enter Captcha Value" type="text" ref={captcha} />
-							</div>
+							</div> */}
 							<div className="col-12">
 								<button className="btn btn-success">
 									ยืนยัน
@@ -324,3 +323,4 @@ export default function Register() {
 		</div>
 	);
 }
+

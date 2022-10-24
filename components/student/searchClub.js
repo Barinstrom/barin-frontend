@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect , useState , useRef} from 'react';
 import { useRouter } from 'next/router';
-import { paginationClub } from '../../utils/auth';
-import { register_club,get_student_ownclub,drop_club } from '../../utils/student/student';
+import { paginationClub, getTeacherName } from '../../utils/auth';
+import { register_club,get_student_ownclub} from '../../utils/student/student';
 import Cookies from 'universal-cookie';
 import Swal from 'sweetalert2';
 import Review from './reviewmodal';
 
 
-export default function EditClub({schoolID ,scheduled}) {
+export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYear}) {
     const [reloadTable,setReloadTable] = useState(false)
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
@@ -24,6 +24,8 @@ export default function EditClub({schoolID ,scheduled}) {
     const schoolYear = useRef()
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
+    const teacherName = useRef()
+    const teacherEmail = useRef()
     const day = useRef()
     
     const router = useRouter()
@@ -31,7 +33,7 @@ export default function EditClub({schoolID ,scheduled}) {
     const token = cookie.get("token")
     
     const reload = (
-        <main style={{ height: "300px" }}>
+        <main style={{ height: "400px" }}>
             <div className="d-flex justify-content-center h-100 align-items-center">
                 <div className="fs-4">loading ...</div>
                 <div className="spinner-border ms-3"></div>
@@ -45,9 +47,12 @@ export default function EditClub({schoolID ,scheduled}) {
         const body = {
             "page":1,
         }
-        window.localStorage.setItem("studentPageClub",1)
+        window.localStorage.setItem("studentPageClub", 1)
+        const sc_Year = {
+            nowSchoolYear : nowSchoolYear
+        }
 
-        Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(token, schoolID)])
+        Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(sc_Year,token, schoolID)])
             .then(result => {
                 console.log(result)
                 if (!result[0]){
@@ -63,6 +68,7 @@ export default function EditClub({schoolID ,scheduled}) {
         },[])
 
     function detailInfo(item,ev){
+        console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.innerText = item.clubName
         clubInfo.current.innerText = item.clubInfo
@@ -70,13 +76,29 @@ export default function EditClub({schoolID ,scheduled}) {
         limitStudent.current.innerText = item.limit + " คน"
         schoolYear.current.innerText = item.schoolYear
         groupID.current.innerText = item.groupID
+        teacherEmail.current.innerText = item.teacherEmail
         
-        let [dayx, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
-        // console.log(dayx, schedule)
-        day.current.innerText = dayx
+        
+        let [day_tmp, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
+        day.current.innerText = day_tmp
+        
         let [ st ,en ] = schedule.split("-")
         scheduleStart.current.innerText = st + " นาฬิกา"
         scheduleEnd.current.innerText = en + " นาฬิกา"
+        getTeacherName(item, token, schoolID).then(result => {
+            console.log(result)
+            if (!result) {
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (!result.data) {
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (result.data) {
+                teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
+            } else {
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+        })
     }
 
     async function applyClub(){
@@ -158,31 +180,52 @@ export default function EditClub({schoolID ,scheduled}) {
     
     function generate(result){
         const paginate_tmp = []
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-        }
         
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1))}><i className="fa-solid fa-angle-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-        }
-        
-        paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-        
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1))}><i className="fa-solid fa-angle-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-        }
+        if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (result.page === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{result.page}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (result.page > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
 
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
-        }
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{result.page}</button>)
+			for (let i=1;i<=2;i++){
+				if (result.page + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page)+i)}>{result.page+i}</button>)
+				}
+			}
+			
+			if (result.page + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (result.page !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
+		}
         return paginate_tmp
     }
 
@@ -212,12 +255,21 @@ export default function EditClub({schoolID ,scheduled}) {
     function showData(result){
         const template = (
             <div className='table-responsive'>
+                <style jsx>{`
+					.detailinfo_btn{
+						border:none;
+						background-color:#004d99;
+						color:white;
+						border-radius:4px;
+					}
+                `}</style>
             <table className='table table-striped align-middle'>
                 <thead>
                     <tr>
                         <th style={{width:"100px"}}>รหัสวิชา</th>
-                        <th style={{width:"400px"}}>ชื่อชุมนุม</th>
-                        <th style={{width:"400px"}} className="text-end"><span className='me-2'>ลงทะเบียน</span></th>
+                        <th style={{width:"600px"}}>ชื่อชุมนุม</th>
+                        <th style={{width:"120px"}} className="text-center"><span>ลงทะเบียน</span></th>
+                        <th style={{width:"50px"}} className="text-center"><span>ดูรีวิว</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -226,16 +278,19 @@ export default function EditClub({schoolID ,scheduled}) {
                             <tr key={index}>
                                 <td>{item.groupID}</td>
                                 <td>{item.clubName}</td>
-                                <td className="text-end">
-                                    <button className='btn btn-info btn-sm' 
+                                <td className="text-center">
+                                    <button className='btn detailinfo_btn btn-sm ' 
                                         onClick={(ev) => detailInfo(item,ev)}
                                         data-bs-toggle="modal"
                                         data-bs-target="#editClubModal"
                                         data-bs-clubid={item._id}
                                     >ดูรายละเอียด
                                     </button>
+                                    
                                 </td>
-                                <td><Review item={item} schoolID={schoolID} schedule={scheduled} /></td>
+                                <td className="text-center">
+                                    <Review item={item} schoolID={schoolID} schedule={scheduled} />
+                                </td>
                             </tr>
                         )
                     })}
@@ -267,6 +322,24 @@ export default function EditClub({schoolID ,scheduled}) {
         </div>
     )
 
+    const in_sc = (
+        <div className="alert alert-primary">
+            ขณะนี้อยู่ในช่วงเวลาลงทะเบียนชุมนุม
+        </div>
+    )
+
+    const out_sc = (
+        <div className="alert alert-danger">
+            ขณะนี้ไม่อยู่ในช่วงเวลาลงทะเบียนชุมนุม
+        </div>
+    )
+
+    const ha_sc = (
+        <div className="alert alert-warning">
+            คุณได้ทำการลงทะเบียนชุมนุมไปแล้ว
+        </div>
+    )
+
     if (displayError){
         return (
             <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
@@ -275,15 +348,17 @@ export default function EditClub({schoolID ,scheduled}) {
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">searchClub</div>
+                    <div className="text-center display-6 mb-3">searchClub</div>
+                    {!inschedule ? out_sc : 
+                        haveClubs ? ha_sc : in_sc}
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
                                     <input type="text" className='form-control' ref={search}></input>
-                                    <button className='btn btn-success' onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-                                    <button className='btn btn-danger' onClick={(ev) => clickReset(ev)}>รีเซต</button>
+                                    <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
                             {reloadTable ? reload  : data}
@@ -309,6 +384,16 @@ export default function EditClub({schoolID ,scheduled}) {
                                     <div className="col-12">
                                         <p>รหัสวิชา : &nbsp;
                                             <span ref={groupID}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>ชื่อนามสกุลผู้สอน : &nbsp;
+                                            <span ref={teacherName}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>อีเมลผู้สอน : &nbsp;
+                                            <span ref={teacherEmail}></span>
                                         </p>
                                     </div>
                                     <div className="col-12">
@@ -348,7 +433,7 @@ export default function EditClub({schoolID ,scheduled}) {
                                     </div>
                                 </div>
                             </div>
-                            {haveClubs ? null : applyBtn}
+                            {haveClubs || !inschedule ? null : applyBtn}
                         </div>
                     </div>
                 </div>

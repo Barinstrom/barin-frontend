@@ -30,22 +30,40 @@ export default function Student({ schoolID }) {
 	const [chooseBtnStart,setchooseBtnStart] = useState(false)
 	const [saveEmail,setSaveEmail] = useState("")
 	// ใช้ในหน้า pastClub
-	const [schedule,setSchedule] =useState("")
+	const [schedule, setSchedule] = useState("")
+	// check schedule
+	const [inschedule, setInschedule] = useState(true)
+	const [nowSchoolYear, setNowSchoolYear] = useState(0)
 	
 	useEffect(() => {
 		if (schoolID) {
 			get_data(token).then(result => {
 				if (result[1]) {
+					console.log(result)
 					const data_tmp = result[0].data._doc
 					const role = result[0].data.role
 					const email = result[0].data.email
 					if (role !== "student") {
 						router.push("/" + String(schoolID))
-					}else if (data_tmp) {
+					} else if (data_tmp) {
+						data_tmp.schedule.forEach((data) => {
+							console.log("data = ",data)
+							if (data.schoolYear === data_tmp.nowSchoolYear) {
+								// console.log(data.schoolYear)
+								const registerDate = new Date(data.registerDate)
+								const endOfRegisterDate = new Date(data.endOfRegisterDate)
+								const thisDate = new Date()
+								//console.log(thisDate, registerDate, endOfRegisterDate)
+								if (thisDate < registerDate || thisDate > endOfRegisterDate) {
+									setInschedule(false)
+								}
+							}
+						})
 						if (data_tmp.schoolID != schoolID) {
 							router.push("/" + String(data_tmp.schoolID))
 						}
 						else {
+							setNowSchoolYear(data_tmp.nowSchoolYear)
 							setDisplayFirst(true)
 							setSaveEmail(email)
 							setchooseBtnStart(true)
@@ -158,7 +176,7 @@ export default function Student({ schoolID }) {
 	async function forgetPassword() {
 		if (!saveEmail) {
 			Swal.fire(
-				'ไม่พบอีเมลล์ของท่าน',
+				'ไม่พบอีเมลของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
 				'warning'
 			)
@@ -203,12 +221,12 @@ export default function Student({ schoolID }) {
 
 	let component = null 
 	if (countBtn === 0){
-		component = <Nowclub schoolID={schoolID}/>
+		component = <Nowclub schoolID={schoolID} inschedule={inschedule} nowSchoolYear={nowSchoolYear} />
 	}else if (countBtn === 1){
-		component = <Searchclub schoolID={schoolID} scheduled={schedule}/>
+		component = <Searchclub schoolID={schoolID} scheduled={schedule} inschedule={inschedule} nowSchoolYear={nowSchoolYear} />
 	}else{
 		console.log(schedule)
-		component = <Pastclub schoolID={schoolID} schedule={schedule}/>
+		component = <Pastclub schoolID={schoolID} schedule={schedule} nowSchoolYear={nowSchoolYear} />
 	}
 	
 	if (displayFirst === "loading"){
@@ -302,13 +320,6 @@ export default function Student({ schoolID }) {
 							<span ref={time}></span>
 						</div>
 							<div className={`me-3 d-flex flex-row h-100`}>
-								<span className={`${styles.logo_bell}`}>
-									<i className="fa-regular fa-bell"></i>
-								</span>
-								<span className={`${styles.user_name} ms-1`}>
-									{/* {data.data.userId} */}
-								</span>
-
 								<div className={`${styles.logo}`}>
 									<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 									<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>

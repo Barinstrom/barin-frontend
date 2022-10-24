@@ -167,7 +167,7 @@ export default function Teacher({ schoolID }) {
 	async function forgetPassword() {
 		if (!saveEmail) {
 			Swal.fire(
-				'ไม่พบอีเมลล์ของท่าน',
+				'ไม่พบอีเมลของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
 				'warning'
 			)
@@ -216,156 +216,149 @@ export default function Teacher({ schoolID }) {
 
 	let component = null
 	if (countBtn === 0){
-		component = <OwnClub school_data={data_school} schoolID={schoolID} />
+		component = <OwnClub school_data={data_school} schoolID={schoolID} data_school={data_school} />
 	}else if (countBtn === 1){
 		component = <StdList school_data={data_school} schoolID={schoolID} />
 	}
 
 	const teacher_page =  (
-			<>
-				<style jsx>{`
-					.nav_header {
-						min-height: 100vh;
-						position: fixed;
-						padding: 3px;
-						transform: translate(-5%, 80px);
-						transition: transform 0.3s ease;
-						z-index: 100;
-						background-color: transparent;
-					}
-	
-					.button_hamberger{
-						width: 40px;
-						height: 40px;
-						border: none;
-						opacity: 1;
-						border-radius: 15px;
-						font-size: 1.4rem;
-						margin-right: 10px;
-						display: none;
-						background-color: transparent;
-					}
-	
-					@media screen and (max-width: 1300px) {
-						.nav_header {
-							transform: translate(-100%, 80px);
-						}
-						.nav_header.active {
-							transform: translateY(80px);
-							background-color: white;
-						}
-						.button_hamberger{
-							display: block;
-						}
-						.button_hamberger.hamactive{
-							background-color: #e8e8e8;
-						}
-					}
-	
-					.h2_alert,
-					.h2_alert {
-						font-size: 36px;
-					}
-	
-					@media screen and (max-width: 1000px) {
-						.h2_alert {
-							font-size: 28px;
-						}
-					}
-					@media screen and (max-width: 800px) {
-						.h2_alert {
-							font-size: 20px;
-						}
-					}
-	
-					.nav_left{
-						border-radius: 10px;
-						padding: 6px 30px;
-						cursor: pointer;
-						text-align:left;
-					}
-	
-					.nav_left.nowclick{
-						background-color: #FFFFFF;
-						box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
-					}
-				`}</style>
-	
-	
-				<header className={`${styles.head} navbar navbar-dark bg-white`}>
-					<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
-						<div className={`${styles.header_item} ms-2 `}>
-							<button
-								className="button_hamberger"
-								onClick={clickHamberger}
-								ref={hamberger}
-							>
-								<i className="fa-solid fa-bars"></i>
-							</button>
-							<span className="ms-3">Dashboard</span>
-						</div>
-						<div className={`${styles.header_item}`}>
-							<div className={`${styles.time_alert} me-2`}>
-								<span ref={time}></span>
-							</div>
-						<div className={`me-3 d-flex flex-row h-100`}>
-							<span className={`${styles.logo_bell}`}>
-								<i className="fa-regular fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
-							</span>
+		<>
+			<style jsx>{`
+				.nav_header {
+					min-height: 100vh;
+					position: fixed;
+					padding: 3px;
+					transform: translate(-5%, 80px);
+					transition: transform 0.3s ease;
+					z-index: 100;
+					background-color: transparent;
+				}
 
-							<div className={`${styles.logo}`}>
-								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
-								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
-									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
-									<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
-								</ul>
+				.button_hamberger{
+					width: 40px;
+					height: 40px;
+					border: none;
+					opacity: 1;
+					border-radius: 15px;
+					font-size: 1.4rem;
+					margin-right: 10px;
+					display: none;
+					background-color: transparent;
+				}
+
+				@media screen and (max-width: 1300px) {
+					.nav_header {
+						transform: translate(-100%, 80px);
+					}
+					.nav_header.active {
+						transform: translateY(80px);
+						background-color: white;
+					}
+					.button_hamberger{
+						display: block;
+					}
+					.button_hamberger.hamactive{
+						background-color: #e8e8e8;
+					}
+				}
+
+				.h2_alert,
+				.h2_alert {
+					font-size: 36px;
+				}
+
+				@media screen and (max-width: 1000px) {
+					.h2_alert {
+						font-size: 28px;
+					}
+				}
+				@media screen and (max-width: 800px) {
+					.h2_alert {
+						font-size: 20px;
+					}
+				}
+
+				.nav_left{
+					border-radius: 10px;
+					padding: 6px 30px;
+					cursor: pointer;
+					text-align:left;
+				}
+
+				.nav_left.nowclick{
+					background-color: #FFFFFF;
+					box-shadow: rgba(0, 0, 0, 0.40) 2px 4px 10px;
+				}
+			`}</style>
+
+
+			<header className={`${styles.head} navbar navbar-dark bg-white`}>
+				<div className={`${styles.header_main} text-dark d-flex justify-content-between shadow`}>
+					<div className={`${styles.header_item} ms-2 `}>
+						<button
+							className="button_hamberger"
+							onClick={clickHamberger}
+							ref={hamberger}
+						>
+							<i className="fa-solid fa-bars"></i>
+						</button>
+						<span className="ms-3">Dashboard</span>
+					</div>
+					<div className={`${styles.header_item}`}>
+						<div className={`${styles.time_alert} me-2`}>
+							<span ref={time}></span>
+						</div>
+					<div className={`me-3 d-flex flex-row h-100`}>
+						<div className={`${styles.logo}`}>
+							<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
+							<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
+								<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>
+								<li style={{ cursor: "pointer" }} onClick={forgetPassword}><span className="dropdown-item">reset password</span></li>
+							</ul>
+						</div>
+					</div>
+					</div>
+				</div>
+			</header>
+
+			
+			<nav className="nav_header" ref={nav}>
+				<div className={styles.box_menu}>
+					<ul>
+						<li>
+							<div className={`nav_left`} 
+								onClick={() => changeComponent(0)}
+								ref={el => optionBtn.current[0] = el}
+							>
+
+								<i className="fa-solid fa-book me-2"></i>
+								<span>ชุมนุมที่ดูแล</span>
 							</div>
-						</div>
-						</div>
-					</div>
-				</header>
-	
-				
-				<nav className="nav_header" ref={nav}>
-					<div className={styles.box_menu}>
-						<ul>
-							<li>
-								<div className={`nav_left`} 
-									onClick={(ev) => changeComponent(0)}
-									ref={el => optionBtn.current[0] = el}
-								>
-	
-									<i className="fa-solid fa-book me-2"></i>
-									<span>ชุมนุมที่ดูแล</span>
-								</div>
-							</li>
-	
-							<li>
-								<div className={`nav_left`} 
-									onClick={(ev) => changeComponent(1)}
-									ref={el => optionBtn.current[1] = el}
-								>
-									<i className="fa-solid fa-magnifying-glass me-2"></i>
-									<span>รายชื่อนักเรียน</span>
-								</div>
-							</li>
-	
-						</ul>
-					</div>
-				</nav>
-	
-				{/* ส่วน component มาแสดงผล */}
-				<main className={styles.content}>
-					<div className="container">
-						{component}
-					</div>
-				</main>
-				
-			</>
-		)
+						</li>
+
+						<li>
+							<div className={`nav_left`} 
+								onClick={() => changeComponent(1)}
+								ref={el => optionBtn.current[1] = el}
+							>
+								<i className="fa-solid fa-magnifying-glass me-2"></i>
+								<span>รายชื่อนักเรียน</span>
+							</div>
+						</li>
+
+					</ul>
+				</div>
+			</nav>
+
+			{/* ส่วน component มาแสดงผล */}
+			<main className={styles.content}>
+				<div className="container">
+					{component}
+				</div>
+			</main>
+			
+		</>
+	)
 	
 	
 if (displayFirst === "loading") { 

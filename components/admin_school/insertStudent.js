@@ -83,22 +83,59 @@ export default function InsertTeacher({ school_data,schoolID }) {
 				})
 				return
             }else{
-                const result = await add_students(body,token,schoolID);
-				if (result){
-					Swal.fire({
-						icon: 'success',
-						title: 'เพิ่มข้อมูลสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-					})
-				}else{
-					Swal.fire({
-						icon: 'error',
-						title: 'เพิ่มข้อมูลไม่สำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
-					})
-				}
+				Swal.fire({
+					title: "คุณต้องการเพิ่มนักเรียนจำนวนมากใช่หรือไม่",
+					showConfirmButton: true,
+					confirmButtonColor: "#0208bb",
+					confirmButtonText: 'ok',
+
+					showCancelButton: true,
+					cancelButtonText: "cancel",
+					cancelButtonColor: "#d93333",
+
+					showLoaderOnConfirm: true,
+					preConfirm: () => {
+						return add_students(body, token, schoolID);
+					},
+					allowOutsideClick: () => !Swal.isLoading()
+
+				}).then((res) => {
+					if (res.isConfirmed) {
+						const result = res.value
+						console.log(result)
+						if (!result[0]) {
+							if (result[1].response.data.error) {
+								Swal.fire({
+									icon: 'error',
+									title: result[1].response.data.error,
+									showConfirmButton: true,
+									confirmButtonColor: "#ce0303"
+								}).then(() => {
+									location.reload();
+								})
+							} else {
+								Swal.fire({
+									icon: 'error',
+									title: 'เพิ่มข้อมูลไม่สำเร็จ',
+									showConfirmButton: true,
+									confirmButtonColor: "#ce0303"
+								}).then(() => {
+									location.reload();
+								})
+							}
+
+						} else {
+							Swal.fire({
+								icon: 'success',
+								title: 'เพิ่มข้อมูลเสร็จสิ้น',
+								showConfirmButton: true,
+								confirmButtonColor: "#009431"
+							}).then(() => {
+								location.reload();
+							})
+						}
+					}
+				})
             }
         }
     }
@@ -120,19 +157,29 @@ export default function InsertTeacher({ school_data,schoolID }) {
 		const body = {...formSuccess,"isActive":"Active"}
 		const result = await add_student(body,token,schoolID);
 		
-		if (!result){
-			Swal.fire({
-				icon: 'error',
-				title: 'เพิ่มข้อมูลไม่สำเร็จ',
-				showConfirmButton:true,
-				confirmButtonColor:"#ce0303"
-			})
-		}else{
+		if (!result[0]) {
+			if (result[1].response.data.error) {
+				Swal.fire({
+					icon: 'error',
+					title: result[1].response.data.error,
+					showConfirmButton: true,
+					confirmButtonColor: "#ce0303"
+				})
+			} else {
+				Swal.fire({
+					icon: 'error',
+					title: 'เพิ่มข้อมูลไม่สำเร็จ',
+					showConfirmButton: true,
+					confirmButtonColor: "#ce0303"
+				})
+			}
+
+		} else {
 			Swal.fire({
 				icon: 'success',
 				title: 'เพิ่มข้อมูลเสร็จสิ้น',
-				showConfirmButton:true,
-				confirmButtonColor:"#009431"
+				showConfirmButton: true,
+				confirmButtonColor: "#009431"
 			})
 		}
 	}

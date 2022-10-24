@@ -101,7 +101,7 @@ export default function CheckStatus() {
                     <i>✓</i>
                 </div>
                 <h1 className="status">Success</h1>
-                <p>คุณยืนยันอีเมลล์เสร็จสิ้น</p>
+                <p>คุณยืนยันอีเมลเสร็จสิ้น</p>
                 <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
             </div>
         </main>
@@ -183,7 +183,7 @@ export default function CheckStatus() {
                         <i>✗</i>
                     </div>
                     <h1 className="status">fail</h1>
-                    <p>ยืนยันอีเมลล์ไม่สำเร็จ</p>
+                    <p>ยืนยันอีเมลไม่สำเร็จ</p>
                     <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
                 </div>
             </main>

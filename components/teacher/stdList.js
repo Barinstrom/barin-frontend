@@ -33,18 +33,17 @@ export default function StdList({schoolID}){
     const [reloadTable,setReloadTable] = useState(false)
     const [nowDisplayname, setNowDisplayname] = useState(null)
     const [nowClubID, setNowClubID] = useState(null)
-    const [allDataErr, setAllDataErr] = useState(false)
+    const [allDataErr, setAllDataErr] = useState(true)
     const [csvReport, setCsvReport] = useState({
         data: tmpdata,
         headers: headers,
         filename: 'tmpdata.csv'
     })
+    const [csvData,setCsvData] = useState()
 
     const cookie = new Cookies()
     const token = cookie.get("token")
     
-    
-
     const reload = (
         <main style={{height:"400px"}}>
             <div className="d-flex justify-content-center h-100 align-items-center">
@@ -54,25 +53,13 @@ export default function StdList({schoolID}){
         </main>
     )
 
-    const noDownload = (
-        <main style={{ height: "400px" }}>
-            <div className="d-flex justify-content-center h-100 align-items-center">
-                <div className="fs-3">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>
-            </div>
-        </main>
+    const still_loding = (
+        <div className="py-2">
+            <div className="d-inline-block">กำลังดาวโหลด โปรดรอสักครู่</div>
+        </div>
     )
 
-    const download = (
-        <main style={{ height: "400px" }}>
-            <div className="d-flex justify-content-center h-100 align-items-center">
-                <div className="btn btn-outline-secondary">
-                    <CSVLink {...csvReport}>Export to CSV</CSVLink>
-                </div>
-            </div>
-        </main>
-    )
-
-	useEffect(() => {
+    useEffect(() => {
         setReloadTable(true)
         get_teacher_ownclubs(token,schoolID).then(result => {
 			console.log(result.data)
@@ -128,7 +115,7 @@ export default function StdList({schoolID}){
 		})
 	}, [])
 
-	function detailTest(item){
+    function detailTest(item) {
         firstname.current.innerText = "ชื่อ: " + item.firstname
         lastname.current.innerText = "นามสกุล: " + item.lastname
         classYear.current.innerText = "ชั้นปีที่: " + item.classYear
@@ -137,33 +124,54 @@ export default function StdList({schoolID}){
     }
     
     function generate(result){
-        console.log(result)
+        //console.log(result)
         const paginate_tmp = []
-        if (result.hasPrevPage && result.page - 5 >= 1){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((1))}><i className="fa-solid fa-angles-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-        }
         
-        if (result.hasPrevPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((parseInt(result.page)-1))}><i className="fa-solid fa-angle-left"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-        }
-        
-        paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-        
-        if (result.hasNextPage){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((parseInt(result.page)+1))}><i className="fa-solid fa-angle-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-        }
+        if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (parseInt(result.page) === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{parseInt(result.page)}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (parseInt(result.page) > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
 
-        if (result.hasNextPage && result.page + 5 <= result.totalPages){
-            paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages))}><i className="fa-solid fa-angles-right"></i></button>)    
-        }else{
-            paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
-        }
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{parseInt(result.page)}</button>)
+			for (let i=1;i<=2;i++){
+				if (parseInt(result.page) + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page))+i)}>{parseInt(result.page)+i}</button>)
+				}
+			}
+			
+			if (parseInt(result.page) + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (parseInt(result.page) !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((parseInt(result.page) + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
+		}
         return paginate_tmp
     }
 
@@ -193,6 +201,14 @@ export default function StdList({schoolID}){
     function showData(result){
         const tmp = (
             <table className='table align-middle'>
+                <style jsx>{`
+					.detailinfo_btn{
+						border:none;
+						background-color:#004d99;
+						color:white;
+						border-radius:4px;
+					}
+                `}</style>
                 <thead>
                     <tr>
                         <th style={{width:"1000px"}}><span className="ms-0 ms-md-4">ชื่อ-นามสกุล</span></th>
@@ -204,13 +220,12 @@ export default function StdList({schoolID}){
                         return (
                             <tr key={i}>
                                 <td>{e.firstname} {e.lastname}</td>
-                                <td className="text-center"><button className='btn btn-sm btn-info' onClick={()=> detailTest(e)} data-bs-toggle="modal" data-bs-target="#modalStudentListbyTeacher">รายละเอียด</button></td>
+                                <td className="text-center"><button className='btn btn-sm detailinfo_btn' onClick={()=> detailTest(e)} data-bs-toggle="modal" data-bs-target="#modalStudentListbyTeacher">รายละเอียด</button></td>
                             </tr>
                         )
                     })}
                 </tbody>
             </table> 
-            
         )
         setData(tmp)
     }
@@ -230,14 +245,13 @@ export default function StdList({schoolID}){
 
     function genetateDropdown(clubs){
         const tmp = clubs.map((club, index) => {
-            return <div key={index} style={{cursor:"pointer"}} className="dropdown-item" onClick={(ev) => changeDropDown(club._id,club.clubName)} data-bs-info={JSON.stringify(club)}>{club.clubName}</div>
+            return <div key={index} style={{cursor:"pointer"}} className="dropdown-item" onClick={(ev) => changeDropDown(club._id,club.clubName)}>{club.clubName}</div>
         })
         setDropDown(tmp)
     }
 
     function changeDropDown(clubID,clubName){
-		
-        const body = {
+	    const body = {
             "page":1,
             "clubID":clubID
 		}
@@ -258,35 +272,36 @@ export default function StdList({schoolID}){
         })
     }
 
-    function getAllStdList(clubID) {
-        setAllDataErr("loading")
-        // console.log(clubID)
-        if (!clubID) {
-            clubID = window.localStorage.getItem("clubidStdentListOwnTeacher")
+    function getAllStdList() {
+        setAllDataErr(true)
+        const data = {
+            clubID : window.localStorage.getItem("clubidStdentListOwnTeacher")
         }
         
-        const data = {
-            clubID : clubID
-        }
         get_all_stdlist(data, token, schoolID).then((res) => {
-            console.log(res)
             if (res[0]) {
-                // console.log(res[1].data)
-                // console.log(tmpdata)
-                setCsvReport ({
-                    data: res[1].data,
-                    headers: headers,
-                    filename: clubID + '.csv'
-                })
-                setAllDataErr(false)
+                console.log(res[1])
+                if (res[1].data.length === 0){
+                    setAllDataErr(false)
+                    setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
+                }else{
+                    setCsvReport ({
+                        data: res[1].data,
+                        headers: headers,
+                        filename: window.localStorage.getItem("clubidStdentListOwnTeacher") + '.csv'
+                    })
+                    setAllDataErr(false)
+                    setCsvData(<CSVLink {...csvReport}>Export to CSV</CSVLink>)
+                }
             }
             else {
-                setAllDataErr(true)
+                setAllDataErr(false)
+                setCsvData(<div className="fs-5">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>)
             }
         })
     }
     
-    /* ส่วนของการแปลง string เป็น object */
+    //* ส่วนของการแปลง string เป็น object
     const stringtoObject = (text) => {
         try {
             console.log(text)
@@ -294,28 +309,20 @@ export default function StdList({schoolID}){
             text = text.trim()
             const tmp = text.split("\n")
             const heads = tmp[0].split(",")
-            // console.log(heads)
             for (let i = 1; i < tmp.length; i++) {
                 const line = tmp[i].split(",")
                 const object = {}
                 for (let j = 0; j < heads.length; j++) {
-                    // console.log(j,line[j])
                     if (line[j] === "") {
                         return "data is undefined"
                     } else {
                         let header = heads[j].trim()
-                        // header = header.replaceAll('"', '');
-                        // header = header.replaceAll("'", '');
                         let hdata = line[j].trim()
-                        // hdata = hdata.replaceAll('"', '');
-                        // hdata = hdata.replaceAll("'", '');
                         object[header] = hdata
                     }
                 }
-                // console.log(line,i)
                 result.push(object)
             }
-            // console.log("test")
             return result
         }
         catch(err){
@@ -391,7 +398,36 @@ export default function StdList({schoolID}){
     }else{
         return (
             <main>
-                <div className="text-center fs-1 mb-5">StudentList</div>
+                <style jsx>{`
+                    .submitgrade_btn{
+						border:none;
+						background-color:#11620e;
+						color:white;
+						border-radius:4px;
+					}
+                    
+					.detailinfo_btn{
+						border:none;
+						background-color:#004d99;
+						color:white;
+						border-radius:4px;
+					}
+
+                    .grade_btn{
+						border:none;
+						background-color:#af1868;
+						color:white;
+						border-radius:4px;
+					}
+                    .csv_btn{
+						border:none;
+						background-color:#9d18af;
+						color:white;
+						border-radius:4px;
+					}
+                `}</style>
+                
+                <div className="text-center display-6 mb-3">รายชื่อนักเรียน</div>
                 <div className="mb-4">
                     <div className="d-flex flex-column align-items-center flex-sm-row">
                         <div className="text-center">
@@ -408,8 +444,8 @@ export default function StdList({schoolID}){
                             <span className="fs-3 ms-sm-4">{nowDisplayname}</span> 
                         </div>
                         <div className="ms-sm-auto ">
-                            <button className='btn btn-secondary me-2' data-bs-target="#stdalllist" data-bs-toggle="modal"  onClick={() => { getAllStdList(nowClubID) }}>csv รายชื่อ</button>
-                            <button className='btn btn-secondary' data-bs-target="#gradestd" data-bs-toggle="modal">ตัดเกรด</button>
+                            <button className='btn csv_btn me-2' data-bs-target="#modal_csv" data-bs-toggle="modal"  onClick={() => getAllStdList()}>csv รายชื่อ</button>
+                            <button className='btn grade_btn' data-bs-target="#modal_grade" data-bs-toggle="modal">ตัดเกรด</button>
                         </div>
                     </div>
                 </div>
@@ -418,48 +454,40 @@ export default function StdList({schoolID}){
                 </div>
                 {paginate}
 
-                <div className="modal fade" id="stdalllist">
+                <div className="modal fade" id="modal_csv">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h3 className="text-center">CSV - รายชื่อ</h3>
+                                <h3 className="text-center">ดาวโหลด csv รายชื่อนักเรียน</h3>
                                 <button className="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div className="modal-body">
-                                <div className="text-center">
-                                    <div className="fs-3">{nowDisplayname}</div>
-                                    {allDataErr=="loading" ? reload : 
-                                        allDataErr ? noDownload :
-                                            download }
+                                <div className="fs-5">ชุมนุม {nowDisplayname}</div>
+                                    {allDataErr ? still_loding : csvData }
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="modal fade" id="gradestd">
+                <div className="modal fade" id="modal_grade">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            <div className="modal-header">
-                                <h3 className="text-center">CSV - รายชื่อ</h3>
+                        <div className="modal-header">
+                                <h3 className="text-center">csv รายชื่อนักเรียน</h3>
                                 <button className="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div className="modal-body">
-                                <div className="text-center">
-                                    <div className="fs-3">{nowDisplayname}</div>
-                                    <div className="fs-3">ใส่ข้อมูล csv ตัดเกรด</div>
-                                    <form>
-                                        <div className="input-group">
-                                            <input className="form-control"
-                                                type='file'
-                                                accept='.csv'
-                                                onChange={(ev) => {
-                                                    setCsvFile(ev.target.files[0])
-                                                }} />
-                                            <button type="submit" className="btn btn-success" onClick={(ev) => submit(ev, nowClubID)}>ยืนยัน</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                <form>
+                                    <label className="form-label mt-1">ใส่ข้อมูล csv เพื่อตัดเกรดของชุมนุม {nowDisplayname}</label>
+                                    <div className="input-group">
+                                        <input className="form-control"
+                                            type='file'
+                                            accept='.csv'
+                                            onChange={(ev) => {setCsvFile(ev.target.files[0])
+                                        }} />
+                                        <button type="submit" className="btn submitgrade_btn" onClick={(ev) => submit(ev, nowClubID)}>ยืนยัน</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -479,7 +507,6 @@ export default function StdList({schoolID}){
                                     <p ref={classYear}></p>
                                     <p ref={enteredYear}></p>
                                     <p ref={tel}></p>
-                                    
                                 </div>
                             </div>
                         </div>

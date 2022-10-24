@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
-import { paginationClub,get_teachers_inclub } from '../../utils/auth';
+import { paginationClub, get_teachers_inclub, getTeacherName } from '../../utils/auth';
 import { update_club } from '../../utils/school_admin/edit_data';
 import Cookies from 'universal-cookie';
 import Swal from "sweetalert2";
@@ -27,9 +27,9 @@ export default function EditClub({ school_data,schoolID }) {
     const schoolYear = useRef()
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
-    const teacherLastName = useRef()
-    const teacherFirstName = useRef()
+    const teacherName = useRef()
     const day = useRef()
+    const teacherEmail = useRef()
     
     const cookie = new Cookies()
     const token = cookie.get("token")
@@ -74,38 +74,56 @@ export default function EditClub({ school_data,schoolID }) {
         limitStudent.current.value = item.limit
         schoolYear.current.value = item.schoolYear
         groupID.current.value = item.groupID
+        teacherEmail.current.value = item.teacherEmail
         
-        console.log(item)
-        let [ dayx, schedule ] = item.schedule[0].split(" ") // [ "วันจัน 17.02.00-18.02.00"]
-        day.current.value = dayx
+        let [day_tmp, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
+        // console.log(day_tmp)
+        const english_day = {
+            "วันจันทร์":"monday",
+            "วันอังคาร":"tuesday",
+            "วันพุธ":"wednesday",
+            "วันพฤหัสบดี": "thurday",
+            "วันศุกร์": "friday",
+            "วันเสาร์": "saturday",
+            "วันอาทิตย์": "sunday"
+        }
+
+        // console.log(english_day[day_tmp])
+        
+        day.current.value = String(english_day[day_tmp]) //"วันจันทร์"
         let [ startTime ,endTime ] = schedule.split("-")
         scheduleStart.current.value = startTime
         scheduleEnd.current.value = endTime
 
-        teacherFirstName.current.value = "--------"
-        teacherLastName.current.value = "---------"
-        get_teachers_inclub(item, token, schoolID).then(result => {
-            
+        teacherName.current.innerText = "--------"
+        getTeacherName(item, token, schoolID).then(result => {
+            console.log(result)
             if (!result){
-                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
-                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
             else if (!result.data) {
-                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
-                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
-            else if (result.data.length >= 1) {
-                teacherFirstName.current.value = result.data[0].firstname
-                teacherLastName.current.value = result.data[0].lastname
+            else if (result.data) {
+                teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
             }else {
-                teacherFirstName.current.value = "ไม่มีชื่อครูผู้สอน"
-                teacherLastName.current.value = "ไม่มีชื่อครูผู้สอน"
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
         })
 		
     }
 
-    async function updateClub(){
+    async function updateClub() {
+        const th_day = {
+            "monday": "วันจันทร์",
+            "tuesday": "วันอังคาร",
+            "wednesday": "วันพุธ",
+            "thurday": "วันพฤหัสบดี",
+            "friday": "วันศุกร์",
+            "saturday": "วันเสาร์",
+            "sunday": "วันอาทิตย์"
+        }
+        console.log(th_day[String(day.current.value)])
         const body_update = {
             clubID: clubName.current.getAttribute("data-clubid"),
             clubName:clubName.current.value,
@@ -114,12 +132,13 @@ export default function EditClub({ school_data,schoolID }) {
             limit: limitStudent.current.value ,
             schoolYear: schoolYear.current.value ,
             groupID: groupID.current.value,
-            schedule: [String(day.current.value) + " " + String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ],
+            teacherEmail: teacherEmail.current.value,
+            schedule: [th_day[String(day.current.value)] + " " + String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ],
         }
-        if(teacherFirstName.current.value !== "ไม่มีชื่อครูผู้สอน" || teacherLastName.current.value !== "ไม่มีชื่อครูผู้สอน") {
-            body_update.firstname = teacherFirstName.current.value
-            body_update.lastname = teacherLastName.current.value
-        }
+        // if(teacherFirstName.current.value !== "ไม่มีชื่อครูผู้สอน" || teacherLastName.current.value !== "ไม่มีชื่อครูผู้สอน") {
+        //     body_update.firstname = teacherFirstName.current.value
+        //     body_update.lastname = teacherLastName.current.value
+        // }
         console.log(body_update)
 
         Swal.fire({
@@ -196,48 +215,6 @@ export default function EditClub({ school_data,schoolID }) {
                     }
             }
         })
-        // try{
-        //     const result_update = await update_club(body_update,token,schoolID)
-            
-        //     if (result_update.status === 200){
-        //         const body = {
-        //             "page":window.localStorage.getItem("pageEditClub"),
-        //             "query":window.localStorage.getItem("searchEditClub")
-        //         }
-                
-        //         const result = await paginationClub(body,token,schoolID)
-                
-        //         if (!result){
-        //             setDisplayError(true)
-        //         }else{
-        //             if (result.data.docs.length === 0){
-        //                 window.localStorage.setItem("pageEditClub",result.data.totalPages)
-                        
-        //                 const body = {
-        //                     "page":window.localStorage.getItem("pageEditClub"),
-        //                     "query":window.localStorage.getItem("searchEditClub")
-        //                 }
-        //                 const result_new = await paginationClubEdit(body)
-                        
-        //                 if (!result_new){
-        //                     setDisplayError(true)
-        //                 }else{
-        //                     const paginate_tmp = generate(result_new.data)
-        //                     setDisplayError(false)
-        //                     showData(result_new.data.docs)
-        //                     showPaginate(paginate_tmp)
-        //                 }
-        //             }else{
-        //                 const paginate_tmp = generate(result.data)
-        //                 setDisplayError(false)
-        //                 showData(result.data.docs)
-        //                 showPaginate(paginate_tmp)
-        //             }
-        //         }
-        //     }
-        // }catch(err){
-        //     console.log(err)
-        // }
     }
 
     async function clickReset(ev){
@@ -401,7 +378,7 @@ export default function EditClub({ school_data,schoolID }) {
                     </thead>
                     <tbody>
                         {result.map((item, index) => {
-                            console.log(item)
+                            //console.log(item)
                             return (
                                 <tr key={index}>
                                     <td>{item.groupID}</td>
@@ -488,13 +465,12 @@ export default function EditClub({ school_data,schoolID }) {
 									<label className="form-label">รหัสวิชา</label>
 									<input type="text" className="form-control" ref={groupID}/>
                                 </div>
-                                <div className="col-6">
-                                    <label className="form-label">ชื่อ ครูผู้สอน</label>
-                                    <input type="text" className="form-control" ref={teacherFirstName} />
+                                <div className="col-12">
+                                    <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
                                 </div>
-                                <div className="col-6">
-                                    <label className="form-label">นามสกุล ครูผู้สอน</label>
-                                    <input type="text" className="form-control" ref={teacherLastName} />
+                                <div className="col-12">
+                                    <label className="form-label">อีเมลผู้สอน</label>
+                                    <input type="text" className="form-control" ref={teacherEmail} />
                                 </div>
 								<div className="col-12">
 									<label className="form-label">category</label>
@@ -514,14 +490,14 @@ export default function EditClub({ school_data,schoolID }) {
                                 </div>
                                 <div className="col-12">
                                     <label className="form-label">วันที่สอน</label>
-                                    <select className="form-select" aria-label="Default select example" ref={day}>
-                                        <option value="วันจันทร์">วันจันทร์</option>
-                                        <option value="วันอังคาร">วันอังคาร</option>
-                                        <option value="วันพุธ">วันพุธ</option>
-                                        <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
-                                        <option value="วันศุกร์">วันศุกร์</option>
-                                        <option value="วันเสาร์">วันเสาร์</option>
-                                        <option value="วันอาทิตย์">วันอาทิตย์</option>
+                                    <select className="form-select" ref={day}>
+                                        <option value="monday">วันจันทร์</option>
+                                        <option value="tuesday">วันอังคาร</option>
+                                        <option value="wednesday">วันพุธ</option>
+                                        <option value="thurday">วันพฤหัสบดี</option>
+                                        <option value="friday">วันศุกร์</option>
+                                        <option value="saturday">วันเสาร์</option>
+                                        <option value="sunday">วันอาทิตย์</option>
                                     </select>
                                 </div>
 								<div className="col-sm-6">
@@ -535,8 +511,8 @@ export default function EditClub({ school_data,schoolID }) {
                                 </form>
                             </div>
                             <div className='modal-footer'>
-                                <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateClub()}>ตกลง</button>
+                                <button className='btn' style={{ backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
+                                <button className='btn' style={{ backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateClub()}>ตกลง</button>
                             </div>
                         </div>
                     </div>

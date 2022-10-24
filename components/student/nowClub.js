@@ -5,7 +5,7 @@ import Cookies from "universal-cookie";
 import { get_student_ownclub, drop_club } from "../../utils/student/student";
 import Swal from "sweetalert2";
 
-export default function Nowclub({schoolID}) {
+export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 	const [ displayOwnclub, setdisplayOwnclub ] = useState(null)
 	
 	const cookie = new Cookies()
@@ -69,22 +69,33 @@ export default function Nowclub({schoolID}) {
 	useEffect(() => {
 		const  cookie = new Cookies()
 		const token = cookie.get("token")
+		const body = {
+			nowSchoolYear : nowSchoolYear
+		}
 		
-		get_student_ownclub(token,schoolID).then(result => {
-			//console.log(result)
+		get_student_ownclub(body,token, schoolID).then(result => {
+			console.log(result)
 			let clubs;
-			if (!result){
+			let clubs_notin
+			if (!result) {
 				clubs = (
-					<div  className="card mt-3">
+					<div className="card mt-3">
+						<div className="card-body">
+							<h5 className="card-title">เกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</h5>
+						</div>
+					</div>
+				)
+				clubs_notin = (
+					<div className="card mt-3">
 						<div className="card-body">
 							<h5 className="card-title">เกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</h5>
 						</div>
 					</div>
 				)
 			}
-			else if (result.data.clubs.length === 0){
+			else if (result.data.clubs.length === 0) {
 				clubs = (
-					<div  className="card mt-3">
+					<div className="card mt-3">
 						<div className="card-body">
 							<h5 className="card-title">คุณยังไม่ได้ลงทะเบียนชุมนุม</h5>
 							<p className="card-text mt-3">
@@ -95,10 +106,59 @@ export default function Nowclub({schoolID}) {
 						</div>
 					</div>
 				)
+				clubs_notin = (
+					<div className="card mt-3">
+						<div className="card-body">
+							<h5 className="card-title">คุณยังไม่ได้ลงทะเบียนชุมนุม</h5>
+							<p className="card-text mt-3">
+								ขณะนี้ ไม่ได้อยู่ในช่วงเวลาลงทะเบียน กรุณาตรวจสอบกับอาจารย์ที่ปรึกษา
+							</p>
+						</div>
+					</div>
+				)
 			}
 			else {
 				clubs = result.data.clubs.map((e, i) => {
-						return (
+					return (
+						<>
+							<style jsx>{`
+									.drop_btn{
+										border:none;
+										background-color:#c3971d;
+										color:white;
+										border-radius:4px;
+									}
+								`}</style>
+								
+							<div key={i} className="card mt-3">
+								<div className="card-body">
+									<p className="card-text">ชื่อชุมนุม: {e.clubName}</p>
+									<p className="card-text">เวลาเรียน: {e.schedule[0]}</p>
+									<p className="card-text">รายละเอียด: {e.clubInfo}</p>
+									<p className="card-text">อาจารย์ผู้สอน: {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
+									<p className="card-text">อีเมลผู้สอน: {e.teacherEmail}</p>
+									<p className="card-text">สถานะ: {e.status}</p>
+								</div>
+								<div className="card-footer text-end">
+									<button className='btn drop_btn' onClick={() => dropClub(e._id)}>ถอนชุมนุม</button>
+								</div>
+							</div>
+						</>
+					)
+				})
+			
+				clubs_notin = result.data.clubs.map((e, i) => {
+					return (
+						<>
+							<style jsx>{`
+									.drop_btn{
+										border:none;
+										background-color:#c3971d;
+										color:white;
+										border-radius:4px;
+									}
+								`}</style>
+
 							<div key={i} className="card mt-3">
 								<div className="card-body">
 									<p className="card-text">ชื่อชุมนุม: {e.clubName}</p>
@@ -106,20 +166,20 @@ export default function Nowclub({schoolID}) {
 									<p className="card-text">รายละเอียด: {e.clubInfo}</p>
 									<p className="card-text">อาจารย์ผู้สอน: {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
 								</div>
-								<div className="card-footer text-end">
-									<button className='btn btn-warning' onClick={() => dropClub(e._id)}>ถอนชุมนุม</button>
-								</div>
 							</div>
-						)
-					})
-				}
-			setdisplayOwnclub(clubs)
+						</>
+					)
+				})
+			}
+			if (inschedule) setdisplayOwnclub(clubs)
+			else setdisplayOwnclub(clubs_notin)
+		
 		})
 	}, [])
 
 	return (
 		<div>
-			<div className="text-center fs-1">ชุมนุมปัจจุบัน</div>
+			<div className="text-center display-6">ชุมนุมปัจจุบัน</div>
 			{displayOwnclub}
 		</div>
 	)

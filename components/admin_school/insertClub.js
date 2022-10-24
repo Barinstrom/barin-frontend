@@ -7,6 +7,7 @@ import { add_club,add_clubs } from "../../utils/school_admin/add_data";
 import {paginationTeacher} from '../../utils/auth'
 import AllowAddClub from "./allowAddClub";
 import { CSVLink } from "react-csv";
+// import { useRouter } from "next/router";
 
 export default function InsertClub({ school_data, schoolID }) {
 	/* hook state */
@@ -14,6 +15,7 @@ export default function InsertClub({ school_data, schoolID }) {
 	const [csvFile, setCsvFile] = useState("");
 	const [allowRegisterClubTeacher,setAllowRegisterClubTeacher] = useState(true)
 	const [loading, setLoading] = useState(true)
+	// const router = useRouter()
 	
 	/* CSV */
 	const headers = [
@@ -25,15 +27,16 @@ export default function InsertClub({ school_data, schoolID }) {
 		// { label: "schedule", key: "schedule" },
 		{ label: "limit", key: "limit" },
 		{ label: "schoolYear", key: "schoolYear" },
-		{ label: "firstname", key: "firstname" },
-		{ label: "lastname", key: "lastname" },
+		{ label: "teacherEmail", key: "teacherEmail" },
+		// { label: "firstname", key: "firstname" },
+		// { label: "lastname", key: "lastname" },
 	];
 	const tmpdata = [
 		{
 			clubName: "", groupID: "", clubInfo: "", category: "",
 			// day: "",
 			// schedule: "",
-			limit: "", schoolYear: "", firstname: "", lastname: ""
+			limit: "", schoolYear: "", teacherEmail: ""
 		}
 	];
 	const csvReport = {
@@ -46,8 +49,6 @@ export default function InsertClub({ school_data, schoolID }) {
 	const clubName = useRef()
 	const clubInfo = useRef()
 	const groupID = useRef()
-	const firstname = useRef()
-	const lastname = useRef()
 	const limit = useRef()
 	const category = useRef()
 	const schoolYear = useRef()
@@ -55,6 +56,7 @@ export default function InsertClub({ school_data, schoolID }) {
 	const endTime = useRef()
 	const urlPicture = useRef()
 	const day = useRef()
+	const teacherEmail = useRef()
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
@@ -143,7 +145,7 @@ export default function InsertClub({ school_data, schoolID }) {
 			const text = reader.result;
 			const body = stringtoObject(text)
 			console.log(body)
-            if (body === "data is undefined"){
+      if (body === "data is undefined"){
                 Swal.fire({
 					icon: 'warning',
 					title: 'ใส่ข้อมูลในไฟล์ csv ไม่ครบ',
@@ -152,23 +154,61 @@ export default function InsertClub({ school_data, schoolID }) {
 					confirmButtonText: 'ok',
 				})
 				return
-            }else{
-                const result = await add_clubs(body,token,schoolID);
-				if (result){
-					Swal.fire({
-						icon: 'success',
-						title: 'เพิ่มข้อมูลสำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#009431"
-					})
-				}else{
-					Swal.fire({
-						icon: 'error',
-						title: 'เพิ่มข้อมูลไม่สำเร็จ',
-						showConfirmButton:true,
-						confirmButtonColor:"#ce0303"
-					})
-				}
+			}
+			else {
+				Swal.fire({
+					title: "คุณต้องการเพิ่มชุมนุมจำนวนมากใช่หรือไม่",
+					showConfirmButton: true,
+					confirmButtonColor: "#0208bb",
+					confirmButtonText: 'ok',
+
+					showCancelButton: true,
+					cancelButtonText: "cancel",
+					cancelButtonColor: "#d93333",
+
+					showLoaderOnConfirm: true,
+					preConfirm: () => {
+						return add_clubs(body, token, schoolID)
+					},
+					allowOutsideClick: () => !Swal.isLoading()
+
+				}).then((res) => {
+					if (res.isConfirmed) {
+						const result = res.value
+						console.log(result)
+						if (!result[0]) {
+							if (result[1].response.data.error) {
+								Swal.fire({
+									icon: 'error',
+									title: result[1].response.data.error,
+									showConfirmButton: true,
+									confirmButtonColor: "#ce0303"
+								}).then(() => {
+									location.reload();
+								})
+							} else {
+								Swal.fire({
+									icon: 'error',
+									title: 'เพิ่มข้อมูลไม่สำเร็จ',
+									showConfirmButton: true,
+									confirmButtonColor: "#ce0303"
+								}).then(() => {
+									location.reload();
+								})
+							}
+
+						} else {
+							Swal.fire({
+								icon: 'success',
+								title: 'เพิ่มข้อมูลเสร็จสิ้น',
+								showConfirmButton: true,
+								confirmButtonColor: "#009431"
+							}).then(() => {
+								location.reload();
+							})
+						}
+					}
+				})
             }
         }
 	}
@@ -181,11 +221,10 @@ export default function InsertClub({ school_data, schoolID }) {
 			groupID:groupID.current.value,
 			schoolYear:schoolYear.current.value,
 			category:category.current.value,
-			firstname:firstname.current.value,
-			lastname:lastname.current.value,
 			limit:limit.current.value,
 			startTime:startTime.current.value,
-			endTime:endTime.current.value
+			endTime: endTime.current.value,
+			teacherEmail: teacherEmail.current.value
 		}
 		
 		for (let e in tmp){
@@ -202,11 +241,12 @@ export default function InsertClub({ school_data, schoolID }) {
 
 		const currentDate = new Date()
 		const successCurrentDate = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`
-		
+
 		const startTimeCheck = Date.parse(`${successCurrentDate} ${startTime.current.value}`)
 		const endTimeCheck = Date.parse(`${successCurrentDate} ${endTime.current.value}`)
 		
 		if (endTimeCheck < startTimeCheck) {
+			//console.log(startTimeCheck,endTimeCheck)
 			Swal.fire({
 				icon: 'warning',
 				title: 'ข้อมูล schedule ไม่ถูกต้อง',
@@ -221,15 +261,25 @@ export default function InsertClub({ school_data, schoolID }) {
 				"schedule":[day.current.value + " " + startTime.current.value + "-" + endTime.current.value],
 				"urlPicture":clubImg
 			}
-			console.log(body)
+			//console.log(body)
 			const result = await add_club(body,token,schoolID);
-			if (!result){
-				Swal.fire({
-					icon: 'error',
-					title: 'เพิ่มข้อมูลไม่สำเร็จ',
-					showConfirmButton:true,
-					confirmButtonColor:"#ce0303"
-				})
+			if (!result[0]) {
+				if (result[1].response.data.error) {
+					Swal.fire({
+						icon: 'error',
+						title: result[1].response.data.error,
+						showConfirmButton: true,
+						confirmButtonColor: "#ce0303"
+					})
+				} else {
+					Swal.fire({
+						icon: 'error',
+						title: 'เพิ่มข้อมูลไม่สำเร็จ',
+						showConfirmButton:true,
+						confirmButtonColor:"#ce0303"
+					})
+				}
+				
 			}else{
 				Swal.fire({
 					icon: 'success',
@@ -247,12 +297,11 @@ export default function InsertClub({ school_data, schoolID }) {
 		groupID.current.value = ""
 		schoolYear.current.value = ""
 		category.current.value = ""
-		firstname.current.value = ""
-		lastname.current.value = ""
 		limit.current.value = ""
 		startTime.current.value = ""
 		endTime.current.value = ""
 		urlPicture.current.value = ""
+		teacherEmail.current.value = ""
 	}
 		
 	if (!school_data.paymentStatus) {
@@ -333,13 +382,9 @@ export default function InsertClub({ school_data, schoolID }) {
 										<label className="form-label">รหัสวิชา</label>
 										<input type="text" className="form-control" ref={groupID}/>
 									</div>
-									<div className="col-6">
-										<label className="form-label">ชื่อ ครูผู้สอน</label>
-										<input type="text" className="form-control" ref={firstname} />
-									</div>
-									<div className="col-6">
-										<label className="form-label">นามสกุล ครูผู้สอน</label>
-										<input type="text" className="form-control" ref={lastname} />
+									<div className="col-12">
+										<label className="form-label">อีเมลผู้สอน</label>
+										<input type="email" className="form-control" ref={teacherEmail} />
 									</div>
 									<div className="col-12">
 										<label className="form-label">category</label>

@@ -84,8 +84,8 @@ export default function TimeConfig({ school_data, schoolID }) {
 		// reset data
 		schoolYear.current.value = school_data.nowSchoolYear
 		endOfSchoolYear.current.value = endOfSchoolYear.current.defaultValue
-		endOfRegisterDate.current.value = registerDate.current.defaultValue
-		endOfRegisterTime.current.value = registerTime.current.defaultValue
+		endOfRegisterDate.current.value = endOfRegisterDate.current.defaultValue
+		endOfRegisterTime.current.value = endOfRegisterTime.current.defaultValue
 		registerTime.current.value = registerTime.current.defaultValue
 		registerDate.current.value = registerDate.current.defaultValue
 	}
@@ -159,6 +159,21 @@ export default function TimeConfig({ school_data, schoolID }) {
 	function taskConfirm(ev){
 		// ภายในนี้จะมีการส่งข้อมูลด้วย
 		ev.preventDefault()
+		const regisD = new Date(String(registerDate.current.value) + " " + String(registerTime.current.value))
+		const engregisD = new Date(String(endOfRegisterDate.current.value) + " " + String(endOfRegisterTime.current.value))
+		const engschD = new Date(endOfSchoolYear.current.value)
+		console.log(regisD, engregisD, engschD)
+
+		if (regisD > engregisD || engregisD > engschD || regisD > engschD) {
+			Swal.fire({
+				icon: 'error',
+				title: 'การตั้งค่าเวลาไม่ถูกต้อง\nกรุณาตรวจสอบอีกครั้ง',
+				showConfirmButton: true,
+				confirmButtonColor: "#d1000a",
+				confirmButtonText: 'ok',
+			})
+			return
+		}
 
 		const sent_data = {
 			schoolID: schoolID,

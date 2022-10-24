@@ -19,10 +19,10 @@ export async function add_student(data,token,schoolID) {
 			data: JSON.stringify(data),
 			timeout: 10000
 		})
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false,err]
 	}
 };
 
@@ -42,10 +42,10 @@ export async function add_students(data,token,schoolID) {
 			data: JSON.stringify(data),
 			timeout: 10000
 		})
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false,err]
 	}
 };
 
@@ -65,10 +65,10 @@ export async function add_club(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false , err]
 	}
 };
 
@@ -89,10 +89,10 @@ export async function add_clubs(data,token,schoolID) {
 			timeout: 100000
 		})
 		console.log(result)
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false,err]
 	}
 };
 
@@ -111,10 +111,10 @@ export async function add_teacher(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false,err]
 	}
 };
 
@@ -132,9 +132,9 @@ export async function add_teachers(data,token,schoolID) {
 			data:JSON.stringify(data),
 			timeout: 10000
 		})
-		return true
+		return [true]
 	} catch (err) {
 		console.log(err)
-		return false
+		return [false,err]
 	}
 };

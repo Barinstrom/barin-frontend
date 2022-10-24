@@ -5,12 +5,20 @@ const stagingUrl = process.env.NEXT_PUBLIC_API
 
 
 // แสดง ownclub
-export async function get_student_ownclub(token, schoolID) {
+export async function get_student_ownclub(data,token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/student/ownclub";
+
+  console.log(data)
+  const params = new URLSearchParams()
+  if (data.nowSchoolYear) {
+    params.append("schoolYear", data.nowSchoolYear)
+  }
+  const params_success = apiUrl + `?${params}`
+  console.log(params_success)
 
   try {
     const result = await axios({
-      url: apiUrl,
+      url: params_success,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=UTF-8",

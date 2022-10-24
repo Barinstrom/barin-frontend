@@ -52,7 +52,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       if (!status) {
         let content = ""
         if (result.response.data === "Email or password is not correct."){
-          content = "อีเมลล์หรือรหัสผ่านผิด"
+          content = "อีเมลหรือรหัสผ่านผิด"
         }else if( result.response.data === "Email is not activated"){
           content = "กรุณาทำการยืนยันอีเมลก่อน"
         }
@@ -171,11 +171,11 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
 
         <section className={styles.block}>
           <aside className={styles.block_left}>
-            <div>
+            <div className="d-flex flex-column align-items-center">
               <div className={styles.logo}>
                 <img src={urlLogo}></img>
               </div>
-              <div className={`${styles.barin_strom}`}>
+              <div className={`${styles.barin_strom} mt-3`}>
                 <div className={`${styles.spanx}`} >{schoolName}</div>
               </div>
             </div>
@@ -187,11 +187,11 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
                 <input
                   type="text"
                   className={`form-control`}
-                  placeholder="อีเมลล์"
+                  placeholder="อีเมล"
                   id={`${styles.block1}`}
                   ref={email}
                 />
-                <label className="form-label">อีเมลล์</label>
+                <label className="form-label">อีเมล</label>
               </div>
 
               <div className="form-floating mt-2">
@@ -205,7 +205,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
                 <label className="form-label">รหัสผ่าน</label>
               </div>
             </div>
-
+            
             <div className="mt-3 d-flex flex-column align-items-center">
               <button
                 className={styles.login_btn}
@@ -213,9 +213,6 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               >
                 เข้าสู่ระบบ
               </button>
-              {/* <Link href="/register">
-                <button className={styles.register_btn}>สมัครสมาชิก</button>
-              </Link> */}
               <div className={styles.additional}>
                 <Link href="/forgotPass">
                   <a className={`mt-2 ${styles.forgotpass}`}>ลืมรหัสผ่าน</a>

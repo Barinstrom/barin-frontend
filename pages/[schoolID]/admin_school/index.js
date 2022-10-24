@@ -200,7 +200,7 @@ export default function Admin({ schoolID }) {
 	async function forgetPassword() {
 		if (!saveEmail) {
 			Swal.fire(
-				'ไม่พบอีเมลล์ของท่าน',
+				'ไม่พบอีเมลของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
 				'warning'
 			)
@@ -329,13 +329,6 @@ export default function Admin({ schoolID }) {
 							<span ref={time}></span>
 						</div>
 						<div className={`me-3 d-flex flex-row h-100`}>
-							<span className={`${styles.logo_bell}`}>
-								<i className="fa-regular fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
-							</span>
-
 							<div className={`${styles.logo}`}>
 								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
@@ -455,17 +448,10 @@ export default function Admin({ schoolID }) {
 						<span className="ms-3">Dashboard</span>
 					</div>
 					<div className={`${styles.header_item}`}>
-						<div className={`${styles.time_alert} me-2`}>
+						<div className={`${styles.time_alert}`}>
 							<span ref={time}></span>
 						</div>
 						<div className={`me-3 d-flex flex-row h-100`}>
-							<span className={`${styles.logo_bell}`}>
-								<i className="fa-regular fa-bell"></i>
-							</span>
-							<span className={`${styles.user_name} ms-1`}>
-								{/* {data.data.userId} */}
-							</span>
-
 							<div className={`${styles.logo}`}>
 								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>

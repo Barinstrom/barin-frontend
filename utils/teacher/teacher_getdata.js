@@ -14,7 +14,7 @@ export async function get_teacher_ownclubs(token, schoolID) {
         "Content-Type": "application/json;charset=UTF-8",
       },
       method: "get",
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
@@ -32,7 +32,7 @@ export async function get_all_stdlist(data,token, schoolID) {
   params.append("clubID", data.clubID)
 
   const params_success = apiUrl + `?${params}`
-  console.log(params_success)
+  //console.log(params_success)
   try {
     const result = await axios({
       method: "get",
@@ -43,7 +43,7 @@ export async function get_all_stdlist(data,token, schoolID) {
       },
       timeout: 10000
     })
-    console.log(result)
+    //console.log(result)
     return [true,result]
   }
   catch (err) {

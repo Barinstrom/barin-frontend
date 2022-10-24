@@ -153,7 +153,7 @@ export default function System() {
 	async function forgetPassword() {
 		if (!saveEmail) {
 			Swal.fire(
-				'ไม่พบอีเมลล์ของท่าน',
+				'ไม่พบอีเมลของท่าน',
 				'กรุณาลอง login ใหม่อีกครั้ง',
 				'warning'
 			)
@@ -294,11 +294,6 @@ export default function System() {
 								<span ref={time}></span>
 							</div>
 							<div className={`me-3 d-flex flex-row h-100`}>
-								<span className={`${styles.logo_bell}`}>
-									<i className="fa-regular fa-bell"></i>
-								</span>
-								<span className={`${styles.user_name} ms-1`}></span>
-
 								<div className={`${styles.logo}`}>
 									<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 									<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>

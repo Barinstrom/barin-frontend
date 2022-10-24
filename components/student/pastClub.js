@@ -2,10 +2,11 @@ import React from "react";
 import { useEffect, useState, useRef } from "react";
 import Review from "./reviewmodal";
 import { get_student_pastclub } from "../../utils/student/student";
+import { getTeacherName } from "../../utils/auth";
 import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 
-
-export default function Pastclub({ schoolID,schedule }) {
+export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 	const clubName = useRef()
 	const clubInfo = useRef()
 	const groupID = useRef()
@@ -14,13 +15,17 @@ export default function Pastclub({ schoolID,schedule }) {
 	const schoolYear = useRef()
 	const scheduleStart = useRef()
 	const scheduleEnd = useRef()
+	const teacherName = useRef()
+	const teacherEmail = useRef()
+	const day = useRef()
+	const cookie = new Cookies()
+	const token = cookie.get("token")
 
 	const [displayError, setDisplayError] = useState(false)
 	const [showData, setShowData] = useState([])
 	
 	useEffect(() => {
-		const cookie = new Cookies()
-		const token = cookie.get("token")
+		
 		get_student_pastclub(token, schoolID).then(res => {
 			if (!res){
 				setDisplayError(true)
@@ -31,14 +36,25 @@ export default function Pastclub({ schoolID,schedule }) {
 					</div>
 				)
 				setShowData(tmp)
-			}else{
+			} else {
+				console.log(res)
 				const tmp = (
+					<div className="table-responsive">
+						<style jsx>{`
+							.detailinfo_btn{
+								border:none;
+								background-color:#004d99;
+								color:white;
+								border-radius:4px;
+							}
+						`}</style>
 						<table className='table align-middle'>
 							<thead>
 								<tr>
 									<th style={{ width: "100px" }}>รหัสวิชา</th>
-									<th style={{ width: "400px" }}>ชื่อชุมนุม</th>
-									<th style={{ width: "400px" }} className="text-end"><span className='me-2'></span></th>
+									<th style={{ width: "600px" }}>ชื่อชุมนุม</th>
+									<th style={{ width: "120px" }} className="text-center"><span>ลงทะเบียน</span></th>
+									<th style={{ width: "50px" }} className="text-center"><span>รีวิว</span></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -47,39 +63,80 @@ export default function Pastclub({ schoolID,schedule }) {
 										<tr key={index}>
 											<td>{item.groupID}</td>
 											<td>{item.clubName}</td>
-											<td className="text-end">
-												<button className='btn btn-info btn-sm'
+											<td className="text-center">
+												<button className='btn detailinfo_btn btn-sm'
 													data-bs-toggle="modal"
 													data-bs-target="#PastClubModal"
-													onClick={(ev) => detailInfo(item)}
+													data-bs-clubid={item._id}
+													onClick={(ev) => detailInfo(item, ev)}
 												>ดูรายละเอียด
 												</button>
 											</td>
-											<td><Review item={item} schoolID={schoolID} schedule={schedule} /></td>
+											<td className="text-center">
+												{item.status == "Pass" ?
+													<Review item={item} schoolID={schoolID} schedule={schedule} /> :
+													<button className='btn btn-sm btn-secondary'
+														onClick={(ev) => cantreview(ev)}
+														disabled
+													>รีวิว
+													</button>
+											}</td>
 										</tr>
 									)
 								})}
 							</tbody>
 						</table>
+					</div>
+						
 					)
 				setShowData(tmp)
 			}
 		})
 	}, [])
 
+	function cantreview(ev) {
+		Swal.fire({
+			icon: 'error',
+			title: "ต้องได้รับสถานะ Pass ชุมนุม\nจึงสามารถรีวิวได้",
+			showConfirmButton: true,
+			confirmButtonColor: "#d1000a"
+		}).then(() => {
+			return
+		})
+	}
 
-	function detailInfo(item) {
+	function detailInfo(item, ev) {
+		console.log(item)
+		clubName.current.setAttribute("data-clubid", ev.target.getAttribute("data-bs-clubid"))
 		clubName.current.innerText = item.clubName
 		clubInfo.current.innerText = item.clubInfo
 		category.current.innerText = item.category
 		limitStudent.current.innerText = item.limit + " คน"
 		schoolYear.current.innerText = item.schoolYear
 		groupID.current.innerText = item.groupID
+		teacherEmail.current.innerText = item.teacherEmail
 
-		let [ schedule ] = item.schedule 
-        let [ st ,en ] = schedule.split("-")
-        scheduleStart.current.innerText = st + " นาฬิกา"
-        scheduleEnd.current.innerText = en + " นาฬิกา"
+
+		let [day_tmp, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
+		day.current.innerText = day_tmp
+
+		let [st, en] = schedule.split("-")
+		scheduleStart.current.innerText = st + " นาฬิกา"
+		scheduleEnd.current.innerText = en + " นาฬิกา"
+		getTeacherName(item, token, schoolID).then(result => {
+			console.log(result)
+			if (!result) {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+			else if (!result.data) {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+			else if (result.data) {
+				teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
+			} else {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+		})
 	}
 
 	if (displayError){
@@ -87,7 +144,7 @@ export default function Pastclub({ schoolID,schedule }) {
 	}else{
 		return (
 			<>
-				<div className="text-center fs-1">Past Club</div>
+				<div className="text-center display-6">Past Club</div>
 				<div className='row'>
 					<div className='col-12'>
 						{showData}
@@ -113,6 +170,16 @@ export default function Pastclub({ schoolID,schedule }) {
 											</p>
 										</div>
 										<div className="col-12">
+											<p>ชื่อนามสกุลผู้สอน : &nbsp;
+												<span ref={teacherName}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>อีเมลผู้สอน : &nbsp;
+												<span ref={teacherEmail}></span>
+											</p>
+										</div>
+										<div className="col-12">
 											<p>category : &nbsp;
 												<span ref={category}></span>
 											</p>
@@ -130,6 +197,11 @@ export default function Pastclub({ schoolID,schedule }) {
 										<div className="col-12">
 											<p>ปีการศึกษา : &nbsp;
 												<span ref={schoolYear}></span>
+											</p>
+										</div>
+										<div className="col-12">
+											<p>วันที่เรียน : &nbsp;
+												<span ref={day}></span>
 											</p>
 										</div>
 										<div className="col-12">

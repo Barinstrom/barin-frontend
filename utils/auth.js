@@ -141,7 +141,7 @@ export async function paginationStudent(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	
+	console.log(params_success)
 	try {
 		const result = await axios({
 			method:"get",
@@ -150,7 +150,7 @@ export async function paginationStudent(data,token,schoolID) {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'
 			},
-			timeout:10000
+			timeout:20000
 		})
 		return result
 	}
@@ -224,3 +224,33 @@ export async function paginationClub(data,token,schoolID) {
 	}
 };
 
+
+// getTeacherName
+export async function getTeacherName(data, token, schoolID) {
+	const apiUrl = stagingUrl + "/" + String(schoolID) + "/getTeacherName";
+	const params = new URLSearchParams()
+
+	console.log("getTeacherName = ",data)
+	if (data.teacherEmail) {
+		params.append("email", data.teacherEmail)
+	}
+
+	const params_success = apiUrl + `?${params}`
+	// console.log(params_success)
+	try {
+		const result = await axios({
+			method: "get",
+			url: params_success,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			},
+			timeout: 10000
+		})
+		return result
+	}
+	catch (err) {
+		console.log(err)
+		return false
+	}
+};

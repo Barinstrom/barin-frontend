@@ -72,59 +72,84 @@ export default function EditStudent({ school_data,schoolID }) {
             enteredYear:enteredYear.current.value,
         }
         
-        try{
-            const result_update = await update_student(body,token,schoolID)
-            if (!result_update){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'แก้ไขข้อมูลไม่สำเร็จ',
-                    showConfirmButton:true,
-                    confirmButtonColor:"#d1000a"
-                })
-                return
-            }else if (result_update.status === 200){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'แก้ไขข้อมูลสำเร็จ',
-                    showConfirmButton:true,
-                    confirmButtonColor:"#009431"
-                })
-                
-                const body = {
-                    "page":window.localStorage.getItem("pageEditStudent"),
-                    "query":window.localStorage.getItem("searchEditStudent")
-                }
-                
-                const result = await paginationStudent(body,token,schoolID)
-                
-                if (!result){
-                    setDisplayError(true)
-                }else{
-                    if (result.data.docs.length === 0){
-                        window.localStorage.setItem("pageEditStudent",result.data.totalPages)
+        try {
+            
+            Swal.fire({
+                title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลนักเรียนใช่หรือไม่",
+                showConfirmButton: true,
+                confirmButtonColor: "#0208bb",
+                confirmButtonText: 'ok',
+
+                showCancelButton: true,
+                cancelButtonText: "cancel",
+                cancelButtonColor: "#d93333",
+
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return update_student(body, token, schoolID)
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+
+            }).then((res) => {
+                if (res.isConfirmed) { 
+                    const result_update = res.value
+                    if (!result_update) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'แก้ไขข้อมูลไม่สำเร็จ',
+                            showConfirmButton: true,
+                            confirmButtonColor: "#d1000a"
+                        })
+                        return
+                    } else if (result_update.status === 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'แก้ไขข้อมูลสำเร็จ',
+                            showConfirmButton: true,
+                            confirmButtonColor: "#009431"
+                        })
+
                         const body = {
-                            "page":window.localStorage.getItem("pageEditStudent"),
-                            "query":window.localStorage.getItem("searchEditStudent")
+                            "page": window.localStorage.getItem("pageEditStudent"),
+                            "query": window.localStorage.getItem("searchEditStudent")
                         }
+
+                        paginationStudent(body, token, schoolID).then((result) => {
+                            if(!result) {
+                                setDisplayError(true)
+                            } else {
+                                if(result.data.docs.length === 0) {
+                                    window.localStorage.setItem("pageEditStudent", result.data.totalPages)
+                                    const body = {
+                                        "page": window.localStorage.getItem("pageEditStudent"),
+                                        "query": window.localStorage.getItem("searchEditStudent")
+                                    }
+
+                                    paginationStudent(body, token, schoolID).then((result_new) => {
+                                        if (!result_new) {
+                                            setDisplayError(true)
+                                        } else {
+                                            const paginate_tmp = generate(result_new.data)
+                                            setDisplayError(false)
+                                            showData(result_new.data.docs)
+                                            showPaginate(paginate_tmp)
+                                        }
+                                    })
+
+                                    
+                                } else {
+                                    const paginate_tmp = generate(result.data)
+                                    setDisplayError(false)
+                                    showData(result.data.docs)
+                                    showPaginate(paginate_tmp)
+                                }
+                    }
+                        })
+
                         
-                        const result_new = await paginationStudent(body,token,schoolID)
-                        
-                        if (!result_new){
-                            setDisplayError(true)
-                        }else{
-                            const paginate_tmp = generate(result_new.data)
-                            setDisplayError(false)
-                            showData(result_new.data.docs)
-                            showPaginate(paginate_tmp)
-                        }
-                    }else{
-                        const paginate_tmp = generate(result.data)
-                        setDisplayError(false)
-                        showData(result.data.docs)
-                        showPaginate(paginate_tmp)
                     }
                 }
-            }
+            })            
         }catch(err){
             console.log(err)
         }
@@ -181,8 +206,9 @@ export default function EditStudent({ school_data,schoolID }) {
     }
     
     function generate(result){
-        console.log(result)
+        //console.log(result)
         const paginate_tmp = []
+        
         if (result.totalPages <= 6){
 			for (let i=1;i<=result.totalPages;i++){
 				if (parseInt(result.page) === i){

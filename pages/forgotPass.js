@@ -21,7 +21,7 @@ export default function ForgotPass() {
     
     if (!email.current.value){
       Swal.fire(
-        'โปรดกรอกอีเมลล์ของท่าน',
+        'โปรดกรอกอีเมลของท่าน',
         '',
         'warning'
       )
@@ -95,8 +95,8 @@ export default function ForgotPass() {
         <aside className={styles.block_right}>
           <div className={styles.form}>
             <div className='form-floating'>
-              <input type="text" className={`form-control`} placeholder="อีเมลล์" ref={email}/>
-              <label className='form-label'>อีเมลล์</label>
+              <input type="text" className={`form-control`} placeholder="อีเมล" ref={email}/>
+              <label className='form-label'>อีเมล</label>
             </div>
           </div>
           

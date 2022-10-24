@@ -50,9 +50,9 @@ export default function Login() {
       if (!status) {
         let content = ""
         if (result.response.data === "Email is not activated"){
-          content = "โปรดทำการยืนยันอีเมลล์ก่อน"
+          content = "โปรดทำการยืนยันอีเมลก่อน"
         }else if (result.response.data === "Email or password is not correct."){
-          content = "อีเมลล์หรือรหัสผ่านผิด"
+          content = "อีเมลหรือรหัสผ่านผิด"
         }
 
         Swal.fire({
@@ -121,8 +121,8 @@ export default function Login() {
         <aside className={styles.block_right}>
           <div className={styles.form}>
             <div className='form-floating'>
-              <input type="text" className={`form-control`} placeholder="อีเมลล์" id={`${styles.block1}`} ref={email}/>
-              <label className='form-label'>อีเมลล์</label>
+              <input type="text" className={`form-control`} placeholder="อีเมล" id={`${styles.block1}`} ref={email}/>
+              <label className='form-label'>อีเมล</label>
             </div>
           
             <div className='form-floating mt-2'>

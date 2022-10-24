@@ -4,7 +4,7 @@ import { update_club } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
 
-export default function OwnClub({schoolID}) {
+export default function OwnClub({ schoolID, data_school }) {
 	const clubName = useRef()
 	const clubInfo = useRef()
 	const clubLimit = useRef()
@@ -13,6 +13,16 @@ export default function OwnClub({schoolID}) {
 	const groupID = useRef()
 	const category = useRef()
 	const day = useRef()
+
+	const clubName2 = useRef()
+	const clubInfo2 = useRef()
+	const clubLimit2 = useRef()
+	const scheduleStart2 = useRef()
+	const scheduleEnd2 = useRef()
+	const groupID2 = useRef()
+	const category2 = useRef()
+	const day2 = useRef()
+	const [clubImg2, setClubImg2] = useState("")
 	
 	const [clubImg, setClubImg] = useState("")
 	const [data, setData] = useState([])
@@ -68,6 +78,29 @@ export default function OwnClub({schoolID}) {
 			setClubImg(club.urlPicture)
 		}else{
 			setClubImg("https://dummyimage.com/300x300")
+		}
+	}
+
+	function clickModal2(club) {
+		console.log(club)
+		clubName2.current.setAttribute("club-id", club._id)
+		clubName2.current.value = club.clubName
+		clubInfo2.current.value = club.clubInfo
+		category2.current.value = club.category
+		groupID2.current.value = club.groupID
+		clubLimit2.current.value = club.limit
+
+		const [dayx, StartandEnd] = club.schedule[0].split(" ")
+		day2.current.value = dayx
+		// console.log(dayx ,StartandEnd)
+		const [startTime, endTime] = StartandEnd.split("-")
+		scheduleStart2.current.value = startTime
+		scheduleEnd2.current.value = endTime
+
+		if (club.urlPicture) {
+			setClubImg2(club.urlPicture)
+		} else {
+			setClubImg2("https://dummyimage.com/300x300")
 		}
 	}
 
@@ -132,8 +165,8 @@ export default function OwnClub({schoolID}) {
 				}
 			})
 		}
-
-    function displayStudentList(e){
+	
+  function displayStudentList(e){
 		window.localStorage.setItem("clubNameFromClick",e.clubName)
 		window.localStorage.setItem("clubidFromClick",e._id)
 		window.localStorage.setItem("displayComponent",1)
@@ -154,8 +187,16 @@ export default function OwnClub({schoolID}) {
 	}else{
 		return (
 			<main>
-				<div className="text-center fs-1">OwnClub</div>
+				<div className="text-center display-6 mb-3">OwnClub</div>
 				<div className="table-responsive">
+					<style jsx>{`
+						.detailinfo_btn{
+							border:none;
+							background-color:#004d99;
+							color:white;
+							border-radius:4px;
+						}
+					`}</style>
 					<table className="table align-middle">
 						<thead>
 							<tr>
@@ -166,6 +207,7 @@ export default function OwnClub({schoolID}) {
 						</thead>
 						<tbody>
 							{data.map((e, i) => {
+								console.log(data_school.nowSchoolYear, e.schoolYear)
 								return (
 									<tr key={i}>
 										<td>{e.clubName}</td>
@@ -176,14 +218,23 @@ export default function OwnClub({schoolID}) {
 											</button>
 										</td>
 										<td className="text-center">
-											<span>
-												<button className="btn btn-sm btn-info" 
-													data-bs-toggle="modal" 
-													data-bs-target="#modalOwnClubTeacher" 
-													onClick={(ev) => clickModal(e,ev)}>
-													รายละเอียด
-												</button>
-											</span>
+											{
+												data_school.nowSchoolYear != e.schoolYear ?
+													<button className="btn btn-sm btn-secondary"
+														data-bs-toggle="modal"
+														data-bs-target="#modalOwnClubTeacher2"
+														onClick={(ev) => clickModal2(e, ev)}>
+														รายละเอียด
+													</button> :
+													<button className="btn btn-sm btn-info"
+														data-bs-toggle="modal"
+														data-bs-target="#modalOwnClubTeacher"
+														onClick={(ev) => clickModal(e, ev)}>
+														รายละเอียด
+													</button>
+													
+											}
+												
 										</td>
 									</tr>
 								);
@@ -261,6 +312,79 @@ export default function OwnClub({schoolID}) {
 							<div className="modal-footer">
 								<button className="btn btn-success" id="submitbtn"  onClick={() => Submit()}>Submit</button>
 							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="modal fade" id="modalOwnClubTeacher2">
+					<div className="modal-dialog modal-dialog-scrollable">
+						<div className="modal-content">
+
+							<div className="modal-header">
+								<div className="modal-title fs-3">Club Info</div>
+								<button className="btn-close" data-bs-dismiss="modal"></button>
+							</div>
+
+							<div className="modal-body">
+								<div className="alert alert-warning">
+									ข้อมูลคลับในอดีต ไม่สามารถแก้ไขได้
+								</div>
+								<div className="row">
+									<div className="col-12">
+										<label className="form-label">Club Name:</label>
+										<input type="text" className="form-control" ref={clubName2} disabled></input>
+									</div>
+
+									<div className="col-12">
+										<label className="form-label">วันที่สอน</label>
+										<select className="form-select" aria-label="Default select example" ref={day2} disabled>
+											<option value="วันจันทร์">วันจันทร์</option>
+											<option value="วันอังคาร">วันอังคาร</option>
+											<option value="วันพุธ">วันพุธ</option>
+											<option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+											<option value="วันศุกร์">วันศุกร์</option>
+											<option value="วันเสาร์">วันเสาร์</option>
+											<option value="วันอาทิตย์">วันอาทิตย์</option>
+										</select>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">เวลาเริ่ม</label>
+										<input type="time" className="form-control" name="startTime" ref={scheduleStart2} disabled></input>
+									</div>
+									<div className="col-sm-6">
+										<label className="form-label">เวลาจบ</label>
+										<input type="time" className="form-control" name="endTime" ref={scheduleEnd2} disabled></input>
+									</div>
+
+									<div className="col-12">
+										<label className="form-label">รหัสวิชา</label>
+										<input type="text" className="form-control" ref={groupID2} disabled />
+									</div>
+
+									<div className="col-12">
+										<label className="form-label">category</label>
+										<input type="text" className='form-control' ref={category2} disabled />
+									</div>
+
+									<div className="col-12 mt-2">
+										<label className="form-label">Description:</label>
+										<textarea cols={5} row={5} className="form-control" ref={clubInfo2} disabled></textarea>
+									</div>
+
+									<div className="col-12 mt-2">
+										<label className="form-label">Picture:</label>
+										<img src={clubImg2} className="form-control" />
+										<input className="form-control mt-2" type="file" disabled />
+									</div>
+
+									<div className="col-12 mt-2">
+										<label className="form-label">Limit:</label>
+										<input type="text" className="form-control" ref={clubLimit2} disabled></input>
+									</div>
+								</div>
+							</div>
+
+							
 						</div>
 					</div>
 				</div>

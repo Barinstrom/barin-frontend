@@ -45,10 +45,10 @@ export default function Aprroved() {
 	}, [])
 
 	const reload = (
-		<main style={{ height: "300px" }}>
+		<main style={{ height: "350px" }}>
 			<div className="d-flex justify-content-center h-100 align-items-center">
-				<img className='img-fluid' src="./bean-eater.svg" width={100}/>
-				<div className="fs-4 ms-2">loading ...</div>
+				<div className="fs-4">loading ...</div>
+                <div className="spinner-border ms-3"></div>
 			</div>
 		</main>
 	)

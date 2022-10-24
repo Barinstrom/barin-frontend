@@ -215,8 +215,6 @@ export default function SchoolData({ school_data, schoolID, email }) {
 						color:white;
 						border-radius:4px;
 					}
-				
-					
 				`}</style>
 
 				

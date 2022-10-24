@@ -113,29 +113,29 @@ export default function Review({ item, schoolID, schedule }) {
           </div>
           <style>
             {`
-                            .comment {
-                              display: flex;
-                              margin-bottom: 28px;
-                            }
-                            .commentimagecontainer {
-                              margin-right: 12px;
-                            }
-                            .commentimagecontainer img {
-                              border-radius: 50px;
-                            }
-                            .commentrightpart {
-                              width: 100%;
-                            }
-                            .commentcontent {
-                              display: flex;
-                            }
-                            .commentauthor {
-                              padding-top: 11px;
-                              margin-right: 8px;
-                              font-size: 20px;
-                              color: rgb(59, 130, 246);
-                            }
-                        `}
+              .comment {
+                display: flex;
+                margin-bottom: 28px;
+              }
+              .commentimagecontainer {
+                margin-right: 12px;
+              }
+              .commentimagecontainer img {
+                border-radius: 50px;
+              }
+              .commentrightpart {
+                width: 100%;
+              }
+              .commentcontent {
+                display: flex;
+              }
+              .commentauthor {
+                padding-top: 11px;
+                margin-right: 8px;
+                font-size: 20px;
+                color: rgb(59, 130, 246);
+              }
+          `}
           </style>
         </div>
       );
@@ -380,6 +380,14 @@ function clickPage(pageSelected,commentYear){
 }        
   return (
     <>
+      <style jsx>{`
+            .review_btn{
+              border:none;
+              background-color:#d80ebd;
+              color:white;
+              border-radius:4px;
+            }
+      `}</style>
       <div className="modal" id={item.clubName}>
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
@@ -456,9 +464,9 @@ function clickPage(pageSelected,commentYear){
           </div>
         </div>
       </div>
-
+                        
       <button
-        className="btn btn-primary"
+        className="btn review_btn btn-sm"
         data-bs-toggle="modal"
         data-bs-target={`#${item.clubName}`}
         onClick={(ev) => clickModal(item, ev)}
