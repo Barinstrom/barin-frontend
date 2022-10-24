@@ -18,6 +18,7 @@
   }
   
   .block_left{
+    /* border: 1px solid black; */
     height: 100%;
     width: 50%;
     display: flex;
@@ -42,19 +43,22 @@
   }
 
   .barin_strom{
-    font-size: 6rem ;
+    max-width: 500px;
+    font-size: 2.5rem ;
     text-align: center;
     margin-bottom: 2rem;
     margin: 10px 0;
     padding: 0;
     font-weight: bold;
-    line-height: 80%;
+    line-height: 90%;
   }
   
-  .barin_strom span:nth-child(1){
+  .spanx{
     color: #000000;
-    cursor: pointer;
-    transition: all 0.5s ease;
+    /* cursor: pointer; */
+    /* transition: all 0.5s ease; */
+    word-wrap:break-word;
+    width: 450px;
   }
   
   .block_right{
@@ -105,7 +109,7 @@
   
   @media screen and (max-width:990px) {
     .barin_strom{
-      font-size: 5rem;
+      font-size: 2rem;
     }
   
     .block{
@@ -167,7 +171,11 @@
   
   @media screen and (max-width:600px) {
     .barin_strom{
-      font-size: 4rem;
+      font-size: 2rem;
+    }
+    
+    .spanx{
+      width: 250px;
     }
 
     .logo img {

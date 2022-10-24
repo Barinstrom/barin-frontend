@@ -106,7 +106,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 			preConfirm: () => {
 				return admin_edit_school(token, body)
 			},
-			allowOutsideClick: () => !Swal.isLoading()
+			allowOutsideClick: false
 
 		}).then((result) => {
 			if (result.isConfirmed) {
@@ -128,47 +128,22 @@ export default function SchoolData({ school_data, schoolID, email }) {
 						confirmButtonColor: "#d1000a",
 						confirmButtonText: 'ok',
 					}).then(() => {
-						// router.reload()
+						router.reload()
 					})
 				}
 			} else {
 
 			}
 		})
-		
-		// if (result){
-		// 	Swal.fire({
-		// 		icon: 'success',
-		// 		title: 'แก้ไขข้อมูลสำเร็จ',
-		// 		showConfirmButton: true,
-		// 		confirmButtonColor: "#009431",
-		// 		confirmButtonText: 'ok',
-		// 	}).then(() => {
-		// 		router.reload()
-		// 	})
-		// }else{
-		// 	Swal.fire({
-		// 		icon: 'error',
-		// 		title: 'แก้ไขข้อมูลไม่สำเร็จ',
-		// 		showConfirmButton: true,
-		// 		confirmButtonColor: "#d1000a",
-		// 		confirmButtonText: 'ok',
-		// 	}).then(() => {
-		// 		router.reload()
-		// 	})
-		// }
 	}
 	
 	useEffect(() => {
-		// Create PaymentIntent as soon as the page loads
 		stripe(token).then((data) => {
 			if (data) {
 				setClientSecret(data.data.clientSecret)
 			}
 		})
 	}, []);
-
-
 
 	if (school_data.paymentStatus == "pending") {
 		const appearance = {
@@ -234,79 +209,91 @@ export default function SchoolData({ school_data, schoolID, email }) {
 						object-fit: contain;
 					}
 					
+					.edit_btn{
+						border:none;
+						background-color:#c3971d;
+						color:white;
+						border-radius:4px;
+					}
+				
+					
 				`}</style>
 
 				
 				<form className="d-flex flex-column flex-md-row justiy-centent-center align-items-center">
 					<div className="me-md-4">
-						<img 
-							className="img-size"
+						<img width={500}
+							className="img-fluid rounded rounded-4"
 							src={picture}
 							alt="Card image cap"
 						/>
 					</div>
-					<div className="card-body">
-						<h4 className="card-text mt-3 d-none" ref={schoolName}>
-							<label className="form-label">
-								School Name :
-							</label>
-							<input
-								type="text"
-								className="form-control"
-								id="staticEmail"
-								defaultValue={school_data.schoolName}
-								ref={schoolNameInput}
-							/>
-						</h4>
-						<h2 className="card-title mt-3" ref={schoolNameShow}>
-							{school_data.schoolName}
-						</h2>
-						<h5 className="card-text mt-2">
-							School Status : {school_data.status}
-						</h5>
+					<div className="w-100 mt-3 mt-md-0">
+						<div className="card-body">
+							<h4 className="card-text mt-3 d-none" ref={schoolName}>
+								<label className="form-label">
+									School Name :
+								</label>
+								<input
+									type="text"
+									className="form-control"
+									id="staticEmail"
+									defaultValue={school_data.schoolName}
+									ref={schoolNameInput}
+								/>
+							</h4>
+							<h2 className="card-title mt-3" ref={schoolNameShow}>
+								{school_data.schoolName}
+							</h2>
+							<h5 className="card-text mt-2">
+								School Status : {school_data.status}
+							</h5>
 
-						<h5 className="card-text mt-2">
-							Payment Status : {school_data.paymentStatus ? "Paid" : "Unpaid"}
-						</h5>
-						
-						<div className="d-none mt-2" ref={schoolLogo}>
-							<div className="card-text">
-								เลือกรูปภาพที่จะเปลี่ยน(ถ้าต้องการแก้ไข) :
+							<h5 className="card-text mt-2">
+								Payment Status : {school_data.paymentStatus ? "Paid" : "Unpaid"}
+							</h5>
+							
+							<div className="d-none mt-2" ref={schoolLogo}>
+								<div className="card-text">
+									เลือกรูปภาพที่ต้องการแก้ไข (jpeg)
+								</div>
+								<input
+									className="form-control"
+									type="file"
+									id="formFile"
+									onChange={(ev) => encodeImageFileAsURL(ev)}
+									ref={uploadImg}
+								/>
 							</div>
-							<input
-								className="form-control"
-								type="file"
-								id="formFile"
-								onChange={(ev) => encodeImageFileAsURL(ev)}
-								ref={uploadImg}
-							/>
-						</div>
-						<div className="d-flex flex-column-reverse flex-md-row justify-content-end  mt-2">
-							<button
-								className="btn btn-danger d-none me-2 w-100 mt-2"
-								ref={btnCancel}
-								onClick={(ev) => taskCancel(ev)}
-							>
-								ยกเลิก
-							</button>
-							<button
-								className="btn btn-warning w-100 mt-2"
-								ref={btnEdit}
-								onClick={(ev) => taskEdit(ev)}
-							>
-								แก้ไข
-							</button>
-							<button
-								className="btn btn-success d-none w-100 mt-2"
-								ref={btnConfirm}
-								onClick={(ev) => taskConfirm(ev)}
-							>
-								ตกลง
-							</button>
+							<div className="d-flex flex-column-reverse flex-md-row justify-content-end  mt-2">
+								<button
+									className="btn  d-none me-2 w-100 mt-2"
+									style={{backgroundColor:"#881b1b",color:"#fff"}}
+									ref={btnCancel}
+									onClick={(ev) => taskCancel(ev)}
+								>
+									ยกเลิก
+								</button>
+								<button
+									className="btn edit_btn w-100 mt-2"
+									ref={btnEdit}
+									onClick={(ev) => taskEdit(ev)}
+								>
+									แก้ไข
+								</button>
+								<button
+									className="btn d-none w-100 mt-2"
+									style={{backgroundColor:"#11620e",color:"#fff"}}
+									
+									ref={btnConfirm}
+									onClick={(ev) => taskConfirm(ev)}
+								>
+									ตกลง
+								</button>
+							</div>
 						</div>
 					</div>
 				</form>
-				
 			</div>
 		);
 	} 

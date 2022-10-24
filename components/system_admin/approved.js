@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Swal from 'sweetalert2';
 import { get_approved,sys_edit_school } from '../../utils/system_admin/system';
 
+
 export default function Aprroved() {
 	const router = useRouter()
 	const [reloadTable, setReloadTable] = useState(false)
@@ -44,10 +45,10 @@ export default function Aprroved() {
 	}, [])
 
 	const reload = (
-		<main style={{ height: "400px" }}>
+		<main style={{ height: "300px" }}>
 			<div className="d-flex justify-content-center h-100 align-items-center">
-				<div className="fs-4">loading ...</div>
-				<div className="spinner-border ms-3"></div>
+				<img className='img-fluid' src="./bean-eater.svg" width={100}/>
+				<div className="fs-4 ms-2">loading ...</div>
 			</div>
 		</main>
 	)
@@ -55,6 +56,7 @@ export default function Aprroved() {
 	async function clickReset(ev) {
 		ev.preventDefault()
 		window.localStorage.removeItem("searchAprroved")
+		window.localStorage.setItem("pageAprroved", 1)
 		search.current.value = ""
 
 		const result = await get_approved({ "page": 1 }, token)
@@ -75,9 +77,11 @@ export default function Aprroved() {
 
 		if (!search.current.value) {
 			window.localStorage.removeItem("searchAprroved")
+			window.localStorage.setItem("pageAprroved", 1)
 			body = { "page": 1 }
 		} else {
 			window.localStorage.setItem("searchAprroved", search.current.value)
+			window.localStorage.setItem("pageAprroved", 1)
 			body = {
 				"page": 1,
 				"query": window.localStorage.getItem("searchAprroved")
@@ -98,36 +102,54 @@ export default function Aprroved() {
 
 	function generate(result) {
 		const paginate_tmp = []
-		//console.log(result)
-
-		if (result.hasPrevPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
-		}
-
-		paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
-
-		for (let i=1;i<=3;i++){
-			if ( i !== 3  && result.page + i <= result.totalPages){
-				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + i))}>{result.page+i}</button>)
-			}else if (result.page + i <= result.totalPages){
+		
+		if (result.totalPages <= 6){
+			for (let i=1;i<=result.totalPages;i++){
+				if (result.page === i){
+					paginate_tmp.push(<button className='page-link disabled bg-primary bg-opacity-75 text-white'>{result.page}</button>)
+				}else{
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((i))}>{i}</button>)
+				}
+			}
+		}else{
+			if (result.hasPrevPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(1)}><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page - 1))}><i className="fa-solid fa-angle-left"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
+			}
+	
+			if (result.page > 3){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((1))}>1</button>)
 				paginate_tmp.push(<button className='page-link disabled'>...</button>)
 			}
-		}
 
-		if (result.hasNextPage) {
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
-		} else {
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
-			paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			paginate_tmp.push(<button className='page-link bg-primary bg-opacity-75 text-white disabled'>{result.page}</button>)
+			for (let i=1;i<=2;i++){
+				if (result.page + i < result.totalPages){
+					paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page)+i)}>{result.page+i}</button>)
+				}
+			}
+			
+			if (result.page + 3 <= result.totalPages){
+				paginate_tmp.push(<button className='page-link disabled'>...</button>)
+			}
+
+			if (result.page !== result.totalPages){
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.totalPages))}>{result.totalPages}</button>)
+			}
+			
+			if (result.hasNextPage) {
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage((result.page + 1))}><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link' onClick={() => clickPage(result.totalPages)}><i className="fa-solid fa-angles-right"></i></button>)
+			} else {
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
+				paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
+			}
 		}
 		return paginate_tmp
 	}
-
 
 	async function clickPage(page) {
 		const body = {
@@ -178,12 +200,6 @@ export default function Aprroved() {
 						border-radius:4px;
 					}
 
-					.approve_btn{
-						border:none;
-						background-color:#3c4b4d;
-						color:white;
-						border-radius:4px;
-					}
 				`}</style>
 				
 				<div className='table-responsive'>

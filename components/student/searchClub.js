@@ -24,6 +24,7 @@ export default function EditClub({schoolID ,scheduled}) {
     const schoolYear = useRef()
     const scheduleStart = useRef()
     const scheduleEnd = useRef()
+    const day = useRef()
     
     const router = useRouter()
     const cookie = new Cookies()
@@ -70,7 +71,9 @@ export default function EditClub({schoolID ,scheduled}) {
         schoolYear.current.innerText = item.schoolYear
         groupID.current.innerText = item.groupID
         
-        let [ schedule ] = item.schedule // [ "17.02.00-18.02.00"]
+        let [dayx, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
+        // console.log(dayx, schedule)
+        day.current.innerText = dayx
         let [ st ,en ] = schedule.split("-")
         scheduleStart.current.innerText = st + " นาฬิกา"
         scheduleEnd.current.innerText = en + " นาฬิกา"
@@ -326,6 +329,11 @@ export default function EditClub({schoolID ,scheduled}) {
                                     <div className="col-12">
                                         <p>ปีการศึกษา : &nbsp;
                                             <span ref={schoolYear}></span>
+                                        </p>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>วันที่เรียน : &nbsp;
+                                            <span ref={day}></span>
                                         </p>
                                     </div>
                                     <div className="col-12">

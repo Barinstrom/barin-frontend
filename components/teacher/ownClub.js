@@ -12,6 +12,7 @@ export default function OwnClub({schoolID}) {
 	const scheduleEnd = useRef()
 	const groupID = useRef()
 	const category = useRef()
+	const day = useRef()
 	
 	const [clubImg, setClubImg] = useState("")
 	const [data, setData] = useState([])
@@ -27,7 +28,8 @@ export default function OwnClub({schoolID}) {
 			if (!result){
 				setLoading(false)
 				setDisplayError(true)
-			}else{
+			} else {
+				console.log(result)
 				const clubs = result.data
 				setData(clubs)
 				setDisplayError(false)
@@ -54,8 +56,11 @@ export default function OwnClub({schoolID}) {
 		category.current.value = club.category
 		groupID.current.value = club.groupID
 		clubLimit.current.value = club.limit
-		
-		const [ startTime ,endTime ] = club.schedule[0].split("-")
+
+		const [ dayx ,StartandEnd ] = club.schedule[0].split(" ")
+		day.current.value = dayx
+		// console.log(dayx ,StartandEnd)
+		const [ startTime ,endTime ] = StartandEnd.split("-")
 		scheduleStart.current.value = startTime
 		scheduleEnd.current.value = endTime
 		
@@ -74,7 +79,7 @@ export default function OwnClub({schoolID}) {
 				category:category.current.value ,
 				limit: clubLimit.current.value,
 				groupID: groupID.current.value,
-				schedule: [String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
+				schedule: [String(day.current.value) + " " +String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
 			}
 			
 			Swal.fire({
@@ -86,10 +91,16 @@ export default function OwnClub({schoolID}) {
 				showCancelButton: true,
 				cancelButtonText: "cancel",
 				cancelButtonColor: "#d93333",
+
+				showLoaderOnConfirm: true,
+				preConfirm: () => {
+					return update_club(body_update, token, schoolID);
+				},
+				allowOutsideClick: () => !Swal.isLoading()
+
 			}).then((res) => {
 				if (res.isConfirmed){
-					update_club(body_update, token, schoolID).then(result => {
-						if (!result) {
+					if (!res.value) {
 							Swal.fire({
 								icon: 'error',
 								title: 'แก้ไขข้อมูลไม่สำเร็จ',
@@ -98,7 +109,7 @@ export default function OwnClub({schoolID}) {
 								confirmButtonText: 'ok',
 							})
 							return
-						}else if(result.data.success){
+						}else if(res.value.data.success){
 							Swal.fire({
 								icon: 'success',
 								title: 'แก้ไขข้อมูลสำเร็จ',
@@ -118,7 +129,6 @@ export default function OwnClub({schoolID}) {
 								})
 							})
 						}
-					})	
 				}
 			})
 		}
@@ -198,14 +208,26 @@ export default function OwnClub({schoolID}) {
 										<label className="form-label">Club Name:</label>
 										<input type="text" className="form-control" ref={clubName}></input>
 									</div>
-									
+
+									<div className="col-12">
+										<label className="form-label">วันที่สอน</label>
+										<select className="form-select" aria-label="Default select example" ref={day}>
+											<option value="วันจันทร์">วันจันทร์</option>
+											<option value="วันอังคาร">วันอังคาร</option>
+											<option value="วันพุธ">วันพุธ</option>
+											<option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+											<option value="วันศุกร์">วันศุกร์</option>
+											<option value="วันเสาร์">วันเสาร์</option>
+											<option value="วันอาทิตย์">วันอาทิตย์</option>
+										</select>
+									</div>
 									<div className="col-sm-6">
-									<label className="form-label">เวลาเริ่ม</label>
-                                    <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
+										<label className="form-label">เวลาเริ่ม</label>
+                    <input type="time" className="form-control" name="startTime" ref={scheduleStart}></input>
 									</div>
 									<div className="col-sm-6">
 										<label className="form-label">เวลาจบ</label>
-										<input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
+										<input type="time" className="form-control" name="endTime" ref={scheduleEnd}></input>
 									</div>
 
 									<div className="col-12">

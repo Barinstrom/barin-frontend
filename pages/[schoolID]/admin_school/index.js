@@ -193,9 +193,7 @@ export default function Admin({ schoolID }) {
 		cookies.remove("token",{path:`/${schoolID}`})
 		cookies.remove("token",{path:"/"})
 		cookies.remove("token", { path: "/login" })
-		
 		localStorage.removeItem('component');
-
 		router.replace("/"+schoolID)
 	}
 

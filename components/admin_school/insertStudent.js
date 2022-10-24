@@ -150,14 +150,30 @@ export default function InsertTeacher({ school_data,schoolID }) {
 	}
 	return (
 		<div>
-			<div className="text-center fs-1">InsertStudent</div>
+			<style jsx>{`
+				.submit_btn{
+					border:none;
+					background-color:#11620e;
+					color:white;
+					border-radius:4px;
+				}
+
+				.insertinfo_btn{
+					border:none;
+					background-color:#004d99;
+					color:white;
+					border-radius:4px;
+				}
+			`}</style>
+			<div className="text-center display-6">เพิ่มข้อมูลของนักเรียน</div>
 			
 			{/* เพิ่มข้อมูลนักเรียนหลายคน */}
 			<div className="card mt-5">
 				<div className="card-body">
-					<h5 className="card-title">เพิ่มข้อมูลของนักเรียนหลายคน</h5>
-					<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลนักเรียนหลายคน สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการใส่ไฟล์ในนี้ได้เลย</p>
-					<div className="btn btn-outline-secondary">
+					<h4 className="card-title">เพิ่มข้อมูลของนักเรียนหลายคน</h4>
+					<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลนักเรียนหลายคน สามารถนำรายชื่อที่มีจากไฟล์ csv และทำการอัพโหลดไฟล์ใส่ในนี้ได้เลย</p>
+					<div className="card-text">สามารถดาวโหลดไฟล์ CSV ตัวอย่างโดยทำการกดลิงค์ด้านล่าง</div>
+					<div>
 						<CSVLink {...csvReport}>ตัวอย่างไฟล์ CSV</CSVLink>
 					</div>
 				</div>
@@ -169,7 +185,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 								accept='.csv'
 								onChange={(ev) => {setCsvFile(ev.target.files[0])
 							}}/>
-							<button type="submit" className="btn btn-success" onClick={(ev) => submit(ev)}>ยืนยัน</button>
+							<button type="submit" className="btn submit_btn" onClick={(ev) => submit(ev)}>ยืนยัน</button>
 						</div>
 					</form>
 				</div>
@@ -178,12 +194,12 @@ export default function InsertTeacher({ school_data,schoolID }) {
 			{/* ส่วนเพิ่มนักเรียน 1 คน */}
 			<div className="card mt-5">
 				<div className="card-body">
-					<h5 className="card-title">เพิ่มข้อมูลของนักเรียน 1 คน</h5>
+					<h4 className="card-title">เพิ่มข้อมูลของนักเรียน 1 คน</h4>
 					<p className="card-text">ถ้าหากต้องการเพิ่มข้อมูลนักเรียนแค่ 1 คน คุณไม่จำเป็นต้องสร้างไฟล์ csv สามารถกรอกแบบฟอร์มได้เลย</p>
 				</div>
 				<div className="card-footer">
 					<div className="d-flex justify-content-end">
-						<button  className="btn btn-primary" data-bs-target="#insertModalStudent" data-bs-toggle="modal">ใส่ข้อมูล</button>
+						<button  className="btn insertinfo_btn" data-bs-target="#insertModalStudent" data-bs-toggle="modal">ใส่ข้อมูล</button>
 					</div>
 				</div>
 			</div>

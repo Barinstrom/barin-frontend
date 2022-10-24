@@ -1,7 +1,10 @@
 import React from "react";
-import { useState,useRef } from "react";
+import { useState,useRef,useEffect } from "react";
 import { useRouter } from "next/router";
 import { register } from "../utils/unauth";
+import CaptchaTest from "../components/captcha";
+import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
+
 import Swal from "sweetalert2";
 
 export default function Register() {
@@ -10,6 +13,11 @@ export default function Register() {
 	const [file, setfile] = useState("");
 	const tagForm = useRef([]);
 	const click_check = useRef();
+	const captcha = useRef();
+
+	useEffect(() => {
+		loadCaptchaEnginge(6); 
+	})
 
 	function checkFile(file) {
 		window.open().document.write(`<img src="${file}"></img>`);
@@ -36,6 +44,26 @@ export default function Register() {
 		const confirmPassword = tagForm.current[4].value;
 		const tel = tagForm.current[5].value;
 		const characterEnglish = /^[A-Za-z0-9]*$/;
+
+		let user_captcha = captcha.current.value;
+
+		if (validateCaptcha(user_captcha)===true) {
+				// alert('Captcha Matched');
+				// loadCaptchaEnginge(6); 
+				// document.getElementById('user_captcha_input').value = "";
+		}
+
+		else {
+			Swal.fire({
+				icon: 'warning',
+				title: 'captcha ไม่ถูกต้อง',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+			captcha.current.value = "";
+			return;
+		}
 
 		if (!characterEnglish.test(schoolID)) {
 			Swal.fire({
@@ -75,30 +103,49 @@ export default function Register() {
 				tel: tel,
 				role: "admin",
 			};
+
+			Swal.fire({
+				title: 'คุณตรวจสอบข้อมูลเรียบร้อย และต้องการสมัครสมาชิก',
+				showConfirmButton: true,
+				confirmButtonColor: "#0047a3",
+				confirmButtonText: 'ยืนยัน',
+
+				showCancelButton: true,
+				cancelButtonText: "cancel",
+				cancelButtonColor: "#d93333",
+						
+				showLoaderOnConfirm: true,
+				preConfirm: () => {
+					return register(will_data);
+				},
+				allowOutsideClick: () => !Swal.isLoading()
+		
+			}).then((result) => {
+				if (result.isConfirmed) {
+					console.log(result)
+					if (!result.value[1]) {
+						Swal.fire({
+							icon: 'error',
+							title: result.value[].response.data,  
+							showConfirmButton:true,
+							confirmButtonColor:"#ce0303"
+						})
+						return;
+					}
+					else {
+						Swal.fire({
+							icon: 'success',
+							title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมลล์' + '\n' + 'เพื่อยืนยันอีเมลล์',
+							showConfirmButton:true,
+							confirmButtonColor:"#009431"
+						}).then(() => {
+							router.push("/");
+						})
+					}
+				}
+			})
 			
-			spin.current.classList.remove("d-none")
-			const [result,status] = await register(will_data);
-			spin.current.classList.add("d-none")
 			
-			if (!status) {
-				Swal.fire({
-					icon: 'error',
-					title: result.response.data,  
-					showConfirmButton:true,
-					confirmButtonColor:"#ce0303"
-				})
-				return;
-			}
-			else {
-				Swal.fire({
-					icon: 'success',
-					title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมลล์' + '\n' + 'เพื่อยืนยันอีเมลล์',
-					showConfirmButton:true,
-					confirmButtonColor:"#009431"
-				}).then(() => {
-					router.push("/");
-				})
-			}
 		}
 	}
 	
@@ -257,6 +304,13 @@ export default function Register() {
 										check picture
 									</p>
 								</label>
+							</div>
+							<div className="col-12">
+									<LoadCanvasTemplate />
+							</div>
+
+							<div className="col-12">
+									<input className="form-control" placeholder="Enter Captcha Value" type="text" ref={captcha} />
 							</div>
 							<div className="col-12">
 								<button className="btn btn-success">
