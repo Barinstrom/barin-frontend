@@ -68,9 +68,9 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
         dislikeBtn.current.disabled = true;
         dislikeIcon.current.disabled = true;
         own_comment.current.disabled = true;
-        btn_review.current.classNameList.add("d-none");
-        btn_confirm.current.classNameList.add("d-none");
-        btn_edit.current.classNameList.remove("d-none");
+        btn_review.current.classList.add("d-none");
+        btn_confirm.current.classList.add("d-none");
+        btn_edit.current.classList.remove("d-none");
       }
       //
     });
@@ -92,23 +92,23 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     // console.log("review display",docs)
     const reveiwTest = docs.map((e, i) => {
       return (
-        <div classNameName="card mt-2" key={i}>
-          <div classNameName="card-header"></div>
-          <div classNameName="card-body">
-            <div classNameName="comment">
-              <div classNameName="commentimagecontainer">
+        <div className="card mt-2" key={i}>
+          <div className="card-header"></div>
+          <div className="card-body">
+            <div className="comment">
+              <div className="commentimagecontainer">
                 <img src="/user-icon.png" />
               </div>
-              <div classNameName="commentrightpart">
-                <div classNameName="commentcontent">
-                  <div classNameName="commentauthor">Anonymous</div>
-                  <i classNameName="fa-solid fa-badge-check"></i>
+              <div className="commentrightpart">
+                <div className="commentcontent">
+                  <div className="commentauthor">Anonymous</div>
+                  <i className="fa-solid fa-badge-check"></i>
                 </div>
               </div>
             </div>
-            <span classNameName="card-title d-flex justify-content-end align-items-start">
+            <span className="card-title d-flex justify-content-end align-items-start">
             </span>
-            <p classNameName="card-text d-flex justify-content-between">{e.textReview}</p>
+            <p className="card-text d-flex justify-content-between">{e.textReview}</p>
           </div>
           <style>
             {`
@@ -189,9 +189,9 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     dislikeBtn.current.disabled = true;
     dislikeIcon.current.disabled = true;
     own_comment.current.disabled = true;
-    btn_review.current.classNameList.add("d-none");
-    btn_confirm.current.classNameList.add("d-none");
-    btn_edit.current.classNameList.remove("d-none");
+    btn_review.current.classList.add("d-none");
+    btn_confirm.current.classList.add("d-none");
+    btn_edit.current.classList.remove("d-none");
   }
 
   function handleEdit(ev) {
@@ -205,8 +205,8 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     //
     ev.preventDefault();
     own_comment.current.disabled = false;
-    btn_confirm.current.classNameList.remove("d-none");
-    btn_edit.current.classNameList.add("d-none");
+    btn_confirm.current.classList.remove("d-none");
+    btn_edit.current.classList.add("d-none");
     likeBtn.current.disabled = false;
     likeIcon.current.disabled = false;
     dislikeBtn.current.disabled = false;
@@ -228,8 +228,8 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
       return;
     } else {
       own_comment.current.disabled = true;
-      btn_confirm.current.classNameList.add("d-none");
-      btn_edit.current.classNameList.remove("d-none");
+      btn_confirm.current.classList.add("d-none");
+      btn_edit.current.classList.remove("d-none");
       likeBtn.current.disabled = true;
       likeIcon.current.disabled = true;
       dislikeBtn.current.disabled = true;
@@ -303,24 +303,24 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     }
     return (
       <label>
-        <button ref={likeBtn} classNameName="btn p-1 m-1" value="พอใจ" onClick={(e) => voteHandle(e)}
+        <button ref={likeBtn} className="btn p-1 m-1" value="พอใจ" onClick={(e) => voteHandle(e)}
           style={
             like
               ? { border: "solid 2px green", borderColor: "green" }
               : { border: "solid 2px gray", borderColor: "gray" }
           }
         >
-          <i ref={likeIcon} classNameName="fa-regular fa-thumbs-up fa-sm m-2" style={like ? { color: "green" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>พอใจ</i>
+          <i ref={likeIcon} className="fa-regular fa-thumbs-up fa-sm m-2" style={like ? { color: "green" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>พอใจ</i>
         </button>
 
-        <button ref={dislikeBtn} classNameName="btn p-1 m-1" value="ไม่พอใจ" onClick={(e) => voteHandle(e)}
+        <button ref={dislikeBtn} className="btn p-1 m-1" value="ไม่พอใจ" onClick={(e) => voteHandle(e)}
           style={
             dislike
               ? { border: "solid 2px red", borderColor: "red" }
               : { border: "solid 2px gray", borderColor: "gray" }
           }
         >
-          <i ref={dislikeIcon} classNameName="fa-regular fa-thumbs-down fa-sm m-2" style={dislike ? { color: "red" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>ไม่พอใจ</i>
+          <i ref={dislikeIcon} className="fa-regular fa-thumbs-down fa-sm m-2" style={dislike ? { color: "red" } : { color: "gray" }} onClick={(e) => voteHandle(e)}>ไม่พอใจ</i>
         </button>
         
       </label>
@@ -331,39 +331,39 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     // console.log("result in generate",result)
     const paginate_tmp = []
     if (result.hasPrevPage && result.page - 5 >= 1){
-      paginate_tmp.push(<button classNameName='page-link' onClick={()=> clickPage(1,schoolYear)}><i classNameName="fa-solid fa-angles-left"></i></button>)    
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1,schoolYear)}><i className="fa-solid fa-angles-left"></i></button>)    
     }else{
-      paginate_tmp.push(<button classNameName='page-link disabled'><i classNameName="fa-solid fa-angles-left"></i></button>)
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-left"></i></button>)
     }
     
     if (result.hasPrevPage){
-      paginate_tmp.push(<button classNameName='page-link' onClick={()=> clickPage((result.page-1),schoolYear)}><i classNameName="fa-solid fa-angle-left"></i></button>)    
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page-1),schoolYear)}><i className="fa-solid fa-angle-left"></i></button>)    
     }else{
-      paginate_tmp.push(<button classNameName='page-link disabled'><i classNameName="fa-solid fa-angle-left"></i></button>)
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-left"></i></button>)
     }
     
-    paginate_tmp.push(<button classNameName='page-link disabled'>{result.page}</button>)
+    paginate_tmp.push(<button className='page-link disabled'>{result.page}</button>)
     
     if (result.hasNextPage){
-      paginate_tmp.push(<button classNameName='page-link' onClick={()=> clickPage((result.page+1),schoolYear)}><i classNameName="fa-solid fa-angle-right"></i></button>)    
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.page+1),schoolYear)}><i className="fa-solid fa-angle-right"></i></button>)    
     }else{
-      paginate_tmp.push(<button classNameName='page-link disabled'><i classNameName="fa-solid fa-angle-right"></i></button>)
+      paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angle-right"></i></button>)
     }
     
     if (result.hasNextPage && result.page + 5 <= result.totalPages){
-      paginate_tmp.push(<button classNameName='page-link' onClick={()=> clickPage((result.totalPages),schoolYear)}><i classNameName="fa-solid fa-angles-right"></i></button>)    
+      paginate_tmp.push(<button className='page-link' onClick={()=> clickPage((result.totalPages),schoolYear)}><i className="fa-solid fa-angles-right"></i></button>)    
     }else{
-        paginate_tmp.push(<button classNameName='page-link disabled'><i classNameName="fa-solid fa-angles-right"></i></button>)
+        paginate_tmp.push(<button className='page-link disabled'><i className="fa-solid fa-angles-right"></i></button>)
     }
     return paginate_tmp
 }
   
 function showPaginate(paginate){
   const template = (
-      <ul classNameName='pagination justify-content-center mt-3'>
+      <ul className='pagination justify-content-center mt-3'>
           {paginate.map((item,index)=>{
               return (
-                  <li key={index} classNameName="page-item">{item}</li>
+                  <li key={index} className="page-item">{item}</li>
               )
           })}
       </ul>
@@ -398,34 +398,34 @@ function clickPage(pageSelected,commentYear){
               border-radius:4px;
             }
       `}</style>
-      <div classNameName="modal" id={item.clubName}>
-        <div classNameName="modal-dialog modal-lg">
-          <div classNameName="modal-content">
-            <div classNameName=" modal-header d-flex justify-content-between h2">
-              <div classNameName="modal-title d-flex text-lg">
-                <div classNameName="d-flex">
+      <div className="modal" id={item.clubName}>
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className=" modal-header d-flex justify-content-between h2">
+              <div className="modal-title d-flex text-lg">
+                <div className="d-flex">
                   <span ref={clubNameInModal}></span>
                 </div>
               </div>
               <div>
                 <button
-                  classNameName="btn-close m-0 "
+                  className="btn-close m-0 "
                   data-bs-dismiss="modal"
                 ></button>
               </div>
             </div>
-            <div classNameName=" modal-body">
-              <div classNameName="d-flex justify-content-between align-items-center">
+            <div className=" modal-body">
+              <div className="d-flex justify-content-between align-items-center">
                 {isStudent ? <div>
                   <span>ความพึงพอใจ</span>
-                  <span classNameName="m-3">{voteClub()}</span>
+                  <span className="m-3">{voteClub()}</span>
                 </div>:""}
-                <div classNameName="d-flex  justify-content-center align-items-center">
+                <div className="d-flex  justify-content-center align-items-center">
                   <div>ปีการศึกษา</div>
                   <span>
-                    <div classNameName="dropdown p-3">
+                    <div className="dropdown p-3">
                       <button
-                        classNameName="btn btn-light dropdown-toggle"
+                        className="btn btn-light dropdown-toggle"
                         type="button"
                         id="dropdownMenuButton1"
                         data-bs-toggle="dropdown"
@@ -434,11 +434,11 @@ function clickPage(pageSelected,commentYear){
                         {/* เปลี่ยน ค.ศ. เป็น พ.ศ. */}
                         {commentYear}
                       </button>
-                      <ul classNameName="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                      <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         {schedule.map((ev, i) => {
                           return (
                             <li key={i}>
-                              <a classNameName="dropdown-item" href="#" onClick={(e) => {handleDropdown(e,ev.schoolYear);}}>
+                              <a className="dropdown-item" href="#" onClick={(e) => {handleDropdown(e,ev.schoolYear);}}>
                                 {/* เปลี่ยน ค.ศ. เป็น พ.ศ. */}
                                 {ev.schoolYear}
                               </a>
@@ -454,10 +454,10 @@ function clickPage(pageSelected,commentYear){
               </div> 
             
               {isStudent ? <form>
-                <div classNameName="mb-3">
-                  <label classNameName="form-label">เขียนรีวิว</label>
+                <div className="mb-3">
+                  <label className="form-label">เขียนรีวิว</label>
                   <textarea
-                    classNameName="form-control"
+                    className="form-control"
                     rows="3"
                     defaultValue={""}
                     ref={own_comment}
@@ -465,9 +465,9 @@ function clickPage(pageSelected,commentYear){
                   >
                   </textarea>
                 </div>
-                <button type="submit" classNameName="btn btn-primary" ref={btn_review} onClick={(ev) => {handleReview(ev);}}>รีวิว</button>
-                <button type="submit" classNameName="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
-                <button type="submit" classNameName="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
+                <button type="submit" className="btn btn-primary" ref={btn_review} onClick={(ev) => {handleReview(ev);}}>รีวิว</button>
+                <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
+                <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
               {backendComments}
               {paginateBtn}
@@ -477,7 +477,7 @@ function clickPage(pageSelected,commentYear){
       </div>
                         
       <button
-        classNameName="btn review_btn btn-sm"
+        className="btn review_btn btn-sm"
         data-bs-toggle="modal"
         data-bs-target={`#${item.clubName}`}
         onClick={(ev) => clickModal(item, ev)}
