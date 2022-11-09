@@ -53,7 +53,7 @@ export default function Review({ item, schoolID, schedule }) {
       page: 1,
       clubID: item._id,
     };
-    console.log("body.clubID",body.clubID)
+    console.log("get own review with ",item.id)
     get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
       // ถ้าเคยรีวิวแล้ว  
       if (res) {
