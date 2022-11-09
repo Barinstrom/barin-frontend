@@ -8,7 +8,7 @@ import {
   get_club_teachers,
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
-export default function Review({ item, schoolID, schedule }) {
+export default function Review({ item, schoolID, schedule , isStudent }) {
   // console.log("clubinfo", item,schedule,schoolID)
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -28,14 +28,10 @@ export default function Review({ item, schoolID, schedule }) {
   const btn_confirm = useRef();
   const teacherName = useRef();
   const [paginateBtn,setPaginateBtn] = useState(null)
-
-  // เหลือ paginate และ loading
-
+  
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
-    // paginate()
-
     ev.preventDefault();
     
     const bodyForTeachers = {
@@ -53,7 +49,7 @@ export default function Review({ item, schoolID, schedule }) {
       page: 1,
       clubID: item._id,
     };
-    console.log("body.clubID",body.clubID)
+    console.log("get own review with ",item._id)
     get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
       // ถ้าเคยรีวิวแล้ว  
       if (res) {
@@ -79,13 +75,16 @@ export default function Review({ item, schoolID, schedule }) {
       //
     });
     //รีวิวปีปัจจุบัน
-    console.log("body",body)
+    console.log("get-review-body",body)
     get_review(body, token, schoolID).then((res) => {
-      console.log("get review",res.data)
-      displayReview(res.data.docs);
-
-      const paginate_tmp = generate(res.data,new Date().getFullYear())
-      showPaginate(paginate_tmp)
+      if(res.data){
+        displayReview(res.data.docs);
+        const paginate_tmp = generate(res.data,new Date().getFullYear())
+        showPaginate(paginate_tmp)
+      }
+      else{
+        noReview
+      }
     });
   }
 
@@ -143,6 +142,17 @@ export default function Review({ item, schoolID, schedule }) {
     setBackendComments(reveiwTest);
   }
 
+
+  const noReview = (
+    <div class="card">
+      <div class="card-header"></div>
+      <div class="card-body d-flex justify-content-center align-items-center">
+        <h5 class="card-title"></h5>
+        <p class="card-text">ยังไม่มีการแสดงความคิดเห็น</p>
+      </div>
+      <div class="card-footer text-muted"></div>
+  </div>
+    )
   function handleReview(ev) {
     const comment = own_comment.current.value;
     // console.log("voteแล้ว", vote);
@@ -318,7 +328,7 @@ export default function Review({ item, schoolID, schedule }) {
   }
   //pagination
   function generate(result,schoolYear){
-    console.log("result in generate",result)
+    // console.log("result in generate",result)
     const paginate_tmp = []
     if (result.hasPrevPage && result.page - 5 >= 1){
       paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1,schoolYear)}><i className="fa-solid fa-angles-left"></i></button>)    
@@ -406,10 +416,10 @@ function clickPage(pageSelected,commentYear){
             </div>
             <div className=" modal-body">
               <div className="d-flex justify-content-between align-items-center">
-                <div>
+                {isStudent ? <div>
                   <span>ความพึงพอใจ</span>
                   <span className="m-3">{voteClub()}</span>
-                </div>
+                </div>:""}
                 <div className="d-flex  justify-content-center align-items-center">
                   <div>ปีการศึกษา</div>
                   <span>
@@ -441,9 +451,9 @@ function clickPage(pageSelected,commentYear){
                   <span ref={teacherName}>
                   </span>
                 </div>
-              </div>
+              </div> 
             
-              <form>
+              {isStudent ? <form>
                 <div className="mb-3">
                   <label className="form-label">เขียนรีวิว</label>
                   <textarea
@@ -451,13 +461,14 @@ function clickPage(pageSelected,commentYear){
                     rows="3"
                     defaultValue={""}
                     ref={own_comment}
+                    placeholder="เพิ่มความคิดเห็น..."
                   >
                   </textarea>
                 </div>
                 <button type="submit" className="btn btn-primary" ref={btn_review} onClick={(ev) => {handleReview(ev);}}>รีวิว</button>
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
-              </form>
+              </form> : ""}
               {backendComments}
               {paginateBtn}
             </div>

@@ -73,14 +73,16 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 												</button>
 											</td>
 											<td className="text-center">
-												{item.status == "Pass" ?
-													<Review item={item} schoolID={schoolID} schedule={schedule} /> :
-													<button className='btn btn-sm btn-secondary'
-														onClick={(ev) => cantreview(ev)}
-														disabled
+												{console.log("from pastClub item",item)}
+												{/* {item.status == "Pass" ? */}
+													<Review item={item} schoolID={schoolID} schedule={schedule} isStudent={true}/> 
+													{/* <button className='btn btn-sm btn-secondary'
+														// onClick={(ev) => cantreview(ev)}
+														// disabled
 													>รีวิว
-													</button>
-											}</td>
+													</button> */}
+											{/* } */}
+											</td>
 										</tr>
 									)
 								})}

@@ -10,7 +10,9 @@ import Error from "next/error";
 import Reload from '../../components/reload'
 import Swal from "sweetalert2";
 
+
 export default function Teacher({ schoolID }) {
+	const [schedule,setSchedule] = useState();
 	const nav = useRef();
 	const time = useRef();
 	const optionBtn = useRef([])
@@ -114,6 +116,7 @@ export default function Teacher({ schoolID }) {
 								setReadyTime(true)
 								setSaveEmail(email)
 								setCheckReadyComponent(true)
+								setSchedule(data_tmp.schedule)
 							}
 						} else {
 							router.push("/" + String(schoolID))
@@ -222,7 +225,7 @@ export default function Teacher({ schoolID }) {
 
 	let component = null
 	if (countBtn === 0){
-		component = <OwnClub school_data={data_school} schoolID={schoolID} data_school={data_school} />
+		component = <OwnClub school_data={data_school} schoolID={schoolID} data_school={data_school} schedule={schedule} />
 	}else if (countBtn === 1){
 		component = <StdList school_data={data_school} schoolID={schoolID} />
 	}
