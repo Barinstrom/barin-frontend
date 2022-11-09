@@ -77,14 +77,7 @@ export default function Review({ item, schoolID, schedule }) {
         btn_edit.current.classList.remove("d-none");
       }
       else{
-        likeBtn.current.disabled = false;
-        likeIcon.current.disabled = false;
-        dislikeBtn.current.disabled = false;
-        dislikeIcon.current.disabled = false;
-        own_comment.current.disabled = false;
-        btn_review.current.classList.remove("d-none");
-        btn_confirm.current.classList.add("d-none");
-        btn_edit.current.classList.add("d-none");
+        console.log("no-own-review")
       }
       //
     });
