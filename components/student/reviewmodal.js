@@ -411,7 +411,7 @@ function clickPage(pageSelected,commentYear){
               </div>
             </div>
             <div className=" modal-body">
-              <div className="d-flex justify-content-between align-items-center">
+              {paginateBtn ?<div className="d-flex justify-content-between align-items-center">
                 {isStudent ? <div>
                   <span>ความพึงพอใจ</span>
                   <span className="m-3">{voteClub()}</span>
@@ -447,7 +447,8 @@ function clickPage(pageSelected,commentYear){
                   <span ref={teacherName}>
                   </span>
                 </div>
-              </div>
+              </div> 
+              : ""}
             
               {isStudent ? <form>
                 <div className="mb-3">
@@ -465,7 +466,7 @@ function clickPage(pageSelected,commentYear){
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
-              {backendComments ? backendComments:reload}
+              {backendComments ? backendComments:""}
               
               {paginateBtn ? paginateBtn :reload}
             </div>
