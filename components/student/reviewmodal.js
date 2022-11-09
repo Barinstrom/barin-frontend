@@ -28,7 +28,7 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   const btn_confirm = useRef();
   const teacherName = useRef();
   const [paginateBtn,setPaginateBtn] = useState(null)
-
+  const [reloadTable,setReloadTable] = useState(false)
   const reload = (
     <main style={{height:"400px"}}>
         <div className="d-flex justify-content-center h-100 align-items-center">
@@ -40,8 +40,7 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
-    // paginate()
-
+    setReloadTable(true)
     ev.preventDefault();
     
     const bodyForTeachers = {
@@ -93,6 +92,7 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
       const paginate_tmp = generate(res.data,new Date().getFullYear())
       showPaginate(paginate_tmp)
     });
+    setReloadTable(false)
   }
 
   function displayReview(docs) {
@@ -411,7 +411,7 @@ function clickPage(pageSelected,commentYear){
               </div>
             </div>
             <div className=" modal-body">
-              {paginateBtn ?<div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex justify-content-between align-items-center">
                 {isStudent ? <div>
                   <span>ความพึงพอใจ</span>
                   <span className="m-3">{voteClub()}</span>
@@ -448,7 +448,6 @@ function clickPage(pageSelected,commentYear){
                   </span>
                 </div>
               </div> 
-              : ""}
             
               {isStudent ? <form>
                 <div className="mb-3">
@@ -466,9 +465,9 @@ function clickPage(pageSelected,commentYear){
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
-              {backendComments ? backendComments:""}
+              {reloadTable ? backendComments:reload}
               
-              {paginateBtn ? paginateBtn :reload}
+              {paginateBtn}
             </div>
           </div>
         </div>
