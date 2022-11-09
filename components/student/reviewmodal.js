@@ -77,11 +77,14 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     //รีวิวปีปัจจุบัน
     console.log("get-review-body",body)
     get_review(body, token, schoolID).then((res) => {
-      console.log("get review",res.data)
-      displayReview(res.data.docs);
-
-      const paginate_tmp = generate(res.data,new Date().getFullYear())
-      showPaginate(paginate_tmp)
+      if(res.data){
+        displayReview(res.data.docs);
+        const paginate_tmp = generate(res.data,new Date().getFullYear())
+        showPaginate(paginate_tmp)
+      }
+      else{
+        noReview
+      }
     });
   }
 
@@ -139,6 +142,17 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
     setBackendComments(reveiwTest);
   }
 
+
+  const noReview = (
+    <div class="card">
+      <div class="card-header"></div>
+      <div class="card-body d-flex justify-content-center align-items-center">
+        <h5 class="card-title"></h5>
+        <p class="card-text">ยังไม่มีการแสดงความคิดเห็น</p>
+      </div>
+      <div class="card-footer text-muted"></div>
+  </div>
+    )
   function handleReview(ev) {
     const comment = own_comment.current.value;
     // console.log("voteแล้ว", vote);
