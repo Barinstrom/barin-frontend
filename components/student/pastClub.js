@@ -73,6 +73,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 												</button>
 											</td>
 											<td className="text-center">
+												{console.log("from pastClub item",item)}
 												{item.status == "Pass" ?
 													<Review item={item} schoolID={schoolID} schedule={schedule} /> :
 													<button className='btn btn-sm btn-secondary'
