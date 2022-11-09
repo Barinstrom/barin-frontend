@@ -29,8 +29,14 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   const teacherName = useRef();
   const [paginateBtn,setPaginateBtn] = useState(null)
 
-  // เหลือ paginate และ loading
-
+  const reload = (
+    <main style={{height:"400px"}}>
+        <div className="d-flex justify-content-center h-100 align-items-center">
+            <div className="fs-4">loading ...</div>
+            <div className="spinner-border ms-3"></div>
+        </div>
+    </main>
+)
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
@@ -459,8 +465,9 @@ function clickPage(pageSelected,commentYear){
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
-              {backendComments}
-              {paginateBtn}
+              {backendComments ? backendComments:reload}
+              
+              {paginateBtn ? paginateBtn :reload}
             </div>
           </div>
         </div>
