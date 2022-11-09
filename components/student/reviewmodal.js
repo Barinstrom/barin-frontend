@@ -76,10 +76,20 @@ export default function Review({ item, schoolID, schedule }) {
         btn_confirm.current.classList.add("d-none");
         btn_edit.current.classList.remove("d-none");
       }
+      else{
+        likeBtn.current.disabled = false;
+        likeIcon.current.disabled = false;
+        dislikeBtn.current.disabled = false;
+        dislikeIcon.current.disabled = false;
+        own_comment.current.disabled = false;
+        btn_review.current.classList.remove("d-none");
+        btn_confirm.current.classList.add("d-none");
+        btn_edit.current.classList.add("d-none");
+      }
       //
     });
     //รีวิวปีปัจจุบัน
-    console.log("body",body)
+    console.log("get-review-body",body)
     get_review(body, token, schoolID).then((res) => {
       console.log("get review",res.data)
       displayReview(res.data.docs);
