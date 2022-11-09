@@ -28,15 +28,7 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   const btn_confirm = useRef();
   const teacherName = useRef();
   const [paginateBtn,setPaginateBtn] = useState(null)
-  const [reloadTable,setReloadTable] = useState(false)
-  const reload = (
-    <main style={{height:"400px"}}>
-        <div className="d-flex justify-content-center h-100 align-items-center">
-            <div className="fs-4">loading ...</div>
-            <div className="spinner-border ms-3"></div>
-        </div>
-    </main>
-)
+  
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
@@ -46,55 +38,21 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
       clubID: item._id,
       schoolYear: new Date().getFullYear()
     };
+    // title
+    clubNameInModal.current.innerText = "ชื่อชุมนุม " + item.clubName;
+    //ชื่อครูปีปัจจุบัน
+    get_club_teachers(bodyForTeachers, token, schoolID).then((res) => {
+      teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
+    });
     const body = {
       schoolYear: new Date().getFullYear(),
       page: 1,
       clubID: item._id,
     };
-    // title
-    // clubNameInModal.current.innerText = "ชื่อชุมนุม " + item.clubName;
-    // //ชื่อครูปีปัจจุบัน
-    // get_club_teachers(bodyForTeachers, token, schoolID).then((res) => {
-    //   teacherName.current.innerHTML =  "ครูผู้สอน " + res.data[0].firstname + " " +res.data[0].lastname  
-    // });
-    // console.log("get own review with ",item._id)
-    // get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
-    //   // ถ้าเคยรีวิวแล้ว  
-    //   if (res) {
-    //     own_comment.current.value = res.data.textReview;
-    //     setOwnCommentData(res.data);
-    //     console.log("ownReview", res.data);
-    //     if (res.data.satisfiedLevel === "พอใจ") {
-    //       setLike(true);
-    //       setDislike(false);
-    //     } else if (res.data.satisfiedLevel === "ไม่พอใจ") {
-    //       setLike(false);
-    //       setDislike(true);
-    //     }
-    //     likeBtn.current.disabled = true;
-    //     likeIcon.current.disabled = true;
-    //     dislikeBtn.current.disabled = true;
-    //     dislikeIcon.current.disabled = true;
-    //     own_comment.current.disabled = true;
-    //     btn_review.current.classList.add("d-none");
-    //     btn_confirm.current.classList.add("d-none");
-    //     btn_edit.current.classList.remove("d-none");
-    //   }
-    //   //
-    // });
-    // //รีวิวปีปัจจุบัน
-    // console.log("get-review-body",body)
-    // get_review(body, token, schoolID).then((res) => {
-    //   console.log("get review",res.data)
-    //   displayReview(res.data.docs);
-
-    //   const paginate_tmp = generate(res.data,new Date().getFullYear())
-    //   showPaginate(paginate_tmp)
-    // });
-    Promise.all([get_club_teachers(bodyForTeachers, token, schoolID),get_own_review({clubID: item._id,}, token, schoolID),get_review(body, token, schoolID)])
-    .then(result => {
-      teacherName.current.innerHTML =  "ครูผู้สอน " + result[0].data[0].firstname + " " +result[0].data[0].lastname 
-      if (result[1]) {
+    console.log("get own review with ",item._id)
+    get_own_review({clubID: item._id,}, token, schoolID).then((res) => {
+      // ถ้าเคยรีวิวแล้ว  
+      if (res) {
         own_comment.current.value = res.data.textReview;
         setOwnCommentData(res.data);
         console.log("ownReview", res.data);
@@ -114,10 +72,17 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
         btn_confirm.current.classList.add("d-none");
         btn_edit.current.classList.remove("d-none");
       }
-      displayReview(result[2].data.docs);
-      const paginate_tmp = generate(result[2].data,new Date().getFullYear())
+      //
+    });
+    //รีวิวปีปัจจุบัน
+    console.log("get-review-body",body)
+    get_review(body, token, schoolID).then((res) => {
+      console.log("get review",res.data)
+      displayReview(res.data.docs);
+
+      const paginate_tmp = generate(res.data,new Date().getFullYear())
       showPaginate(paginate_tmp)
-    })
+    });
   }
 
   function displayReview(docs) {
@@ -491,7 +456,6 @@ function clickPage(pageSelected,commentYear){
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
               {backendComments}
-              
               {paginateBtn}
             </div>
           </div>
