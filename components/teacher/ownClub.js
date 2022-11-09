@@ -3,6 +3,7 @@ import { get_teacher_ownclubs } from "../../utils/teacher/teacher_getdata";
 import { update_club } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
+import Review from "../student/reviewmodal";
 
 export default function OwnClub({ schoolID, data_school }) {
 	const clubName = useRef()
@@ -232,9 +233,10 @@ export default function OwnClub({ schoolID, data_school }) {
 														onClick={(ev) => clickModal(e, ev)}>
 														รายละเอียด
 													</button>
-													
 											}
-												
+										</td>
+										<td className="text-center">
+											<Review item={e} schoolID={schoolID} schedule={schedule}/>
 										</td>
 									</tr>
 								);

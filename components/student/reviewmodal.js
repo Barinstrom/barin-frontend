@@ -76,9 +76,6 @@ export default function Review({ item, schoolID, schedule }) {
         btn_confirm.current.classList.add("d-none");
         btn_edit.current.classList.remove("d-none");
       }
-      else{
-        console.log("no-own-review")
-      }
       //
     });
     //รีวิวปีปัจจุบัน
