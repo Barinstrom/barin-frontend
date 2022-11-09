@@ -406,10 +406,10 @@ function clickPage(pageSelected,commentYear){
             </div>
             <div className=" modal-body">
               <div className="d-flex justify-content-between align-items-center">
-                <div>
+                {isStudent ? <div>
                   <span>ความพึงพอใจ</span>
                   <span className="m-3">{voteClub()}</span>
-                </div>
+                </div>:""}
                 <div className="d-flex  justify-content-center align-items-center">
                   <div>ปีการศึกษา</div>
                   <span>
