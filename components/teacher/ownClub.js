@@ -237,7 +237,7 @@ export default function OwnClub({ schoolID, data_school,schedule }) {
 											}
 										</td>
 										<td className="text-center">
-											<Review item={e} schoolID={schoolID} schedule={schedule}/>
+											<Review item={e} schoolID={schoolID} schedule={schedule} isStudent={false}/>
 										</td>
 									</tr>
 								);

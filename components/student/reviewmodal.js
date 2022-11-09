@@ -8,7 +8,7 @@ import {
   get_club_teachers,
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
-export default function Review({ item, schoolID, schedule }) {
+export default function Review({ item, schoolID, schedule , isStudent }) {
   // console.log("clubinfo", item,schedule,schoolID)
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -443,7 +443,7 @@ function clickPage(pageSelected,commentYear){
                 </div>
               </div>
             
-              <form>
+              {isStudent ? <form>
                 <div className="mb-3">
                   <label className="form-label">เขียนรีวิว</label>
                   <textarea
@@ -451,13 +451,14 @@ function clickPage(pageSelected,commentYear){
                     rows="3"
                     defaultValue={""}
                     ref={own_comment}
+                    placeholder="เพิ่มความคิดเห็น..."
                   >
                   </textarea>
                 </div>
                 <button type="submit" className="btn btn-primary" ref={btn_review} onClick={(ev) => {handleReview(ev);}}>รีวิว</button>
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
-              </form>
+              </form> : ""}
               {backendComments}
               {paginateBtn}
             </div>
