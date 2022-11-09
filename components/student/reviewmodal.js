@@ -40,7 +40,6 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   const clubNameInModal = useRef();
 
   function clickModal(item, ev) {
-    setReloadTable(true)
     ev.preventDefault();
     
     const bodyForTeachers = {
@@ -91,7 +90,6 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
 
       const paginate_tmp = generate(res.data,new Date().getFullYear())
       showPaginate(paginate_tmp)
-      setReloadTable(false)
     });
   }
 
@@ -465,7 +463,7 @@ function clickPage(pageSelected,commentYear){
                 <button type="submit" className="btn btn-warning d-none" ref={btn_edit} onClick={(ev) => {handleEdit(ev);}}>แก้ไขรีวิว</button>
                 <button type="submit" className="btn btn-success d-none" ref={btn_confirm} onClick={(ev) => { handleConfirm(ev); }}>ตกลง</button>
               </form> : ""}
-              {reloadTable ? backendComments:reload}
+              {backendComments}
               
               {paginateBtn}
             </div>
