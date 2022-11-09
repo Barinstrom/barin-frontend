@@ -77,8 +77,8 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 												{item.status == "Pass" ?
 													<Review item={item} schoolID={schoolID} schedule={schedule} /> :
 													<button className='btn btn-sm btn-secondary'
-														onClick={(ev) => cantreview(ev)}
-														disabled
+														// onClick={(ev) => cantreview(ev)}
+														// disabled
 													>รีวิว
 													</button>
 											}</td>
