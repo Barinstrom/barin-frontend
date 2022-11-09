@@ -91,8 +91,8 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
 
       const paginate_tmp = generate(res.data,new Date().getFullYear())
       showPaginate(paginate_tmp)
+      setReloadTable(false)
     });
-    setReloadTable(false)
   }
 
   function displayReview(docs) {
@@ -324,7 +324,7 @@ export default function Review({ item, schoolID, schedule , isStudent }) {
   }
   //pagination
   function generate(result,schoolYear){
-    console.log("result in generate",result)
+    // console.log("result in generate",result)
     const paginate_tmp = []
     if (result.hasPrevPage && result.page - 5 >= 1){
       paginate_tmp.push(<button className='page-link' onClick={()=> clickPage(1,schoolYear)}><i className="fa-solid fa-angles-left"></i></button>)    
