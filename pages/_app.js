@@ -17,6 +17,8 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossOrigin="anonymous"></Script>
       <Script src="https://kit.fontawesome.com/70e1721a75.js" crossorigin="anonymous"></Script>
+      <Script src="https://www.google.com/recaptcha/api.js"></Script>
+
       <Component {...pageProps} />
     </>
   )

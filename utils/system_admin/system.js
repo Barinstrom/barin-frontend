@@ -67,7 +67,7 @@ export async function get_approved(data,token) {
 		}
 		
 		const paramsSuccess = apiUrl+`?${params}`
-		//console.log(paramsSuccess)
+		// console.log(paramsSuccess)
 		
 		const response = await axios({
 			method:"get",
@@ -128,10 +128,10 @@ export async function sys_edit_school(token,data) {
 			data:JSON.stringify(data)
 		})
 		console.log(response)
-		return true
+		return 'true'
 	} catch(err) {
 		console.log(err);
-		return false;
+		return 'false';
 	}
 };
 

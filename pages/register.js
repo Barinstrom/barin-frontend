@@ -2,8 +2,6 @@ import React from "react";
 import { useState,useRef,useEffect } from "react";
 import { useRouter } from "next/router";
 import { register } from "../utils/unauth";
-// import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-
 import Swal from "sweetalert2";
 
 export default function Register() {
@@ -12,11 +10,8 @@ export default function Register() {
 	const [file, setfile] = useState("");
 	const tagForm = useRef([]);
 	const click_check = useRef();
-	// const captcha = useRef();
+	const site_key = process.env.NEXT_PUBLIC_SITE_KEY
 
-	// useEffect(() => {
-	// 	loadCaptchaEnginge(6); 
-	// })
 
 	function checkFile(file) {
 		window.open().document.write(`<img src="${file}"></img>`);
@@ -43,26 +38,6 @@ export default function Register() {
 		const confirmPassword = tagForm.current[4].value;
 		const tel = tagForm.current[5].value;
 		const characterEnglish = /^[A-Za-z0-9]*$/;
-
-		// let user_captcha = captcha.current.value;
-
-		// if (validateCaptcha(user_captcha)===true) {
-		// 		// alert('Captcha Matched');
-		// 		// loadCaptchaEnginge(6); 
-		// 		// document.getElementById('user_captcha_input').value = "";
-		// }
-
-		// else {
-		// 	Swal.fire({
-		// 		icon: 'warning',
-		// 		title: 'captcha ไม่ถูกต้อง',
-		// 		showConfirmButton: true,
-		// 		confirmButtonColor: "#f7a518",
-		// 		confirmButtonText: 'ok',
-		// 	})
-		// 	captcha.current.value = "";
-		// 	return;
-		// }
 
 		if (!characterEnglish.test(schoolID)) {
 			Swal.fire({
@@ -103,8 +78,16 @@ export default function Register() {
 				role: "admin",
 			};
 
+			
 			Swal.fire({
 				title: 'คุณตรวจสอบข้อมูลเรียบร้อย และต้องการสมัครสมาชิก',
+				html: '<div style="display:flex; justify-content:center; overflow-y:hidden"><div id="recaptcha" ></div> </div > ',
+				didOpen: () => {
+					grecaptcha.render('recaptcha', {
+						'sitekey': site_key
+					})
+				},
+
 				showConfirmButton: true,
 				confirmButtonColor: "#0047a3",
 				confirmButtonText: 'ยืนยัน',
@@ -115,7 +98,13 @@ export default function Register() {
 						
 				showLoaderOnConfirm: true,
 				preConfirm: () => {
-					return register(will_data);
+					if (grecaptcha.getResponse().length === 0) {
+						Swal.showValidationMessage(`Please verify that you're not a robot`)
+					}
+					else {
+						return register(will_data);
+					}
+					
 				},
 				allowOutsideClick: false
 		
@@ -164,6 +153,14 @@ export default function Register() {
 					justify-content: center;
 					align-items: center;
 					z-index: 100;
+				}
+
+				.recaptcha {
+					margin: 0 auto .5em;
+				}
+
+				#recaptcha{
+					margin: 0 auto .5em;
 				}
 			`}</style>
 			<div className='background-spinner d-none' ref={spin}>

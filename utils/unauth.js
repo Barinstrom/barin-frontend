@@ -59,11 +59,11 @@ export async function forget_password(data) {
 			},
 			timeout: 10000
 		})
-		return result
+		return "true"
 	}
 	catch (err) {
 		console.log(err)
-		return false
+		return 'false'
 	}
 };
 

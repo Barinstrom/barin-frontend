@@ -200,11 +200,12 @@ export default function TimeConfig({ school_data, schoolID }) {
 			preConfirm: () => {
 				return set_schedule(sent_data, token, schoolID)
 			},
-			allowOutsideClick: () => !Swal.isLoading()
+			allowOutsideClick: false
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				if (!result.value) {
+				const result_update = result.value === "true" ? true : false
+				if (!result_update) {
 					Swal.fire({
 						icon: 'error',
 						title: 'แก้ไขข้อมูลไม่สำเร็จ',
@@ -213,7 +214,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 						confirmButtonText: 'ok',
 					})
 				}
-				else if (result.value.data.success) {
+				else {
 					Swal.fire({
 						icon: 'success',
 						title: 'แก้ไขข้อมูลสำเร็จ',
@@ -263,11 +264,12 @@ export default function TimeConfig({ school_data, schoolID }) {
 			preConfirm: () => {
 				return set_schedule(sent_data, token, schoolID)
 			},
-			allowOutsideClick: () => !Swal.isLoading()
+			allowOutsideClick: false
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				if (!result.value) {
+				const result_update = result.value === "true" ? true : false
+				if (!result_update) {
 					Swal.fire({
 						icon: 'error',
 						title: 'แก้ไขข้อมูลไม่สำเร็จ',
@@ -276,7 +278,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 						confirmButtonText: 'ok',
 					})
 				}
-				else if (result.value.data.success) {
+				else{
 					Swal.fire({
 						icon: 'success',
 						title: 'แก้ไขข้อมูลสำเร็จ',
@@ -374,13 +376,34 @@ export default function TimeConfig({ school_data, schoolID }) {
 	</div>
 	)
 
-	const TimeConfig_page =  (
+	const TimeConfig_page = (
+		<>
 		<div>
-			<h2 className="text-center mt-2">ตั้งเวลาลงทะเบียน</h2>
+			<h2 className="text-center mt-2">
+					<span className='me-2'>ตั้งเวลาลงทะเบียน</span>
+					<h4 className="fa-solid fa-circle-info"
+						data-bs-toggle="modal"
+						data-bs-target="#helpmodal"
+						type="button" ></h4>
+			</h2>
 			<form className="row g-4 p-2" ref={form}>
 				{nowYear} 
 			</form>
 		</div>
+		<div className="modal fade" id="helpmodal">
+				<div className="modal-dialog modal-lg">
+					<div className='modal-content'>
+						<div className='modal-header'>
+							<h3 className="modal-title" >คู่มือการใช้งาน</h3>
+						</div>
+						<div className='modal-body'>
+							รอใส่ user manual
+						</div>
+					</div>
+				</div>
+			</div>
+		</>
+		
 	)
 
 	if (!school_data.paymentStatus) {

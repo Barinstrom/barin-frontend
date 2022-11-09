@@ -28,6 +28,7 @@ export default function OwnClub({ schoolID, data_school }) {
 	const [data, setData] = useState([])
 	const [loading,setLoading] = useState(true)
 	const [displayError, setDisplayError] = useState(false)
+
 	
 	const cookies = new Cookies()
 	const token = cookies.get("token")
@@ -39,7 +40,7 @@ export default function OwnClub({ schoolID, data_school }) {
 				setLoading(false)
 				setDisplayError(true)
 			} else {
-				console.log(result)
+				console.log(result.data)
 				const clubs = result.data
 				setData(clubs)
 				setDisplayError(false)
@@ -129,11 +130,12 @@ export default function OwnClub({ schoolID, data_school }) {
 				preConfirm: () => {
 					return update_club(body_update, token, schoolID);
 				},
-				allowOutsideClick: () => !Swal.isLoading()
+				allowOutsideClick: false
 
 			}).then((res) => {
-				if (res.isConfirmed){
-					if (!res.value) {
+				if (res.isConfirmed) {
+					const result_update = res.value === "true" ? true : false
+					if (!result_update) {
 							Swal.fire({
 								icon: 'error',
 								title: 'แก้ไขข้อมูลไม่สำเร็จ',
@@ -142,7 +144,7 @@ export default function OwnClub({ schoolID, data_school }) {
 								confirmButtonText: 'ok',
 							})
 							return
-						}else if(res.value.data.success){
+						}else{
 							Swal.fire({
 								icon: 'success',
 								title: 'แก้ไขข้อมูลสำเร็จ',
@@ -166,13 +168,14 @@ export default function OwnClub({ schoolID, data_school }) {
 			})
 		}
 	
-  function displayStudentList(e){
+  	function displayStudentList(e){
 		window.localStorage.setItem("clubNameFromClick",e.clubName)
-		window.localStorage.setItem("clubidFromClick",e._id)
+			window.localStorage.setItem("clubidFromClick", e._id)
+			window.localStorage.setItem("clubYearFromClick", e.schoolYear)
 		window.localStorage.setItem("displayComponent",1)
 		window.location.href = `/${schoolID}/teacher`
 	}
-	
+
 	if(loading){
 		return (
 			<div className="d-flex justify-content-center align-items-center" style={{minHeight:"600px"}}>
@@ -188,6 +191,19 @@ export default function OwnClub({ schoolID, data_school }) {
 		return (
 			<main>
 				<div className="text-center display-6 mb-3">OwnClub</div>
+				<div className="alert alert-dismissible fade show border">
+					<button className="btn-close" data-bs-dismiss="alert"></button>
+					<div className="alert-text">
+						<label className="form-label">ปุ่มรายละเอียดสี</label>
+						<input type="color" className="form-control-color form-control-sm ms-2" value="#404040" disabled/>
+						<label className="form-label ms-1">เป็นปุ่มดูรายละเอียดชุมนุมในอดีต ซึ่งไม่สามารถแก้ไขรายละเอียดได้</label>
+					</div>
+					<div className="alert-text">
+						<label className="form-label">ปุ่มรายละเอียดสี</label>
+						<input type="color" className="form-control-color form-control-sm ms-2" value="#004d99" disabled/>
+						<label className="form-label ms-1">เป็นปุ่มดูรายละเอียดชุมนุมในปัจจุบัน สามารถแก้ไขรายละเอียดได้</label>
+						</div>
+				</div>
 				<div className="table-responsive">
 					<style jsx>{`
 						.detailinfo_btn{
@@ -196,45 +212,58 @@ export default function OwnClub({ schoolID, data_school }) {
 							color:white;
 							border-radius:4px;
 						}
+
+						.detailinfo_notbtn{
+							border:none;
+							background-color:#404040;
+							color:white;
+							border-radius:4px;
+						}
+
+						.liststudent_btn{
+							border:none;
+							background-color:#9c4d0d;
+							color:white;
+							border-radius:4px;
+						}
 					`}</style>
 					<table className="table align-middle">
 						<thead>
 							<tr>
-								<th style={{width: "60%"}}>ชื่อชุมนุม</th>
+								<th style={{ width: "10%" }}>ปีการศึกษา</th>
+								<th style={{width: "50%"}}>ชื่อชุมนุม</th>
 								<th style={{width: "20%"}} className="text-center">รายชื่อนักเรียน</th>
 								<th style={{width: "20%"}} className="text-center">รายละเอียดชุมนุม</th>
 							</tr>
 						</thead>
 						<tbody>
 							{data.map((e, i) => {
-								console.log(data_school.nowSchoolYear, e.schoolYear)
 								return (
 									<tr key={i}>
+										<td>{e.schoolYear}</td>
 										<td>{e.clubName}</td>
 										<td className="text-center">
-											<button className="btn btn-sm btn-success" 
+											<button className="btn btn-sm liststudent_btn" 
 												onClick={(ev) => displayStudentList(e,ev)}>
 												ดูรายชื่อ
 											</button>
 										</td>
 										<td className="text-center">
-											{
+											{ 
 												data_school.nowSchoolYear != e.schoolYear ?
-													<button className="btn btn-sm btn-secondary"
+													<button className="btn btn-sm detailinfo_notbtn"
 														data-bs-toggle="modal"
 														data-bs-target="#modalOwnClubTeacher2"
 														onClick={(ev) => clickModal2(e, ev)}>
 														รายละเอียด
 													</button> :
-													<button className="btn btn-sm btn-info"
+													<button className="btn btn-sm detailinfo_btn"
 														data-bs-toggle="modal"
 														data-bs-target="#modalOwnClubTeacher"
 														onClick={(ev) => clickModal(e, ev)}>
 														รายละเอียด
 													</button>
-													
-											}
-												
+												}
 										</td>
 									</tr>
 								);
@@ -310,7 +339,7 @@ export default function OwnClub({ schoolID, data_school }) {
 							</div>
 							
 							<div className="modal-footer">
-								<button className="btn btn-success" id="submitbtn"  onClick={() => Submit()}>Submit</button>
+								<button className="btn" style={{ backgroundColor:"#11620e",color:"#fff"}}  onClick={() => Submit()}>แก้ไข</button>
 							</div>
 						</div>
 					</div>
@@ -383,8 +412,6 @@ export default function OwnClub({ schoolID, data_school }) {
 									</div>
 								</div>
 							</div>
-
-							
 						</div>
 					</div>
 				</div>

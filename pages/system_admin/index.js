@@ -159,6 +159,7 @@ export default function System() {
 			)
 			return
 		}
+		const body = { "email": saveEmail }
 
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
@@ -169,11 +170,17 @@ export default function System() {
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return forget_password(body)
+			},
+			allowOutsideClick: false
+			
 		}).then((result) => {
-			if (result.isConfirmed){
-				const body = { "email": saveEmail }
-				forget_password(body).then((result) => {
-					if (!result) {
+			if (result.isConfirmed) {
+				const result_update = result.value === "true" ? true : false
+				if (!result_update) {
 						Swal.fire({
 							icon: 'error',
 							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
@@ -190,7 +197,7 @@ export default function System() {
 							confirmButtonText: 'ok',
 						})
 					}
-				})
+				
 			}
 		})	
 	}

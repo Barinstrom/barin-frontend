@@ -7,6 +7,7 @@ import Reload from '../../../components/reload'
 import { get_all_schoolID } from '../../../utils/unauth'
 import { get_name_clubs } from '../../../utils/school_admin/get_data'
 import { get_all_stdlist } from '../../../utils/teacher/teacher_getdata'
+import { get_data } from '../../../utils/auth'
 import { CSVLink } from "react-csv";
 
 export default function StudentList({schoolID}) {
@@ -37,6 +38,8 @@ export default function StudentList({schoolID}) {
   const [clubName,setClubName] = useState(null)
   const [csvData,setCsvData] = useState()
   const [allDataErr, setAllDataErr] = useState(true)
+  const [notShowAlert, setNotShowAlert] = useState(0)
+
   const [csvReport, setCsvReport] = useState({
     data: tmpdata,
     headers: headers,
@@ -60,6 +63,12 @@ export default function StudentList({schoolID}) {
         </div>
     </main>
   )
+
+  const alert = (
+    <div className="alert alert-dark" role="alert">
+      ไม่พบนักเรียน
+    </div>
+  )
   
   useEffect(() => {
     if (schoolID) {
@@ -72,10 +81,12 @@ export default function StudentList({schoolID}) {
         "clubID": String(window.localStorage.getItem("clubIDStudentList"))
       }
       
-      Promise.all([get_name_clubs(token, schoolID), get_students_inclub(body, token, schoolID)])
+      setReloadTable(true)
+      Promise.all([get_name_clubs(token, schoolID), get_students_inclub(body, token, schoolID), get_data(token)])
         .then(result => {
-          console.log(result[0])
-          generateDropdown(result[0].data)
+          setReloadTable(false)
+          const nowSchoolYear = result[2][0].data._doc.nowSchoolYear
+          generateDropdown(result[0].data , nowSchoolYear)
           
           if (!result[1]) {
             setDisplayError(true)
@@ -84,6 +95,7 @@ export default function StudentList({schoolID}) {
             const paginate_tmp = generate(result[1].data)
             setDisplayError(false)
             showData(result[1].data.docs)
+            setNotShowAlert(result[1].data.totalDocs)
             showPaginate(paginate_tmp)
             setClubName(router.query.clubName)
             setLoading(false)
@@ -113,6 +125,7 @@ export default function StudentList({schoolID}) {
         const paginate_tmp = generate(result[1].data)
         setDisplayError(false)
         showData(result[1].data.docs)
+        setNotShowAlert(result[1].data.totalDocs)
         showPaginate(paginate_tmp)
         
         for (let e of result[0].data){
@@ -126,11 +139,14 @@ export default function StudentList({schoolID}) {
     })
   }
 
-  function generateDropdown(clubs){
-    console.log(clubs)
+  function generateDropdown(clubs, nowSchoolYear){
+    const clubsAfterfilter = clubs.filter((e) => {
+      return e.schoolYear === nowSchoolYear
+    })
+
     const tmp = (
       <>
-        {clubs.map((e,i) => {
+        {clubsAfterfilter.map((e,i) => {
           return <li style={{cursor:"pointer"}} key={i} className='dropdown-item' onClick={() => chooseFetchClub(e)}>{e.clubName}</li>
         })}
       </>
@@ -207,7 +223,8 @@ export default function StudentList({schoolID}) {
     }else{
         const paginate_tmp = generate(result.data)
         setDisplayError(false)
-        showData(result.data.docs)
+      showData(result.data.docs)
+      setNotShowAlert(result.data.totalDocs)
         showPaginate(paginate_tmp)
         setLoading(false)
     }
@@ -270,9 +287,9 @@ function detailTest(item) {
 
 function getAllStdList() {
   setAllDataErr(true)
-  console.log(String(window.localStorage.getItem("clubIDStudentList")))
+  //console.log(String(window.localStorage.getItem("clubIDStudentList")))
   const data = {
-      clubID : String(window.localStorage.getItem("clubIDStudentList"))
+    clubID : String(window.localStorage.getItem("clubIDStudentList"))
   }
   
   get_all_stdlist(data, token, schoolID).then((res) => {
@@ -324,23 +341,40 @@ if (loading){
 						border-radius:4px;
 					}
         `}</style>
-      <h3 className='text-center mb-3 mt-3'>ดูรายชื่อนักเรียนของชุมนุม {clubName}</h3>
-      <div className='btn-group dropdown'>
-        <button className='btn btn-dark'>ชุมนุม</button>
-        <button className='btn btn-dark dropdown-toggle dropdown-toggle-split' data-bs-toggle="dropdown"></button>
-        <ul className='dropdown-menu'>
-          {dropdown}
-        </ul>
+      <div className='text-center mb-3 mt-3 fs-5'>
+        <span className='me-2'>รายชื่อนักเรียนชุมนุม {clubName}</span>
+        <h4 className="fa-solid fa-circle-info"
+          data-bs-toggle="modal"
+          data-bs-target="#helpmodal"
+          type="button" ></h4>
       </div>
-      <div className="btn-group">
-        <button className='btn comeback_btn ms-2' onClick={() => router.push(`/${schoolID}/admin_school`)}>กลับหน้า admin</button>
+      <div className="d-flex flex-column flex-sm-row p-1 align-items-start align-items-sm-center">
+        <div className='btn-group dropdown d-sm-block order-3 order-sm-1 mt-2 mt-sm-0'>
+          <button className='btn btn-dark dropdown-toggle' data-bs-toggle="dropdown">ชุมนุม</button>
+          <ul className='dropdown-menu'>
+            {dropdown}
+          </ul>
+        </div>
+        <div className="btn-group d-sm-block order-1 order-sm-2 ms-sm-2">
+          <button className='btn comeback_btn' onClick={() => router.push(`/${schoolID}/admin_school`)}>กลับหน้า admin</button>
+        </div>
+        <div className="btn-group d-sm-block order-2 order-sm-3 mt-2 mt-sm-0 ms-sm-2">
+          { !notShowAlert ? null :
+            <button className='btn csv_btn' data-bs-target="#modal_csvAdmin" data-bs-toggle="modal" onClick={() => getAllStdList()}>csv รายชื่อ</button>
+          }
+        </div>
+        
       </div>
-      <button className='btn csv_btn ms-2' data-bs-target="#modal_csvAdmin" data-bs-toggle="modal"  onClick={() => getAllStdList()}>csv รายชื่อ</button>
+      
 
       <div className='mt-4'>
-        {reloadTable ? reload : data}
+        {reloadTable ? reload :
+          notShowAlert ? data : alert}
       </div>
-      {paginate}
+					{
+            reloadTable ? null :
+              notShowAlert ? paginate : null
+          }
       <div className="modal fade" id="modalStudentListbyAdmin">
           <div className="modal-dialog">
               <div className="modal-content">
@@ -375,6 +409,19 @@ if (loading){
           </div>
         </div>
       </div>
+
+      <div className="modal fade" id="helpmodal">
+        <div className="modal-dialog modal-lg">
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h3 className="modal-title" >คู่มือการใช้งาน</h3>
+            </div>
+            <div className='modal-body'>
+              รอใส่ user manual
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   )
 }
@@ -391,7 +438,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
 	const schoolID_param = context.params.schoolID
 	const schoolPathAll = await get_all_schoolID();
-	console.log("context",context)
+	console.log(schoolPathAll)
 	
 	const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
 	if (school_path_data) {

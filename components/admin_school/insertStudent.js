@@ -97,7 +97,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 					preConfirm: () => {
 						return add_students(body, token, schoolID);
 					},
-					allowOutsideClick: () => !Swal.isLoading()
+					allowOutsideClick: false
 
 				}).then((res) => {
 					if (res.isConfirmed) {
@@ -212,7 +212,13 @@ export default function InsertTeacher({ school_data,schoolID }) {
 					border-radius:4px;
 				}
 			`}</style>
-			<div className="text-center display-6">เพิ่มข้อมูลของนักเรียน</div>
+			<div className="text-center display-6">
+				<span className='me-2'>เพิ่มข้อมูลนักเรียน</span>
+				<h4 className="fa-solid fa-circle-info"
+					data-bs-toggle="modal"
+					data-bs-target="#helpmodal"
+					type="button" ></h4>
+			</div>
 			
 			{/* เพิ่มข้อมูลนักเรียนหลายคน */}
 			<div className="card mt-5">
@@ -289,6 +295,19 @@ export default function InsertTeacher({ school_data,schoolID }) {
 									<button type="submit" className="btn btn-success w-100">ตกลง</button>
 								</div>
 							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="modal fade" id="helpmodal">
+				<div className="modal-dialog modal-lg">
+					<div className='modal-content'>
+						<div className='modal-header'>
+							<h3 className="modal-title" >คู่มือการใช้งาน</h3>
+						</div>
+						<div className='modal-body'>
+							รอใส่ user manual
 						</div>
 					</div>
 				</div>

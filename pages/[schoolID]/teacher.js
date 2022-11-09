@@ -173,6 +173,7 @@ export default function Teacher({ schoolID }) {
 			)
 			return
 		}
+		const body = { "email": saveEmail }
 
 		Swal.fire({
 			title: 'คุณต้องการเปลี่ยนรหัสผ่านใช่หรือไม่',
@@ -183,28 +184,33 @@ export default function Teacher({ schoolID }) {
 			showCancelButton: true,
 			cancelButtonText: "ยกเลิก",
 			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return forget_password(body)
+			},
+			allowOutsideClick: false
 		}).then((result) => {
-			if (result.isConfirmed){
-				const body = { "email": saveEmail }
-				forget_password(body).then((result) => {
-					if (!result) {
-						Swal.fire({
-							icon: 'error',
-							title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
-							showConfirmButton: true,
-							confirmButtonColor: "#d1000a",
-							confirmButtonText: 'ok',
-						})
-					} else {
-						Swal.fire({
-							icon: 'success',
-							title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
-							showConfirmButton: true,
-							confirmButtonColor: "#009431",
-							confirmButtonText: 'ok',
-						})
-					}
-				})
+			if (result.isConfirmed) {
+				const result_update = result.value === "true" ? true : false
+				if (!result_update) {
+					Swal.fire({
+						icon: 'error',
+						title: 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง',
+						showConfirmButton: true,
+						confirmButtonColor: "#d1000a",
+						confirmButtonText: 'ok',
+					})
+				} else {
+					Swal.fire({
+						icon: 'success',
+						title: 'ส่งช่องทางการเปลี่ยนรหัสเรียบร้อย' + '\n' + 'กรุณาตรวจสอบ email',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431",
+						confirmButtonText: 'ok',
+					})
+				}
+
 			}
 		})
 	}

@@ -37,7 +37,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 				)
 				setShowData(tmp)
 			} else {
-				console.log(res)
+				//console.log(res)
 				const tmp = (
 					<div className="table-responsive">
 						<style jsx>{`
@@ -124,19 +124,19 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 		scheduleStart.current.innerText = st + " นาฬิกา"
 		scheduleEnd.current.innerText = en + " นาฬิกา"
 		getTeacherName(item, token, schoolID).then(result => {
-			console.log(result)
-			if (!result) {
-				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-			}
-			else if (!result.data) {
-				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-			}
-			else if (result.data) {
-				teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
-			} else {
-				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-			}
-		})
+            if (!result){
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (!result.data) {
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+            else if (result.data) {
+                const {firstname , lastname} = result.data._teacher
+                teacherName.current.innerText = `${firstname} ${lastname}`
+            }else {
+                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+            }
+        })
 	}
 
 	if (displayError){
@@ -144,7 +144,13 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 	}else{
 		return (
 			<>
-				<div className="text-center display-6">Past Club</div>
+				<div className="text-center display-6">
+					<span className='me-2'>Past Club</span>
+					<h4 className="fa-solid fa-circle-info"
+						data-bs-toggle="modal"
+						data-bs-target="#helpmodal"
+						type="button" ></h4>
+				</div>
 				<div className='row'>
 					<div className='col-12'>
 						{showData}
@@ -167,11 +173,6 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 										<div className="col-12">
 											<p>รหัสวิชา : &nbsp;
 												<span ref={groupID}></span>
-											</p>
-										</div>
-										<div className="col-12">
-											<p>ชื่อนามสกุลผู้สอน : &nbsp;
-												<span ref={teacherName}></span>
 											</p>
 										</div>
 										<div className="col-12">
@@ -214,8 +215,26 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 												<span ref={scheduleEnd}></span>
 											</p>
 										</div>
+										<div className="col-12">
+											<p>ชื่อนามสกุลผู้สอน : &nbsp;
+												<span ref={teacherName}></span>
+											</p>
+										</div>
 									</div>
 								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="modal fade" id="helpmodal">
+					<div className="modal-dialog modal-lg">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title" >คู่มือการใช้งาน</h3>
+							</div>
+							<div className='modal-body'>
+								รอใส่ user manual
 							</div>
 						</div>
 					</div>

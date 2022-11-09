@@ -14,6 +14,8 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
     const [paginate,setPaginate] = useState(null)
     const [displayError, setDisplayError] = useState(false)
     const [haveClubs, setHaveClubs] = useState(false)
+    const [notShowAlert, setNotShowAlert] = useState(0)
+
     const search = useRef()
 
     const clubName = useRef()
@@ -41,6 +43,12 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         </main>
     )
 
+    const alert = (
+        <div className="alert alert-dark" role="alert">
+            ไม่พบชุมนุม
+        </div>
+    )
+
     useEffect(()=>{
         window.localStorage.removeItem("studentSearchClub")
         window.localStorage.removeItem("studentPageClub")
@@ -52,9 +60,11 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
             nowSchoolYear : nowSchoolYear
         }
 
+        setReloadTable(true)
         Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(sc_Year,token, schoolID)])
             .then(result => {
                 console.log(result)
+                setReloadTable(false)
                 if (!result[0]){
                     setDisplayError(true)
                 }else{
@@ -62,6 +72,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                     const paginate_tmp = generate(result[0].data)
                     setDisplayError(false)
                     showData(result[0].data.docs)
+                    setNotShowAlert(result[0].data.totalDocs)
                     showPaginate(paginate_tmp)
                 }
             })
@@ -85,17 +96,18 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         let [ st ,en ] = schedule.split("-")
         scheduleStart.current.innerText = st + " นาฬิกา"
         scheduleEnd.current.innerText = en + " นาฬิกา"
+        teacherName.current.innerText = ""
         getTeacherName(item, token, schoolID).then(result => {
-            console.log(result)
-            if (!result) {
+            if (!result){
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
             else if (!result.data) {
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
             else if (result.data) {
-                teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
-            } else {
+                const {firstname , lastname} = result.data._teacher
+                teacherName.current.innerText = `${firstname} ${lastname}`
+            }else {
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
         })
@@ -138,7 +150,9 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         
         const body = {"page":1}
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -147,9 +161,9 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
             setDisplayError(false)
             showData(result.data.docs)
             showPaginate(paginate_tmp)
+            setNotShowAlert(result.data.totalDocs)
         }
     }
-    
     
     async function clickAccept(ev){
         ev.preventDefault()
@@ -167,7 +181,10 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
             }
         }
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
+        
         if (!result){
             setDisplayError(true)
         }else{
@@ -175,6 +192,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
             setDisplayError(false)
             showData(result.data.docs)
             showPaginate(paginate_tmp)
+            setNotShowAlert(result.data.totalDocs)
         }
     }
     
@@ -249,6 +267,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
             setDisplayError(false)
             showData(result.data.docs)
             showPaginate(paginate_tmp)
+            setNotShowAlert(result.data.totalDocs)
         }
     }
 
@@ -348,7 +367,13 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         return (
             <>
                 <div>
-                    <div className="text-center display-6 mb-3">searchClub</div>
+                    <div className="text-center display-6 mb-3">
+                        <span className='me-2'>searchClub</span>
+                        <h4 className="fa-solid fa-circle-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#helpmodal"
+                            type="button" ></h4>
+                    </div>
                     {!inschedule ? out_sc : 
                         haveClubs ? ha_sc : in_sc}
                     <div className='row'>
@@ -356,16 +381,18 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                             <form className='mb-3'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
-                                    <input type="text" className='form-control' ref={search}></input>
+                                    <input placeholder="ค้นหาด้วย ชื่อชุมนุม" type="text" className='form-control' ref={search}></input>
                                     <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
 									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            {reloadTable ? reload  : data}
-                        </div>
-                    </div>
-                    {paginate}
-                </div>
+                            {reloadTable ? reload :
+								notShowAlert ? data : alert}
+						</div>
+					</div>
+					{reloadTable ? null :
+						notShowAlert ? paginate : null}
+				</div>
     
                 <div className="modal fade" id="editClubModal">
                     <div className="modal-dialog">
@@ -384,11 +411,6 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                                     <div className="col-12">
                                         <p>รหัสวิชา : &nbsp;
                                             <span ref={groupID}></span>
-                                        </p>
-                                    </div>
-                                    <div className="col-12">
-                                        <p>ชื่อนามสกุลผู้สอน : &nbsp;
-                                            <span ref={teacherName}></span>
                                         </p>
                                     </div>
                                     <div className="col-12">
@@ -431,9 +453,24 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                                             <span ref={scheduleEnd}></span>
                                         </p>
                                     </div>
+                                    <div className="col-12">
+                                        <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
+                                    </div>
                                 </div>
                             </div>
                             {haveClubs || !inschedule ? null : applyBtn}
+                        </div>
+                    </div>
+                </div>
+                <div className="modal fade" id="helpmodal">
+                    <div className="modal-dialog modal-lg">
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
+                            </div>
+                            <div className='modal-body'>
+                                รอใส่ user manual
+                            </div>
                         </div>
                     </div>
                 </div>

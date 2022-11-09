@@ -16,7 +16,9 @@ export default function EditClub({ school_data,schoolID }) {
     
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
-    const [displayError,setDisplayError] = useState(false)
+    const [displayError, setDisplayError] = useState(false)
+    const [notShowAlert, setNotShowAlert] = useState(0)
+
     const search = useRef()
 
     const clubName = useRef()
@@ -43,6 +45,12 @@ export default function EditClub({ school_data,schoolID }) {
         </main>
     )
 
+    const alert = (
+        <div className="alert alert-dark" role="alert">
+            ไม่พบชุมนุม
+        </div>
+    )
+
     useEffect(()=>{
         window.localStorage.removeItem("searchEditClub")
         window.localStorage.removeItem("pageEditClub")
@@ -51,9 +59,10 @@ export default function EditClub({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditClub",1)
 
-        
+        setReloadTable(true)
         paginationClub(body, token, schoolID).then(result => {
-            console.log(result)
+            //console.log(result)
+            setReloadTable(false)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -61,15 +70,16 @@ export default function EditClub({ school_data,schoolID }) {
                 setDisplayError(false)
                 showData(result.data.docs)
                 showPaginate(paginate_tmp)
+                setNotShowAlert(result.data.totalDocs)
             }
         })
     },[])
 
     function detailInfo(item, ev) {
+        console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo
-        
         category.current.value = item.category
         limitStudent.current.value = item.limit
         schoolYear.current.value = item.schoolYear
@@ -77,7 +87,6 @@ export default function EditClub({ school_data,schoolID }) {
         teacherEmail.current.value = item.teacherEmail
         
         let [day_tmp, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
-        // console.log(day_tmp)
         const english_day = {
             "วันจันทร์":"monday",
             "วันอังคาร":"tuesday",
@@ -88,16 +97,13 @@ export default function EditClub({ school_data,schoolID }) {
             "วันอาทิตย์": "sunday"
         }
 
-        // console.log(english_day[day_tmp])
-        
         day.current.value = String(english_day[day_tmp]) //"วันจันทร์"
         let [ startTime ,endTime ] = schedule.split("-")
         scheduleStart.current.value = startTime
         scheduleEnd.current.value = endTime
 
-        teacherName.current.innerText = "--------"
+        teacherName.current.innerText = ""
         getTeacherName(item, token, schoolID).then(result => {
-            console.log(result)
             if (!result){
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
@@ -105,7 +111,8 @@ export default function EditClub({ school_data,schoolID }) {
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
             else if (result.data) {
-                teacherName.current.innerText = result.data._teacher.firstname + " " + result.data._teacher.lastname
+                const {firstname , lastname} = result.data._teacher
+                teacherName.current.innerText = `${firstname} ${lastname}`
             }else {
                 teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
             }
@@ -114,6 +121,16 @@ export default function EditClub({ school_data,schoolID }) {
     }
 
     async function updateClub() {
+        if (clubName.current.value === "" || clubInfo.current.value === "" || groupID.current.value === "" || category.current.value === "" || limitStudent.current.value === "" || schoolYear.current.value === "" || scheduleStart.current.value === "" || scheduleEnd.current.value === "" || day.current.value === ""){
+            Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+            return
+        }
         const th_day = {
             "monday": "วันจันทร์",
             "tuesday": "วันอังคาร",
@@ -123,7 +140,7 @@ export default function EditClub({ school_data,schoolID }) {
             "saturday": "วันเสาร์",
             "sunday": "วันอาทิตย์"
         }
-        console.log(th_day[String(day.current.value)])
+        
         const body_update = {
             clubID: clubName.current.getAttribute("data-clubid"),
             clubName:clubName.current.value,
@@ -135,14 +152,10 @@ export default function EditClub({ school_data,schoolID }) {
             teacherEmail: teacherEmail.current.value,
             schedule: [th_day[String(day.current.value)] + " " + String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ],
         }
-        // if(teacherFirstName.current.value !== "ไม่มีชื่อครูผู้สอน" || teacherLastName.current.value !== "ไม่มีชื่อครูผู้สอน") {
-        //     body_update.firstname = teacherFirstName.current.value
-        //     body_update.lastname = teacherLastName.current.value
-        // }
-        console.log(body_update)
-
+        
         Swal.fire({
-            title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลชุมนุมใช่หรือไม่",
+            icon:"question",
+            title: "ยืนยันการแก้ไข",
             showConfirmButton: true,
             confirmButtonColor: "#0208bb",
             confirmButtonText: 'ok',
@@ -155,64 +168,65 @@ export default function EditClub({ school_data,schoolID }) {
             preConfirm: () => {
                 return update_club(body_update,token,schoolID)
             },
-            allowOutsideClick: () => !Swal.isLoading()
+            allowOutsideClick: false
 
         }).then((res) => {
-            if (res.isConfirmed){
-                if (!res.value) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'แก้ไขข้อมูลไม่สำเร็จ',
-                            showConfirmButton: true,
-                            confirmButtonColor: "#d1000a",
-                            confirmButtonText: 'ok',
-                        })
-                        return
-                    }else if(res.value.data.success){
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'แก้ไขข้อมูลสำเร็จ',
-                            showConfirmButton:true,
-                            confirmButtonColor:"#009431"
-                        }).then(() => {
-                            const body = {
-                                "page":window.localStorage.getItem("pageEditClub"),
-                                "query":window.localStorage.getItem("searchEditClub")
-                            }
-                            
-                            paginationClub(body, token, schoolID).then((result) => {
-                                if (!result){
-                                    setDisplayError(true)
-                                }else{
-                                    if (result.data.docs.length === 0){
-                                        window.localStorage.setItem("pageEditClub",result.data.totalPages)
-                                        
-                                        const body = {
-                                            "page":window.localStorage.getItem("pageEditClub"),
-                                            "query":window.localStorage.getItem("searchEditClub")
-                                        }
-                                        paginationClubEdit(body).then((result_new) => {
-                                            if (!result_new){
-                                                setDisplayError(true)
-                                            }else{
-                                                const paginate_tmp = generate(result_new.data)
-                                                setDisplayError(false)
-                                                showData(result_new.data.docs)
-                                                showPaginate(paginate_tmp)
-                                            }
-                                        })
-                                        
-                                        
-                                    }else{
-                                        const paginate_tmp = generate(result.data)
-                                        setDisplayError(false)
-                                        showData(result.data.docs)
-                                        showPaginate(paginate_tmp)
+            if (res.isConfirmed) {
+                const result_update = res.value === "true" ? true : false
+                if (!result_update) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'แก้ไขข้อมูลไม่สำเร็จ',
+                        showConfirmButton: true,
+                        confirmButtonColor: "#d1000a",
+                        confirmButtonText: 'ok',
+                    })
+                    return
+                }else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'แก้ไขข้อมูลสำเร็จ',
+                        showConfirmButton:true,
+                        confirmButtonColor:"#009431"
+                    }).then(() => {
+                        const body = {
+                            "page":window.localStorage.getItem("pageEditClub"),
+                            "query":window.localStorage.getItem("searchEditClub")
+                        }
+                        
+                        paginationClub(body, token, schoolID).then((result) => {
+                            if (!result){
+                                setDisplayError(true)
+                            }else{
+                                if (result.data.docs.length === 0){
+                                    window.localStorage.setItem("pageEditClub",result.data.totalPages)
+                                    
+                                    const body = {
+                                        "page":window.localStorage.getItem("pageEditClub"),
+                                        "query":window.localStorage.getItem("searchEditClub")
                                     }
+                                    paginationClubEdit(body).then((result_new) => {
+                                        if (!result_new){
+                                            setDisplayError(true)
+                                        }else{
+                                            const paginate_tmp = generate(result_new.data)
+                                            setDisplayError(false)
+                                            showData(result_new.data.docs)
+                                            setNotShowAlert(result_new.data.totalDocs)
+                                            showPaginate(paginate_tmp)
+                                        }
+                                    })
+                                }else{
+                                    const paginate_tmp = generate(result.data)
+                                    setDisplayError(false)
+                                    showData(result.data.docs)
+                                    setNotShowAlert(result.data.totalDocs)
+                                    showPaginate(paginate_tmp)
                                 }
-                            })
+                            }
                         })
-                    }
+                    })
+                }
             }
         })
     }
@@ -228,7 +242,9 @@ export default function EditClub({ school_data,schoolID }) {
             "page":1
         }
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -236,11 +252,11 @@ export default function EditClub({ school_data,schoolID }) {
             const paginate_tmp = generate(result.data)
             setDisplayError(false)
             showData(result.data.docs)
+            setNotShowAlert(result.data.totalDocs)
             showPaginate(paginate_tmp)
         }
     }
     
-    /* กรณี search ข้อมูลต่างๆ */
     async function clickAccept(ev){
         ev.preventDefault()
         let body
@@ -258,7 +274,9 @@ export default function EditClub({ school_data,schoolID }) {
             }
         }
         
+        setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -266,6 +284,7 @@ export default function EditClub({ school_data,schoolID }) {
             const paginate_tmp = generate(result.data)
             setDisplayError(false)
             showData(result.data.docs)
+            setNotShowAlert(result.data.totalDocs)
             showPaginate(paginate_tmp)
         }
     }
@@ -320,9 +339,7 @@ export default function EditClub({ school_data,schoolID }) {
         return paginate_tmp
     }
 
-    
     async function clickPage(page){
-        
         const body = {
             "page":page,
             "query":window.localStorage.getItem("searchEditClub")
@@ -333,19 +350,20 @@ export default function EditClub({ school_data,schoolID }) {
         setReloadTable(true)
         const result = await paginationClub(body,token,schoolID)
         setReloadTable(false)
+        
         if (!result){
             setDisplayError(true)
         }else{
             const paginate_tmp = generate(result.data)
             setDisplayError(false)
             showData(result.data.docs)
+            setNotShowAlert(result.data.totalDocs)
             showPaginate(paginate_tmp)
         }
     }
 
     function goStudentList(item,ev){
         const params_clubID = String(item._id)
-        //console.log(item.clubName)
         router.push(`/${schoolID}/admin_school/studentList/?clubID=${params_clubID}&clubName=${item.clubName}`)
     }
 
@@ -372,17 +390,18 @@ export default function EditClub({ school_data,schoolID }) {
                         <tr>
                             <th style={{width:"100px"}}>รหัสวิชา</th>
                             <th style={{width:"250px"}}>ชื่อชุมนุม</th>
+                            <th style={{width:"150px"}}>ปีการศึกษา</th>
                             <th className='text-center text-sm-end' style={{width:"250px"}}>รายชื่อนักเรียน</th>
                             <th className='text-center text-sm-end' style={{width:"100px"}}>แก้ไขข้อมูล</th>
                         </tr>
                     </thead>
                     <tbody>
                         {result.map((item, index) => {
-                            //console.log(item)
                             return (
                                 <tr key={index}>
                                     <td>{item.groupID}</td>
                                     <td>{item.clubName}</td>
+                                    <td>{item.schoolYear}</td>
                                     <td className='text-center text-sm-end'>
                                         <button className='btn liststudent_btn btn-sm me-0 me-sm-3'
                                             onClick={(ev)=> goStudentList(item,ev)}
@@ -431,88 +450,108 @@ export default function EditClub({ school_data,schoolID }) {
         return (
             <>
                 <div>
-                    <div className="text-center display-6 mb-3">แก้ไขข้อมูลของชุมนุม</div>
+                    <div className="text-center display-6 mb-3">
+                        <span className='me-2'>แก้ไขข้อมูลของชุมนุม</span>
+                        <h4 className="fa-solid fa-circle-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#helpmodal"
+                            type="button" ></h4>
+                    </div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
-                                    <input type="text" className='form-control' ref={search}></input>
+                                    <input type="text" placeholder="ค้นหาด้วย ชื่อชุมนุม" className='form-control' ref={search}></input>
                                     <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
 									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            {reloadTable ? reload  : data}
+                            {reloadTable ? reload :
+                                notShowAlert ? data : alert}
                         </div>
                     </div>
-                    {paginate}
+                    {reloadTable ? null :
+                        notShowAlert ? paginate : null}
                 </div>
     
                 <div className="modal fade" id="editClubModal">
                     <div className="modal-dialog">
                         <div className='modal-content'>
                             <div className='modal-header'>
-                                <h3 className="modal-title">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
+                                <h3 className="modal-title">แบบฟอร์มแก้ไขข้อมูลชุมนุม</h3>
                                 <button className='btn-close' data-bs-dismiss="modal"></button>
                             </div>
                             <div className='modal-body'>
                                 <form className="row gy-2 gx-3">
-                                <div className="col-12">
-									<label className="form-label">ชื่อคลับ</label>
-									<input type="text" className="form-control" ref={clubName}/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รหัสวิชา</label>
-									<input type="text" className="form-control" ref={groupID}/>
-                                </div>
-                                <div className="col-12">
-                                    <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
-                                </div>
-                                <div className="col-12">
-                                    <label className="form-label">อีเมลผู้สอน</label>
-                                    <input type="text" className="form-control" ref={teacherEmail} />
-                                </div>
-								<div className="col-12">
-									<label className="form-label">category</label>
-                                    <input type="text" className='form-control' ref={category}/>
-								</div>
-								<div className="col-12">
-									<label className="form-label">รายละเอียดคลับ</label>
-									<textarea className="form-control" rows="3" ref={clubInfo} />
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">จำนวนนักเรียนสูงสุด</label>
-									<input type="number" className="form-control" ref={limitStudent}/>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">ปีการศึกษา</label>
-									<input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
-                                </div>
-                                <div className="col-12">
-                                    <label className="form-label">วันที่สอน</label>
-                                    <select className="form-select" ref={day}>
-                                        <option value="monday">วันจันทร์</option>
-                                        <option value="tuesday">วันอังคาร</option>
-                                        <option value="wednesday">วันพุธ</option>
-                                        <option value="thurday">วันพฤหัสบดี</option>
-                                        <option value="friday">วันศุกร์</option>
-                                        <option value="saturday">วันเสาร์</option>
-                                        <option value="sunday">วันอาทิตย์</option>
-                                    </select>
-                                </div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาเริ่ม</label>
-                                    <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
-								</div>
-								<div className="col-sm-6">
-									<label className="form-label">เวลาจบ</label>
-                                    <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
-								</div>
+                                    <div className="col-12">
+                                        <label className="form-label">ชื่อคลับ</label>
+                                        <input type="text" className="form-control" ref={clubName}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">รหัสวิชา</label>
+                                        <input type="text" className="form-control" ref={groupID}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">อีเมลผู้สอน</label>
+                                        <input type="text" className="form-control" ref={teacherEmail} disabled/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">category</label>
+                                        <input type="text" className='form-control' ref={category}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">รายละเอียดคลับ</label>
+                                        <textarea className="form-control" rows="3" ref={clubInfo} />
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">จำนวนนักเรียนสูงสุด</label>
+                                        <input type="number" className="form-control" ref={limitStudent}/>
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">ปีการศึกษา</label>
+                                        <input type="number" className="form-control" min={school_data.nowSchoolYear} ref={schoolYear}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">วันที่สอน</label>
+                                        <select className="form-select" ref={day}>
+                                            <option value="monday">วันจันทร์</option>
+                                            <option value="tuesday">วันอังคาร</option>
+                                            <option value="wednesday">วันพุธ</option>
+                                            <option value="thurday">วันพฤหัสบดี</option>
+                                            <option value="friday">วันศุกร์</option>
+                                            <option value="saturday">วันเสาร์</option>
+                                            <option value="sunday">วันอาทิตย์</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">เวลาเริ่ม</label>
+                                        <input type="time" className="form-control mt-3" name="startTime" ref={scheduleStart}></input>
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <label className="form-label">เวลาจบ</label>
+                                        <input type="time" className="form-control mt-3" name="endTime" ref={scheduleEnd}></input>
+                                    </div>
+                                    <div className="col-12">
+                                        <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
+                                    </div>
                                 </form>
                             </div>
                             <div className='modal-footer'>
                                 <button className='btn' style={{ backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
                                 <button className='btn' style={{ backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateClub()}>ตกลง</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="modal fade" id="helpmodal">
+                    <div className="modal-dialog modal-lg">
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
+                            </div>
+                            <div className='modal-body'>
+                                รอใส่ user manual
                             </div>
                         </div>
                     </div>

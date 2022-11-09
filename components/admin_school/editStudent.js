@@ -11,12 +11,14 @@ export default function EditStudent({ school_data,schoolID }) {
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError,setDisplayError] = useState(false)
-    const [reloadTable,setReloadTable] = useState(false)
+    const [reloadTable, setReloadTable] = useState(false)
+    const [notShowAlert, setNotShowAlert] = useState(0)
+
     const search = useRef()
 
     const firstname = useRef()
     const lastname = useRef()
-    //const email = useRef()
+    const email = useRef()
     const tel = useRef()
     const classYear = useRef()
     const enteredYear = useRef()
@@ -33,6 +35,12 @@ export default function EditStudent({ school_data,schoolID }) {
         </main>
     )
 
+    const alert = (
+        <div className="alert alert-dark" role="alert">
+            ไม่พบข้อมูลนักเรียน
+        </div>
+    )
+
     useEffect(()=>{
         window.localStorage.removeItem("searchEditStudent")
         window.localStorage.removeItem("pageEditStudent")
@@ -41,7 +49,9 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         window.localStorage.setItem("pageEditStudent",1)
         
-        paginationStudent(body,token,schoolID).then(result => {
+        setReloadTable(true)
+        paginationStudent(body, token, schoolID).then(result => {
+            setReloadTable(false)
             if (!result){
                 setDisplayError(true)
             }else{
@@ -49,20 +59,32 @@ export default function EditStudent({ school_data,schoolID }) {
                 setDisplayError(false)
                 showData(result.data.docs)
                 showPaginate(paginate_tmp)
+                setNotShowAlert(result.data.totalDocs)
             }
         })
     },[])
 
     function detailInfo(item,ev){
-		firstname.current.setAttribute("user-id",ev.target.getAttribute("data-bs-id"))
+        firstname.current.setAttribute("user-id",ev.target.getAttribute("data-bs-id"))
         firstname.current.value = item.firstname
         lastname.current.value = item.lastname
+        email.current.value = item.email
         tel.current.value = item.tel
         classYear.current.value = item.classYear
         enteredYear.current.value = item.enteredYear
     }
 
     async function updateStudent(){
+        if (firstname.current.value === "" || lastname.current.value === "" || tel.current.value === "" || classYear.current.value === "" || enteredYear.current.value === ""){
+            Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+            return
+        }
         const body = {
             userID:firstname.current.getAttribute("user-id"),
             firstname:firstname.current.value,
@@ -73,9 +95,9 @@ export default function EditStudent({ school_data,schoolID }) {
         }
         
         try {
-            
             Swal.fire({
-                title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลนักเรียนใช่หรือไม่",
+                icon: 'question',
+                title: "ยืนยันการแก้ไข",
                 showConfirmButton: true,
                 confirmButtonColor: "#0208bb",
                 confirmButtonText: 'ok',
@@ -88,11 +110,13 @@ export default function EditStudent({ school_data,schoolID }) {
                 preConfirm: () => {
                     return update_student(body, token, schoolID)
                 },
-                allowOutsideClick: () => !Swal.isLoading()
+                allowOutsideClick: false
 
             }).then((res) => {
+                console.log(res)
                 if (res.isConfirmed) { 
-                    const result_update = res.value
+                    const result_update = res.value === "true" ? true : false
+                    
                     if (!result_update) {
                         Swal.fire({
                             icon: 'error',
@@ -101,52 +125,50 @@ export default function EditStudent({ school_data,schoolID }) {
                             confirmButtonColor: "#d1000a"
                         })
                         return
-                    } else if (result_update.status === 200) {
+                    }else{
                         Swal.fire({
                             icon: 'success',
                             title: 'แก้ไขข้อมูลสำเร็จ',
                             showConfirmButton: true,
                             confirmButtonColor: "#009431"
-                        })
-
-                        const body = {
-                            "page": window.localStorage.getItem("pageEditStudent"),
-                            "query": window.localStorage.getItem("searchEditStudent")
-                        }
-
-                        paginationStudent(body, token, schoolID).then((result) => {
-                            if(!result) {
-                                setDisplayError(true)
-                            } else {
-                                if(result.data.docs.length === 0) {
-                                    window.localStorage.setItem("pageEditStudent", result.data.totalPages)
-                                    const body = {
-                                        "page": window.localStorage.getItem("pageEditStudent"),
-                                        "query": window.localStorage.getItem("searchEditStudent")
-                                    }
-
-                                    paginationStudent(body, token, schoolID).then((result_new) => {
-                                        if (!result_new) {
-                                            setDisplayError(true)
-                                        } else {
-                                            const paginate_tmp = generate(result_new.data)
-                                            setDisplayError(false)
-                                            showData(result_new.data.docs)
-                                            showPaginate(paginate_tmp)
-                                        }
-                                    })
-
-                                    
+                        }).then(() => {
+                            const body = {
+                                "page": window.localStorage.getItem("pageEditStudent"),
+                                "query": window.localStorage.getItem("searchEditStudent")
+                            }
+    
+                            paginationStudent(body, token, schoolID).then((result) => {
+                                if(!result) {
+                                    setDisplayError(true)
                                 } else {
-                                    const paginate_tmp = generate(result.data)
-                                    setDisplayError(false)
-                                    showData(result.data.docs)
-                                    showPaginate(paginate_tmp)
+                                    if(result.data.docs.length === 0) {
+                                        window.localStorage.setItem("pageEditStudent", result.data.totalPages)
+                                        const body = {
+                                            "page": window.localStorage.getItem("pageEditStudent"),
+                                            "query": window.localStorage.getItem("searchEditStudent")
+                                        }
+    
+                                        paginationStudent(body, token, schoolID).then((result_new) => {
+                                            if (!result_new) {
+                                                setDisplayError(true)
+                                            } else {
+                                                const paginate_tmp = generate(result_new.data)
+                                                setDisplayError(false)
+                                                showData(result_new.data.docs)
+                                                showPaginate(paginate_tmp)
+                                                setNotShowAlert(result_new.data.totalDocs)
+                                            }
+                                        })
+                                    } else {
+                                        const paginate_tmp = generate(result.data)
+                                        setDisplayError(false)
+                                        showData(result.data.docs)
+                                        showPaginate(paginate_tmp)
+                                        setNotShowAlert(result.data.totalDocs)
+                                    }
                                 }
-                    }
+                            })
                         })
-
-                        
                     }
                 }
             })            
@@ -166,7 +188,9 @@ export default function EditStudent({ school_data,schoolID }) {
             "page":1
         }
         
+        setReloadTable(true)
         const result = await paginationStudent(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -175,6 +199,7 @@ export default function EditStudent({ school_data,schoolID }) {
             setDisplayError(false)
             showData(result.data.docs)
             showPaginate(paginate_tmp)
+            setNotShowAlert(result.data.totalDocs)
         }
     }
     
@@ -193,7 +218,9 @@ export default function EditStudent({ school_data,schoolID }) {
             }
         }
         
+        setReloadTable(true)
         const result = await paginationStudent(body,token,schoolID)
+        setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -202,11 +229,11 @@ export default function EditStudent({ school_data,schoolID }) {
             setDisplayError(false)
             showData(result.data.docs)
             showPaginate(paginate_tmp)
+            setNotShowAlert(result.data.totalDocs)
         }
     }
     
     function generate(result){
-        //console.log(result)
         const paginate_tmp = []
         
         if (result.totalPages <= 6){
@@ -345,23 +372,31 @@ export default function EditStudent({ school_data,schoolID }) {
         return (
             <>
                 <div>
-                    <h3 className="text-center display-6 mb-3">แก้ไขข้อมูลของนักเรียน</h3>
+                    <div className="text-center display-6 mb-3">
+                        <span className='me-2'>แก้ไขข้อมูลของนักเรียน</span>
+                        <h4 className="fa-solid fa-circle-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#helpmodal"
+                            type="button" ></h4>
+                    </div>
                     <div className='row'>
                         <div className='col-12'>
                             <form className='mb-3'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
-                                    <input type="text" className='form-control' ref={search}></input>
+                                    <input type="text" placeholder="ค้นหาด้วย ชื่อนามสกุล" className='form-control' ref={search}></input>
                                     <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
 									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
                         </div>
                         <div className='col-12'>
-                            {reloadTable ? reload : data}
+                            {reloadTable ? reload :
+                                notShowAlert ? data : alert}
                         </div>
                     </div>
-                    {paginate}
+                    {reloadTable ? null :
+                        notShowAlert ? paginate : null}
                 </div>
     
                 <div className="modal fade" id="editStudentModal">
@@ -381,6 +416,10 @@ export default function EditStudent({ school_data,schoolID }) {
                                         <label className="form-label">นามสกุล</label>
                                         <input type="text" className="form-control" ref={lastname}/>
                                     </div>
+                                    <div className="col-12">
+                                        <label className="form-label">อีเมลล์</label>
+                                        <input type="email" className="form-control" ref={email} disabled/>
+                                    </div>
                                     <div className="col-sm-6">
                                         <label className="form-label">โทรศัพท์มือถือ</label>
                                         <input type="tel" className="form-control" ref={tel}/>
@@ -396,8 +435,20 @@ export default function EditStudent({ school_data,schoolID }) {
                                 </form>
                             </div>
                             <div className='modal-footer'>
-                                <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
-                                <button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateStudent()}>ตกลง</button>
+                                <button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
+                                <button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} data-bs-dismiss="modal" onClick={()=> updateStudent()}>แก้ไข</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="modal fade" id="helpmodal">
+                    <div className="modal-dialog modal-lg">
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
+                            </div>
+                            <div className='modal-body'>
+                                รอใส่ user manual
                             </div>
                         </div>
                     </div>

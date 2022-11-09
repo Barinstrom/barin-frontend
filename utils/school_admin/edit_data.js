@@ -18,10 +18,10 @@ export async function set_schedule(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    return 'true'
   } catch (err) {
     console.log(err)
-    return false
+    return 'false'
   }
 }
 
@@ -40,10 +40,10 @@ export async function update_club(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    return "true"
   } catch (err) {
     console.log(err)
-    return false
+    return 'false'
   }
 };
 
@@ -62,11 +62,11 @@ export async function update_student(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    console.log(result)
-    return result
+    
+    return "true"
   }catch (err) {
     console.log(err)
-    return false
+    return "false"
   }
 };
 
@@ -85,10 +85,11 @@ export async function update_teacher(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    console.log(result)
+    return "true"
   } catch (err) {
     console.log(err)
-    return false
+    return "false"
   }
 }
 
@@ -108,10 +109,10 @@ export async function admin_edit_school(token,data){
       data:JSON.stringify(data)
     })
     console.log(response)
-    return true
+    return 'true'
   }catch(err) {
     console.log(err);
-    return false;
+    return 'false';
   }
 };
 

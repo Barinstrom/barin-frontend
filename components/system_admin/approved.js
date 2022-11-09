@@ -9,10 +9,12 @@ import { get_approved,sys_edit_school } from '../../utils/system_admin/system';
 
 export default function Aprroved() {
 	const router = useRouter()
-	const [reloadTable, setReloadTable] = useState(false)
+	const [reloadTable, setReloadTable] = useState(true)
 	const [data, setData] = useState([])
 	const [paginate, setPaginate] = useState([])
 	const [displayError, setDisplayError] = useState(false)
+	const [notShowAlert, setNotShowAlert] = useState(0)
+
 	
 	const search = useRef()
 	const schoolName = useRef()
@@ -33,6 +35,7 @@ export default function Aprroved() {
 		window.localStorage.setItem("pageAprroved", 1)
 
 		get_approved(body, token).then(result => {
+			setReloadTable(false)
 			if (!result) {
 				setDisplayError(true)
 			} else {
@@ -40,6 +43,7 @@ export default function Aprroved() {
 				setDisplayError(false)
 				showData(result.data.docs)
 				showPaginate(paginate_tmp)
+				setNotShowAlert(result.data.totalDocs)
 			}
 		})
 	}, [])
@@ -53,13 +57,21 @@ export default function Aprroved() {
 		</main>
 	)
 
+	const alert = (
+		<div className="alert alert-dark" role="alert">
+			ไม่พบโรงเรียน
+		</div>
+	)
+
 	async function clickReset(ev) {
 		ev.preventDefault()
 		window.localStorage.removeItem("searchAprroved")
 		window.localStorage.setItem("pageAprroved", 1)
 		search.current.value = ""
 
+		setReloadTable(true)
 		const result = await get_approved({ "page": 1 }, token)
+		setReloadTable(false)
 
 		if (!result) {
 			setDisplayError(true)
@@ -68,6 +80,7 @@ export default function Aprroved() {
 			setDisplayError(false)
 			showData(result.data.docs)
 			showPaginate(paginate_tmp)
+			setNotShowAlert(result.data.totalDocs)
 		}
 	}
 	
@@ -88,15 +101,19 @@ export default function Aprroved() {
 			}
 		}
 
+		setReloadTable(true)
 		const result = await get_approved(body, token)
+		setReloadTable(false)
 
 		if (!result) {
 			setDisplayError(true)
 		} else {
+			console.log(result.data)
 			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
 			showData(result.data.docs)
 			showPaginate(paginate_tmp)
+			setNotShowAlert(result.data.totalDocs)
 		}
 	}
 
@@ -169,6 +186,7 @@ export default function Aprroved() {
 			setDisplayError(false)
 			showData(result.data.docs)
 			showPaginate(paginate_tmp)
+			setNotShowAlert(result.data.totalDocs)
 		}
 	}
 
@@ -203,7 +221,7 @@ export default function Aprroved() {
 				`}</style>
 				
 				<div className='table-responsive'>
-					<table className='table table-sm align-middle'>
+					<table className='table table-striped align-middle'>
 						<thead>
 							<tr>
 								<th style={{ width: "100px" }}>schoolID</th>
@@ -301,36 +319,89 @@ export default function Aprroved() {
 
 	function update_school(ev) {
 		ev.preventDefault();
+		if (schoolName.current.getAttribute("data-schoolID") === "" || schoolName.current.value === "" || urlLogo.current.src === "" || editUrlCertificateDocument.current.src === " ") {
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+			return
+		}
 		const body = {
 			schoolID: schoolName.current.getAttribute("data-schoolID"),
 			schoolName: schoolName.current.value,
 			urlLogo: urlLogo.current.src,
 			urlCertificateDocument: editUrlCertificateDocument.current.src
 		}
-		
-		sys_edit_school(token,body).then(result => {
-			if (result){
-				Swal.fire({
-					icon: 'success',
-					title: 'แก้ไขข้อมูลสำเร็จ',
-					showConfirmButton: true,
-					confirmButtonColor: "#009431",
-					confirmButtonText: 'ok',
-				}).then(() => {
-					router.reload()
-				})
-			}else{
-				Swal.fire({
-					icon: 'error',
-					title: 'แก้ไขข้อมูลไม่สำเร็จ',
-					showConfirmButton: true,
-					confirmButtonColor: "#d1000a",
-					confirmButtonText: 'ok',
-				}).then(() => {
-					router.reload()
-				})
+		Swal.fire({
+			title: 'คุณต้องการแก้ไขข้อมูลโรงเรียนนี้ใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return sys_edit_school(token, body)
+			},
+			allowOutsideClick: false
+
+		}).then((result) => {
+			if (result.isConfirmed) {
+				console.log(result)
+				const result_update = result.value === "true" ? true : false
+				if (result_update) {
+					Swal.fire({
+						icon: 'success',
+						title: 'ทำการแก้ไขสำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#0047a3"
+					}).then(() => {
+						router.reload()
+					})
+				}
+				else {
+					Swal.fire({
+						icon: 'error',
+						title: 'ทำการแก้ไขไม่สำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#00a30b"
+					}).then(() => {
+						router.reload()
+					})
+				}
+
 			}
 		})
+		
+		// sys_edit_school(token,body).then(result => {
+		// 	if (result==='true'){
+		// 		Swal.fire({
+		// 			icon: 'success',
+		// 			title: 'แก้ไขข้อมูลสำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#009431",
+		// 			confirmButtonText: 'ok',
+		// 		}).then(() => {
+		// 			router.reload()
+		// 		})
+		// 	}else{
+		// 		Swal.fire({
+		// 			icon: 'error',
+		// 			title: 'แก้ไขข้อมูลไม่สำเร็จ',
+		// 			showConfirmButton: true,
+		// 			confirmButtonColor: "#d1000a",
+		// 			confirmButtonText: 'ok',
+		// 		}).then(() => {
+		// 			router.reload()
+		// 		})
+		// 	}
+		// })
 	}
 
 	if (displayError) {
@@ -339,21 +410,29 @@ export default function Aprroved() {
 		return (
 			<>
 				<div>
-					<div className="text-center fs-1 mb-3">Approve</div>
+					<div className="text-center fs-1 mb-3">
+						<span className='me-2'>Approve</span>
+						<h4 className="fa-solid fa-circle-info"
+							data-bs-toggle="modal"
+							data-bs-target="#helpmodal"
+							type="button" ></h4>
+					</div>
 					<div className='row mb-4'>
 						<div className='col-12'>
 							<form className='mb-5'>
 								<div className='input-group'>
 									<span className="input-group-text">ค้นหา</span>
-									<input type="text" className='form-control' ref={search}></input>
+									<input type="text" placeholder="ค้นหาด้วย schoolID" className='form-control' ref={search}></input>
 									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
 									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
 								</div>
 							</form>
-							{reloadTable ? reload : data}
+							{reloadTable ? reload :
+								notShowAlert ? data : alert}
 						</div>
 					</div>
-					{paginate}
+					{reloadTable ? null :
+						notShowAlert ? paginate : null}
 				</div>
 
 				<div className="modal fade" id="approveModal">
@@ -417,6 +496,20 @@ export default function Aprroved() {
 										</div>
 									</div>
 								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div className="modal fade" id="helpmodal">
+					<div className="modal-dialog modal-lg">
+						<div className='modal-content'>
+							<div className='modal-header'>
+								<h3 className="modal-title" >คู่มือการใช้งาน</h3>
+							</div>
+							<div className='modal-body'>
+								รอใส่ user manual
 							</div>
 						</div>
 					</div>

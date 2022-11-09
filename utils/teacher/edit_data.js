@@ -17,10 +17,10 @@ export async function update_club(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    return 'true'
   } catch (err) {
     console.log(err)
-    return false
+    return 'false'
   }
 };
 

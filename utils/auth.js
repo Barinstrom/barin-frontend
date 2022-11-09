@@ -112,6 +112,7 @@ export async function get_students_inclub(data, token, schoolID) {
 	}
 	
 	const params_success = apiUrl + `?${params}`
+	// console.log("testing")
 	try {
 		const result = await axios({
 			url: params_success,
@@ -121,6 +122,7 @@ export async function get_students_inclub(data, token, schoolID) {
 			},
 			timeout: 10000
 		})
+		// console.log(result)
 		return result
 	} catch (err) {
 		console.log(err)
@@ -230,13 +232,12 @@ export async function getTeacherName(data, token, schoolID) {
 	const apiUrl = stagingUrl + "/" + String(schoolID) + "/getTeacherName";
 	const params = new URLSearchParams()
 
-	console.log("getTeacherName = ",data)
 	if (data.teacherEmail) {
 		params.append("email", data.teacherEmail)
 	}
 
 	const params_success = apiUrl + `?${params}`
-	// console.log(params_success)
+	
 	try {
 		const result = await axios({
 			method: "get",

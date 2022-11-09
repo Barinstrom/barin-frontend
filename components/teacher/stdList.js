@@ -7,7 +7,7 @@ import { get_students_inclub } from "../../utils/auth";
 import { CSVLink } from "react-csv";
 import Swal from "sweetalert2";
 
-export default function StdList({schoolID}){
+export default function StdList({ schoolID, school_data }){
     const firstname = useRef()
     const lastname = useRef()
     const classYear = useRef()
@@ -33,7 +33,10 @@ export default function StdList({schoolID}){
     const [reloadTable,setReloadTable] = useState(false)
     const [nowDisplayname, setNowDisplayname] = useState(null)
     const [nowClubID, setNowClubID] = useState(null)
+    const [nowClubYear, setNowClubYear] = useState(null)
     const [allDataErr, setAllDataErr] = useState(true)
+    const [notShowAlert, setNotShowAlert] = useState(0)
+
     const [csvReport, setCsvReport] = useState({
         data: tmpdata,
         headers: headers,
@@ -53,6 +56,12 @@ export default function StdList({schoolID}){
         </main>
     )
 
+    const alert = (
+        <div className="alert alert-dark" role="alert">
+            ยังไม่มีนักเรียนมาลงทะเบียน
+        </div>
+    )
+
     const still_loding = (
         <div className="py-2">
             <div className="d-inline-block">กำลังดาวโหลด โปรดรอสักครู่</div>
@@ -60,6 +69,7 @@ export default function StdList({schoolID}){
     )
 
     useEffect(() => {
+        // console.log(school_data)
         setReloadTable(true)
         get_teacher_ownclubs(token,schoolID).then(result => {
 			console.log(result.data)
@@ -69,17 +79,21 @@ export default function StdList({schoolID}){
                 window.localStorage.removeItem("clubNameFromClick")
                 window.localStorage.removeItem("clubidFromClick")
                 window.localStorage.removeItem("displayComponent")
+                window.localStorage.removeItem("clubYearFromClick")
             }else{
                 genetateDropdown(clubs)
                 const formButtonOwnClubName = window.localStorage.getItem("clubNameFromClick")
                 const formButtonOwnClubID = window.localStorage.getItem("clubidFromClick")
+                const formButtonOwnClubYear = window.localStorage.getItem("clubYearFromClick")
                 
+                window.localStorage.removeItem("clubYearFromClick")
                 window.localStorage.removeItem("clubNameFromClick")
                 window.localStorage.removeItem("clubidFromClick")
                 window.localStorage.removeItem("displayComponent")
                 
                 const clubID_tmp = clubs[0]._id
                 const clubName_tmp = clubs[0].clubName
+                const clubYear_tmp = clubs[0].schoolYear
                 let body
                 
                 if ((!formButtonOwnClubName || !formButtonOwnClubID)){
@@ -88,6 +102,7 @@ export default function StdList({schoolID}){
                         "clubID":clubID_tmp
                     }
                     setNowDisplayname(clubName_tmp)
+                    setNowClubYear(clubYear_tmp)
                     window.localStorage.setItem("clubidStdentListOwnTeacher",clubID_tmp)
                 }else{
                     body = {
@@ -95,20 +110,22 @@ export default function StdList({schoolID}){
                         "clubID":formButtonOwnClubID
                     }
                     setNowDisplayname(formButtonOwnClubName)
+                    setNowClubYear(formButtonOwnClubYear)
                     window.localStorage.setItem("clubidStdentListOwnTeacher",formButtonOwnClubID)
                 }
                 
                 window.localStorage.setItem("pageStdentListOwnTeacher",1)
                 
+                setReloadTable(true)
                 get_students_inclub(body, token, schoolID).then(result => {
+                    setReloadTable(false)
                     if (!result){
                         setDisplayError(true)
-                        setReloadTable(false)
                     }else{
                         const paginate_tmp = generate(result.data)
+                        setNotShowAlert(result.data.totalDocs)
                         showData(result.data.docs)
                         showPaginate(paginate_tmp)
-                        setReloadTable(false)
                     }
                 })
             }
@@ -124,7 +141,6 @@ export default function StdList({schoolID}){
     }
     
     function generate(result){
-        //console.log(result)
         const paginate_tmp = []
         
         if (result.totalPages <= 6){
@@ -186,12 +202,12 @@ export default function StdList({schoolID}){
 
         setReloadTable(true)
         get_students_inclub(body, token, schoolID).then(result => {
+            setReloadTable(false)
             if (!result){
-                setReloadTable(false)
                 setDisplayError(true)
             }else{
                 const paginate_tmp = generate(result.data)
-                setReloadTable(false)
+                setNotShowAlert(result.data.totalDocs)
                 showData(result.data.docs)
                 showPaginate(paginate_tmp)
             }
@@ -243,29 +259,36 @@ export default function StdList({schoolID}){
         setPaginate(tmp)
     }
 
-    function genetateDropdown(clubs){
+    function genetateDropdown(clubs) {
+        console.log(clubs)
         const tmp = clubs.map((club, index) => {
-            return <div key={index} style={{cursor:"pointer"}} className="dropdown-item" onClick={(ev) => changeDropDown(club._id,club.clubName)}>{club.clubName}</div>
+            return <div key={index} style={{ cursor: "pointer" }} className="dropdown-item" onClick={(ev) => changeDropDown(club._id, club.clubName,club.schoolYear)}>
+                {club.clubName} ปี {club.schoolYear}
+            </div>
         })
         setDropDown(tmp)
     }
 
-    function changeDropDown(clubID,clubName){
+    function changeDropDown(clubID,clubName,clubYear){
 	    const body = {
             "page":1,
             "clubID":clubID
 		}
 
+        setNowClubYear(clubYear)
         setNowClubID(clubID)
         setNowDisplayname(clubName)
         window.localStorage.setItem("clubidStdentListOwnTeacher",clubID)
         window.localStorage.setItem("pageStdentListOwnTeacher",1)
 
+        setReloadTable(true)
         get_students_inclub(body, token, schoolID).then(result => {
+            setReloadTable(false)
             if (!result){
                 setDisplayError(true)
             }else{
                 const paginate_tmp = generate(result.data)
+                setNotShowAlert(result.data.totalDocs)
                 showData(result.data.docs)
                 showPaginate(paginate_tmp)
             }
@@ -427,14 +450,18 @@ export default function StdList({schoolID}){
 					}
                 `}</style>
                 
-                <div className="text-center display-6 mb-3">รายชื่อนักเรียน</div>
+                <div className="text-center display-6 mb-3">
+                    <span className='me-2'>รายชื่อนักเรียน</span>
+                    <h4 className="fa-solid fa-circle-info"
+                        data-bs-toggle="modal"
+                        data-bs-target="#helpmodal"
+                        type="button" ></h4>
+                </div>
                 <div className="mb-4">
                     <div className="d-flex flex-column align-items-center flex-sm-row">
                         <div className="text-center">
                             <div className="btn-group dropdown">
-                                <button className='btn btn-dark'>ชุมนุม</button>
-                                <button className="btn btn-dark dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
-                                
+                                <button className="btn btn-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">ชุมนุม</button>
                                 <div className="dropdown-menu">
                                     {dropdown}
                                 </div>
@@ -443,16 +470,26 @@ export default function StdList({schoolID}){
                         <div className="text-left">
                             <span className="fs-3 ms-sm-4">{nowDisplayname}</span> 
                         </div>
-                        <div className="ms-sm-auto ">
-                            <button className='btn csv_btn me-2' data-bs-target="#modal_csv" data-bs-toggle="modal"  onClick={() => getAllStdList()}>csv รายชื่อ</button>
-                            <button className='btn grade_btn' data-bs-target="#modal_grade" data-bs-toggle="modal">ตัดเกรด</button>
+                        <div className="ms-sm-auto">
+                            {
+                                reloadTable ? null : notShowAlert ?
+                                <button className='btn csv_btn me-2 btn-sm mt-2 mt-sm-0' data-bs-target="#modal_csv" data-bs-toggle="modal" onClick={() => getAllStdList()}>csv รายชื่อ</button>
+                                : null
+                            }
+                            {
+                                reloadTable ? null : !notShowAlert ? null :
+                                nowClubYear != school_data.nowSchoolYear ? null :
+                                <button className='btn grade_btn btn-sm mt-2 mt-sm-0' data-bs-target="#modal_grade" data-bs-toggle="modal">ตัดเกรด</button>
+                            }
                         </div>
                     </div>
                 </div>
                 <div>
-                    {reloadTable ? reload : data}
+                    {reloadTable ? reload :
+                        notShowAlert ? data : alert}
                 </div>
-                {paginate}
+                {reloadTable ? reload :
+                    notShowAlert ? paginate : null}
 
                 <div className="modal fade" id="modal_csv">
                     <div className="modal-dialog">
@@ -508,6 +545,19 @@ export default function StdList({schoolID}){
                                     <p ref={enteredYear}></p>
                                     <p ref={tel}></p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="modal fade" id="helpmodal">
+                    <div className="modal-dialog modal-lg">
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
+                            </div>
+                            <div className='modal-body'>
+                                รอใส่ user manual
                             </div>
                         </div>
                     </div>

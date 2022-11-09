@@ -110,7 +110,8 @@ export default function SchoolData({ school_data, schoolID, email }) {
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				if (result.value) {
+				const result_update = result.value === "true" ? true : false
+				if (result_update) {
 					Swal.fire({
 						icon: 'success',
 						title: 'แก้ไขข้อมูลสำเร็จ',

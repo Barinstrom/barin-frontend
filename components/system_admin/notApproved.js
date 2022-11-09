@@ -10,11 +10,13 @@ import {useRouter} from 'next/router';
 
 export default function NotApproved() {
     const router = useRouter()
-    const [reloadTable,setReloadTable] = useState(false)
+    const [reloadTable,setReloadTable] = useState(true)
 	const [data,setData] = useState([])
     const [paginate,setPaginate] = useState([])
     const [displayError,setDisplayError] = useState(false)
-    const search = useRef()
+	const search = useRef()
+	const [notShowAlert, setNotShowAlert] = useState(0)
+
 
     const schoolName = useRef()
 	const [schoolID,setSchoolID] = useState()
@@ -35,14 +37,16 @@ export default function NotApproved() {
         }
         window.localStorage.setItem("pageNotApproved",1)
         
-        get_not_approved(body,token).then(result => {
+			get_not_approved(body, token).then(result => {
+				setReloadTable(false)
             if (!result){
                 setDisplayError(true)
             }else{
                 const paginate_tmp = generate(result)
                 setDisplayError(false)
                 showData(result.docs)
-                showPaginate(paginate_tmp)
+				showPaginate(paginate_tmp)
+				setNotShowAlert(result.totalDocs)
             }
         })
     }, [])
@@ -54,7 +58,13 @@ export default function NotApproved() {
                 <div className="spinner-border ms-3"></div>
             </div>
         </main>
-    )
+		)
+	
+	const alert = (
+		<div className="alert alert-dark">
+			ไม่พบโรงเรียน
+		</div>
+	)
 
     async function clickReset(ev){
         ev.preventDefault()
@@ -62,7 +72,9 @@ export default function NotApproved() {
 		window.localStorage.setItem("pageNotApproved",1)
         search.current.value = ""
 
-        const result = await get_not_approved({"page":1},token)
+		setReloadTable(true)
+		const result = await get_not_approved({ "page": 1 }, token)
+		setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
@@ -70,7 +82,8 @@ export default function NotApproved() {
             const paginate_tmp = generate(result)
             setDisplayError(false)
             showData(result.docs)
-            showPaginate(paginate_tmp)
+			showPaginate(paginate_tmp)
+			setNotShowAlert(result.totalDocs)
         }
     }
     
@@ -91,15 +104,19 @@ export default function NotApproved() {
             }
         }
         
-        const result = await get_not_approved(body,token)
+			setReloadTable(true)
+			const result = await get_not_approved(body, token)
+			setReloadTable(false)
         
         if (!result){
             setDisplayError(true)
         }else{
+			console.log(result)
             const paginate_tmp = generate(result)
             setDisplayError(false)
             showData(result.docs)
-            showPaginate(paginate_tmp)
+			showPaginate(paginate_tmp)
+			setNotShowAlert(result.totalDocs)
         }
     }
     
@@ -171,7 +188,8 @@ export default function NotApproved() {
             const paginate_tmp = generate(result)
             setDisplayError(false)
             showData(result.docs)
-            showPaginate(paginate_tmp)
+			showPaginate(paginate_tmp)
+			setNotShowAlert(result.totalDocs)
         }
     }
 
@@ -290,13 +308,13 @@ export default function NotApproved() {
 							status:"approve"
 						})
 					},
-					allowOutsideClick: () => !Swal.isLoading()
-
+					allowOutsideClick: false
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				console.log(result)
-				if (result.value) {
+				const result_update = result.value === "true" ? true : false
+				// console.log(result)
+				if (result_update) {
 					Swal.fire({
 						icon: 'success',
 						title: 'ทำการ approve สำเร็จ',  
@@ -334,33 +352,87 @@ function getDetails(item) {
 
 	function Edit_school(ev) {
 		ev.preventDefault();
+		if (schoolID === "" || schoolName.current.value === "" || urlLogo.current.src === "" || editUrlCertificateDocument.current.src === " ") {
+			Swal.fire({
+				icon: 'warning',
+				title: 'โปรดกรอกข้อมูลให้ครบถ้วน!',
+				showConfirmButton: true,
+				confirmButtonColor: "#f7a518",
+				confirmButtonText: 'ok',
+			})
+			return
+		}
 		const body = {
 			schoolID: schoolID,
 			schoolName: schoolName.current.value,
 			urlLogo: urlLogo.current.src,
 			urlCertificateDocument: editUrlCertificateDocument.current.src
 		}
-		sys_edit_school(token,body).then(result => {
-					if (result){
-						Swal.fire({
-							icon: 'success',
-							title: 'ทำการแก้ไขสำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#0047a3"
-					}).then(res => {
-							router.reload()
+
+		Swal.fire({
+			title: 'คุณต้องการแก้ไขข้อมูลโรงเรียนนี้ใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
+
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return sys_edit_school(token, body)
+			},
+			allowOutsideClick: false
+
+		}).then((result) => {
+			if (result.isConfirmed) {
+				console.log(result)
+				const result_update = result.value === "true" ? true : false
+				if (result_update) {
+					Swal.fire({
+						icon: 'success',
+						title: 'ทำการแก้ไขสำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#0047a3"
+					}).then(() => {
+						router.reload()
 					})
-					}else{
-						Swal.fire({
-							icon: 'error',
-							title: 'ทำการแก้ไขไม่สำเร็จ',  
-							showConfirmButton:true,
-							confirmButtonColor:"#00a30b"
-						}).then(res => {
-							router.reload()
+				}
+				else {
+					Swal.fire({
+						icon: 'error',
+						title: 'ทำการแก้ไขไม่สำเร็จ',
+						showConfirmButton: true,
+						confirmButtonColor: "#00a30b"
+					}).then(() => {
+						router.reload()
 					})
-					}
-				})
+				}
+
+			}
+		})
+		// sys_edit_school(token,body).then(result => {
+		// 			if (result){
+		// 				Swal.fire({
+		// 					icon: 'success',
+		// 					title: 'ทำการแก้ไขสำเร็จ',  
+		// 					showConfirmButton:true,
+		// 					confirmButtonColor:"#0047a3"
+		// 			}).then(res => {
+		// 					router.reload()
+		// 			})
+		// 			}else{
+		// 				Swal.fire({
+		// 					icon: 'error',
+		// 					title: 'ทำการแก้ไขไม่สำเร็จ',  
+		// 					showConfirmButton:true,
+		// 					confirmButtonColor:"#00a30b"
+		// 				}).then(res => {
+		// 					router.reload()
+		// 			})
+		// 			}
+		// 		})
 	}
 
     if (displayError){
@@ -369,21 +441,28 @@ function getDetails(item) {
         return (
             <>
                 <div>
-                    <div className="text-center fs-1 mb-3">Not Approve</div>
+							<div className="text-center fs-1 mb-3">
+								<span className='me-2'>Not Approve</span>
+								<h4 className="fa-solid fa-circle-info"
+									data-bs-toggle="modal"
+									data-bs-target="#helpmodal"
+									type="button" ></h4>
+										</div>
                     <div className='row mb-4'>
                         <div className='col-12'>
                             <form className='mb-5'>
                                 <div className='input-group'>
                                     <span className="input-group-text">ค้นหา</span>
-                                    <input type="text" className='form-control' ref={search}></input>
+                                    <input type="text" placeholder="ค้นหาด้วย schoolID" className='form-control' ref={search}></input>
 									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
 									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
                                 </div>
                             </form>
-                            {reloadTable ? reload  : data}
-                        </div>
-                    </div>
-                    {paginate}
+									{reloadTable ? reload :
+										notShowAlert ? data : alert}
+								</div>
+							</div>
+							{reloadTable ? null : notShowAlert ? paginate : null}
                 </div>
 
 
@@ -460,7 +539,20 @@ function getDetails(item) {
 							</div>
 						</div>
 					</div>
-				</div>
+						</div>
+						
+						<div className="modal fade" id="helpmodal">
+							<div className="modal-dialog modal-lg">
+								<div className='modal-content'>
+									<div className='modal-header'>
+										<h3 className="modal-title" >คู่มือการใช้งาน</h3>
+									</div>
+									<div className='modal-body'>
+										รอใส่ user manual
+									</div>
+								</div>
+							</div>
+						</div>
             </>
         )
     }
