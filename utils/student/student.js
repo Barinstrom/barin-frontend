@@ -98,19 +98,65 @@ export async function drop_club(data, token, schoolID) {
 };
 
 // get-review
-export async function get_review(body, token, schoolID) {
-  const apiUrl = stagingUrl + "/" + schoolID + "/get-review";
+export async function get_review_year(groupID, token, schoolID) {
+  const apiUrl = stagingUrl + "/" + schoolID + "/get-schoolyear";
+
+  // console.log("get-schoolyear =", groupID)
+  const params = new URLSearchParams()
+  if (groupID) {
+    params.append("groupID", groupID)
+  }
+  const params_success = apiUrl + `?${params}`
+  // console.log(params_success)
+
   try {
     const result = await axios({
       method: "get",
-      params: body,
-      url: apiUrl,
+      url: params_success,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       timeout: 10000,
     });
+    // console.log(result)
+    return result;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+}
+
+
+// get-review
+export async function get_review(body, token, schoolID) {
+  const apiUrl = stagingUrl + "/" + schoolID + "/get-review";
+
+  // console.log("get_review =",body)
+  const params = new URLSearchParams()
+  if (body.clubID) {
+    params.append("clubID", body.clubID)
+  }
+  if (body.schoolYear) {
+    params.append("schoolYear", body.schoolYear)
+  }
+  if (body.page) {
+    params.append("page", body.page)
+  }
+  const params_success = apiUrl + `?${params}`
+  // console.log(params_success)
+
+  try {
+    const result = await axios({
+      method: "get",
+      url: params_success,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 10000,
+    });
+    // console.log(result)
     return result;
   } catch (err) {
     console.log(err);
@@ -134,26 +180,35 @@ export async function post_review(data, token, schoolID) {
       timeout: 3000,
     });
     // console.log(result)
-    return result;
+    // return result;
+    return 'true'
   } catch (err) {
     console.log(err);
-    return false;
+    return 'false';
   }
 }
 // get-own-review
-export async function get_own_review(body, token, schoolID) {
+export async function get_own_review(clubID, token, schoolID) {
   const apiUrl = stagingUrl + "/" + schoolID + "/get-own-review";
+
+  const params = new URLSearchParams()
+  if (clubID) {
+    params.append("clubID", clubID)
+  }
+  const params_success = apiUrl + `?${params}`
+  // console.log(params_success)
+
   try {
     const result = await axios({
       method: "get",
-      params: body,
-      url: apiUrl,
+      url: params_success,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       timeout: 10000,
     });
+    console.log(result)
     return result;
   } catch (err) {
     console.log(err.message);
@@ -175,10 +230,11 @@ export async function update_own_review(data, token, schoolID) {
       data: JSON.stringify(data),
       timeout: 10000
     })
-    return result
+    // return result
+    return 'true'
   } catch (err) {
     console.log(err)
-    return false
+    return 'false'
   }
 };
 

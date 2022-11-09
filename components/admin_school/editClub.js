@@ -61,7 +61,6 @@ export default function EditClub({ school_data,schoolID }) {
 
         setReloadTable(true)
         paginationClub(body, token, schoolID).then(result => {
-            //console.log(result)
             setReloadTable(false)
             if (!result){
                 setDisplayError(true)

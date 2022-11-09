@@ -113,7 +113,7 @@ export default function EditStudent({ school_data,schoolID }) {
                 allowOutsideClick: false
 
             }).then((res) => {
-                console.log(res)
+                //console.log(res)
                 if (res.isConfirmed) { 
                     const result_update = res.value === "true" ? true : false
                     

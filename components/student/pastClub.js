@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState, useRef } from "react";
-import Review from "./reviewmodal";
+import ReviewEdit from "./reviewmodal_canedit";
+import Review from "./reviewmodal_seeonly";
 import { get_student_pastclub } from "../../utils/student/student";
 import { getTeacherName } from "../../utils/auth";
 import Cookies from "universal-cookie";
@@ -23,13 +24,12 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 
 	const [displayError, setDisplayError] = useState(false)
 	const [showData, setShowData] = useState([])
-	
+
 	useEffect(() => {
-		
 		get_student_pastclub(token, schoolID).then(res => {
-			if (!res){
+			if (!res) {
 				setDisplayError(true)
-			}else if (res.data.clubs.length === 0) {
+			} else if (res.data.clubs.length === 0) {
 				const tmp = (
 					<div className="alert alert-warning mt-3">
 						<h4 className="alert-heading">คุณไม่มีชุมนุมที่เคยเรียนมา</h4>
@@ -37,7 +37,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 				)
 				setShowData(tmp)
 			} else {
-				//console.log(res)
+				
 				const tmp = (
 					<div className="table-responsive">
 						<style jsx>{`
@@ -52,13 +52,14 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 							<thead>
 								<tr>
 									<th style={{ width: "100px" }}>รหัสวิชา</th>
-									<th style={{ width: "600px" }}>ชื่อชุมนุม</th>
+									<th style={{ width: "500px" }}>ชื่อชุมนุม</th>
 									<th style={{ width: "120px" }} className="text-center"><span>ลงทะเบียน</span></th>
-									<th style={{ width: "50px" }} className="text-center"><span>รีวิว</span></th>
+									<th style={{ width: "80px" }} className="text-center"><span>รีวิว</span></th>
 								</tr>
 							</thead>
 							<tbody>
 								{res.data.clubs.map((item, index) => {
+									console.log(item)
 									return (
 										<tr key={index}>
 											<td>{item.groupID}</td>
@@ -73,15 +74,11 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 												</button>
 											</td>
 											<td className="text-center">
-												{console.log("from pastClub item",item)}
-												{/* {item.status == "Pass" ? */}
-													<Review item={item} schoolID={schoolID} schedule={schedule} isStudent={true}/> 
-													{/* <button className='btn btn-sm btn-secondary'
-														// onClick={(ev) => cantreview(ev)}
-														// disabled
-													>รีวิว
-													</button> */}
-											{/* } */}
+												{/* {item.status} */}
+												{item.status == "Pass" ? <ReviewEdit item={item} schoolID={schoolID} nowSchoolYear={nowSchoolYear} /> :
+													<Review item={item} schoolID={schoolID} nowSchoolYear={nowSchoolYear} />
+												}
+												
 											</td>
 										</tr>
 									)
@@ -89,8 +86,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 							</tbody>
 						</table>
 					</div>
-						
-					)
+				)
 				setShowData(tmp)
 			}
 		})
@@ -126,24 +122,24 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 		scheduleStart.current.innerText = st + " นาฬิกา"
 		scheduleEnd.current.innerText = en + " นาฬิกา"
 		getTeacherName(item, token, schoolID).then(result => {
-            if (!result){
-                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-            }
-            else if (!result.data) {
-                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-            }
-            else if (result.data) {
-                const {firstname , lastname} = result.data._teacher
-                teacherName.current.innerText = `${firstname} ${lastname}`
-            }else {
-                teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
-            }
-        })
+			if (!result) {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+			else if (!result.data) {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+			else if (result.data) {
+				const { firstname, lastname } = result.data._teacher
+				teacherName.current.innerText = `${firstname} ${lastname}`
+			} else {
+				teacherName.current.innerText = "ไม่มีชื่อครูผู้สอน"
+			}
+		})
 	}
 
-	if (displayError){
+	if (displayError) {
 		return <div className="fs-4 text-center">เกิดข้อผิดพลาดไม่สามารถแสดงผลได้</div>
-	}else{
+	} else {
 		return (
 			<>
 				<div className="text-center display-6">
@@ -157,7 +153,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 					<div className='col-12'>
 						{showData}
 					</div>
-	
+
 					<div className="modal fade" id="PastClubModal">
 						<div className="modal-dialog">
 							<div className='modal-content'>
@@ -244,5 +240,5 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 			</>
 		)
 	}
-	
+
 }

@@ -5,7 +5,7 @@ import { paginationClub, getTeacherName } from '../../utils/auth';
 import { register_club,get_student_ownclub} from '../../utils/student/student';
 import Cookies from 'universal-cookie';
 import Swal from 'sweetalert2';
-import Review from './reviewmodal';
+import Review from './reviewmodal_seeonly';
 
 
 export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYear}) {
@@ -288,11 +288,12 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                         <th style={{width:"100px"}}>รหัสวิชา</th>
                         <th style={{width:"600px"}}>ชื่อชุมนุม</th>
                         <th style={{width:"120px"}} className="text-center"><span>ลงทะเบียน</span></th>
-                        <th style={{width:"50px"}} className="text-center"><span>ดูรีวิว</span></th>
+                        <th style={{width:"80px"}} className="text-center"><span>ดูรีวิว</span></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {result.map((item,index) => {
+                        {result.map((item, index) => {
+                        console.log(item)
                         return (
                             <tr key={index}>
                                 <td>{item.groupID}</td>
@@ -308,7 +309,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                                     
                                 </td>
                                 <td className="text-center">
-                                    <Review item={item} schoolID={schoolID} schedule={scheduled} />
+                                    <Review item={item} schoolID={schoolID} nowSchoolYear={nowSchoolYear} />
                                 </td>
                             </tr>
                         )

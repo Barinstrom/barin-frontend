@@ -225,7 +225,7 @@ export default function Teacher({ schoolID }) {
 
 	let component = null
 	if (countBtn === 0){
-		component = <OwnClub school_data={data_school} schoolID={schoolID} data_school={data_school} schedule={schedule} />
+		component = <OwnClub school_data={data_school} schoolID={schoolID} data_school={data_school} />
 	}else if (countBtn === 1){
 		component = <StdList school_data={data_school} schoolID={schoolID} />
 	}

@@ -3,9 +3,9 @@ import { get_teacher_ownclubs } from "../../utils/teacher/teacher_getdata";
 import { update_club } from "../../utils/teacher/edit_data";
 import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
-import Review from "../student/reviewmodal";
+import Review from "../student/reviewmodal_seeonly";
 
-export default function OwnClub({ schoolID, data_school,schedule }) {
+export default function OwnClub({ schoolID, data_school }) {
 	const clubName = useRef()
 	const clubInfo = useRef()
 	const clubLimit = useRef()
@@ -231,11 +231,11 @@ export default function OwnClub({ schoolID, data_school,schedule }) {
 					<table className="table align-middle">
 						<thead>
 							<tr>
-								<th style={{ width: "10%" }}>ปีการศึกษา</th>
-								<th style={{width: "50%"}}>ชื่อชุมนุม</th>
+								<th style={{width: "10%"}}>ปีการศึกษา</th>
+								<th style={{width: "40%"}}>ชื่อชุมนุม</th>
 								<th style={{width: "20%"}} className="text-center">รายชื่อนักเรียน</th>
 								<th style={{width: "20%"}} className="text-center">รายละเอียดชุมนุม</th>
-								<th style={{width: "20%"}} className="text-center">รีวิว</th>
+								<th style={{width: "10%"}} className="text-center">รีวิว</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -265,10 +265,12 @@ export default function OwnClub({ schoolID, data_school,schedule }) {
 														onClick={(ev) => clickModal(e, ev)}>
 														รายละเอียด
 													</button>
+													
 											}
+												
 										</td>
 										<td className="text-center">
-											<Review item={e} schoolID={schoolID} schedule={schedule} isStudent={false}/>
+											<Review item={e} schoolID={schoolID} nowSchoolYear={data_school.nowSchoolYear} />
 										</td>
 									</tr>
 								);
