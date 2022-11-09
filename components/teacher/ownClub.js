@@ -204,6 +204,7 @@ export default function OwnClub({ schoolID, data_school,schedule }) {
 								<th style={{width: "60%"}}>ชื่อชุมนุม</th>
 								<th style={{width: "20%"}} className="text-center">รายชื่อนักเรียน</th>
 								<th style={{width: "20%"}} className="text-center">รายละเอียดชุมนุม</th>
+								<th style={{width: "20%"}} className="text-center">รีวิว</th>
 							</tr>
 						</thead>
 						<tbody>
