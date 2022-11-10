@@ -15,6 +15,8 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
     const [displayError, setDisplayError] = useState(false)
     const [haveClubs, setHaveClubs] = useState(false)
     const [notShowAlert, setNotShowAlert] = useState(0)
+    const [clubImg, setClubImg] = useState("")
+
 
     const search = useRef()
 
@@ -80,6 +82,11 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
 
     function detailInfo(item,ev){
         console.log(item)
+        if (item.urlPicture) {
+            setClubImg(item.urlPicture)
+        } else {
+            setClubImg("https://dummyimage.com/300x300")
+        }
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.innerText = item.clubName
         clubInfo.current.innerText = item.clubInfo
@@ -456,6 +463,10 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                                     </div>
                                     <div className="col-12">
                                         <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
+                                    </div>
+                                    <div className="col-12">
+                                        <p>รูปภาพประกอบ</p>
+                                        <img src={clubImg} className="form-control" ></img>
                                     </div>
                                 </div>
                             </div>

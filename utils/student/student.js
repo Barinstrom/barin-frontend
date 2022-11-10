@@ -238,13 +238,77 @@ export async function update_own_review(data, token, schoolID) {
   }
 };
 
-// club-teachers
-export async function get_club_teachers(body,token, schoolID) {
-  const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/teachers";
+// delete-review
+export async function delete_review(data, token, schoolID) {
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/delete-review";
+  console.log("delete_review",data, token, schoolID)
   try {
     const result = await axios({
       url: apiUrl,
-      params:body,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      method: "delete",
+      data: JSON.stringify(data),
+      timeout: 10000
+    })
+    // return result
+    return 'true'
+  } catch (err) {
+    console.log(err)
+    return 'false'
+  }
+};
+
+// club-teachers
+export async function get_club_teachers(body,token, schoolID) {
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/teachers";
+  
+  const params = new URLSearchParams()
+  if (body.clubID) {
+    params.append("clubID", body.clubID)
+  }
+  if (body.schoolYear) {
+    params.append("schoolYear", body.schoolYear)
+  }
+  const params_success = apiUrl + `?${params}`
+  // console.log(params_success)
+  
+  try {
+    const result = await axios({
+      url: params_success,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      method: "get",
+      timeout: 10000
+    })
+    return result
+  } catch (err) {
+    console.log(err)
+    return false
+  }
+};
+
+// club-review stat
+export async function get_stat(body, token, schoolID) {
+  const apiUrl = stagingUrl + "/" + String(schoolID) + "/review/count";
+
+  const params = new URLSearchParams()
+  if (body.clubID) {
+    params.append("clubID", body.clubID)
+  }
+  if (body.schoolYear) {
+    params.append("schoolYear", body.schoolYear)
+  }
+  const params_success = apiUrl + `?${params}`
+  // console.log(params_success)
+
+  try {
+    const result = await axios({
+      url: params_success,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=UTF-8",

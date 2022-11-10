@@ -129,16 +129,38 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 										color:white;
 										border-radius:4px;
 									}
-								`}</style>
+
+									.logo{
+										/* border: 1px solid black; */
+										display: flex;
+										justify-content: center;
+										height: 400px;
+										border-radius: 15px;
+									}
+
+								.logo img {
+									border-radius: 15px;
+									width: 100%;
+									object-fit: contain;
+								}
+						`}</style>
 								
 							<div key={i} className="card mt-3">
-								<div className="card-body">
-									<p className="card-text">ชื่อชุมนุม: {e.clubName}</p>
-									<p className="card-text">เวลาเรียน: {e.schedule[0]}</p>
-									<p className="card-text">รายละเอียด: {e.clubInfo}</p>
-									<p className="card-text">อาจารย์ผู้สอน: {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
-									<p className="card-text">อีเมลผู้สอน: {e.teacherEmail}</p>
-									<p className="card-text">สถานะ: {e.status}</p>
+								<div className="card-body mx-5">
+									<div className="logo">
+										<img src={e.urlPicture} alt={e.clubName}></img>
+									</div>
+									<div className="row my-3">
+										<p className="col-12  col-sm-6  card-text"><strong>ชื่อชุมนุม:</strong> {e.clubName}</p>
+										<p className="col-12  col-sm-6  card-text"><strong>เวลาเรียน:</strong> {e.schedule[0]}</p>
+										
+										<p className="col-12  col-sm-6  card-text"><strong>อาจารย์ผู้สอน:</strong> {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
+										<p className="col-12  col-sm-6  card-text"><strong>อีเมลผู้สอน:</strong> {e.teacherEmail}</p>
+										
+										<p className="col-12  col-sm-6  card-text"><strong>สถานะ:</strong> {e.status}</p>
+										
+									</div>
+									<p className="card-text"><strong>รายละเอียด:</strong> {e.clubInfo}</p>
 								</div>
 								<div className="card-footer text-end">
 									<button className='btn drop_btn' onClick={() => dropClub(e._id)}>ถอนชุมนุม</button>
@@ -158,14 +180,38 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 										color:white;
 										border-radius:4px;
 									}
+
+									.logo{
+										/* border: 1px solid black; */
+										display: flex;
+										justify-content: center;
+										height: 400px;
+										border-radius: 15px;
+									}
+
+								.logo img {
+									border-radius: 15px;
+									width: 100%;
+									object-fit: contain;
+								}
 								`}</style>
 
 							<div key={i} className="card mt-3">
-								<div className="card-body">
-									<p className="card-text">ชื่อชุมนุม: {e.clubName}</p>
-									<p className="card-text">เวลาเรียน: {e.schedule[0]}</p>
-									<p className="card-text">รายละเอียด: {e.clubInfo}</p>
-									<p className="card-text">อาจารย์ผู้สอน: {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
+								<div className="card-body mx-5">
+									<div className="logo">
+										<img src={e.urlPicture} alt={e.clubName}></img>
+									</div>
+									<div className="row my-3">
+										<p className="col-12  col-sm-6  card-text"><strong>ชื่อชุมนุม:</strong> {e.clubName}</p>
+									<p className="col-12  col-sm-6  card-text"><strong>เวลาเรียน:</strong> {e.schedule[0]}</p>
+
+										<p className="col-12  col-sm-6  card-text"><strong>อาจารย์ผู้สอน:</strong> {e.teachers[0].firstname} {e.teachers[0].lastname}</p>
+										<p className="col-12  col-sm-6  card-text"><strong>อีเมลผู้สอน:</strong> {e.teacherEmail}</p>
+
+										<p className="col-12  col-sm-6  card-text"><strong>สถานะ:</strong> {e.status}</p>
+
+									</div>
+									<p className="card-text"><strong>รายละเอียด:</strong> {e.clubInfo}</p>
 								</div>
 							</div>
 						</>

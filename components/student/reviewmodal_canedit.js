@@ -22,6 +22,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
   let like = true
   const [reloadTable, setReloadTable] = useState(false)
   const [notShowAlert, setNotShowAlert] = useState(0)
+  const [teacher, setTeacher] = useState()
 
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -61,6 +62,26 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
       </>
     )
     setIcon(tmp)
+  }
+
+  function teacherName(clubID, nowChooseYear, token, schoolID) {
+    const body = {
+      clubID: clubID,
+      schoolYear: nowChooseYear
+    }
+    let teacher_name = ""
+    setTeacher(teacher_name)
+    get_club_teachers(body, token, schoolID).then(result => {
+      // console.log("teacher name =",result.data)
+      if (result) {
+        teacher_name = result.data[0].firstname + " " + result.data[0].lastname
+      }
+      else {
+        teacher_name = "None"
+      }
+      setTeacher(teacher_name)
+    })
+
   }
 
   const reload = (
@@ -262,6 +283,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
         nowChooseYear = result.data[0]  // res.data.length - 1 will use
         dropdownYear(item._id, result.data)
         setTempNowChooseYear(nowChooseYear)
+        teacherName(item._id, result.data[0], token, schoolID) 
 
         get_own_review(item._id, token, schoolID).then((result) => { 
             console.log(result.data)
@@ -308,6 +330,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
       schoolYear: year
     };
     setReloadTable(true)
+    teacherName(clubID, year, token, schoolID) 
     get_review(body, token, schoolID).then((res) => {
       if (res) {
         setReloadTable(false)
@@ -477,7 +500,10 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
             <div className=" modal-header">
               <div className="modal-title w-100">
                 <div className="d-flex align-items-center justify-content-between">
-                  <div ref={clubName}></div>
+                  <div className="d-flex justify-content-start flex-column">
+                    <p className="text-start" ref={clubName}></p>
+                    <p className="text-start">ผู้สอน: {teacher}</p>
+                  </div>
                   <div>{clubYears}</div>
                 </div>
               </div>

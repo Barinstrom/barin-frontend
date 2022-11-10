@@ -7,11 +7,11 @@ import {
   update_own_review,
   get_club_teachers,
   get_review_year,
-  get_stat
+  delete_review
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
 
-export default function Review({ item, schoolID, nowSchoolYear }) {
+export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
   const [review, setReview] = useState()
   const [clubYears, setClubYears] = useState()
   const [paginate,setPaginate] = useState(null)
@@ -19,8 +19,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
   let nowChooseYear = ''
   const [reloadTable, setReloadTable] = useState(false)
   const [notShowAlert, setNotShowAlert] = useState(0)
-  const [teacher, setTeacher] = useState('')
-  const [stat, setStat] = useState('')
+  const [teacher, setTeacher] = useState()
 
   // get_own_review,
   // update_own_review,
@@ -53,29 +52,12 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
   )
   
   const isGood = (
-    <i  className=" p-1 m-1 rounded rounded-2" value="พอใจ"
+    <i className=" p-1 m-1 rounded rounded-2" value="พอใจ"
       style={{ border: "solid 2px green", borderColor: "green" }}
     >
       <i className="fa-regular fa-thumbs-up fa-sm m-2" style={{ color: "green" }} >พอใจ</i>
     </i>
   )
-
-  function ReviewStat(clubID, nowChooseYear, token, schoolID) {
-    const body = {
-      clubID: clubID,
-      schoolYear: nowChooseYear
-    }
-    let tmp_stat = ''
-    get_stat(body, token, schoolID).then(result => {
-      console.log(result)
-      if (result) {
-        tmp_stat = 'พอใจ( ' + ' คน) : ' + '%' + 'ไม่พอใจ( ' + ' คน) : ' + '%'
-      }
-      else {
-        tmp_stat = 'ไม่พบสถิติ'
-      }
-    })
-  }
 
   function clickModal(item, schoolID, nowSchoolYear, ev) {
     ev.preventDefault()
@@ -92,8 +74,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
         
         nowChooseYear = result.data[0]  // res.data.length - 1 will use
         dropdownYear(item._id,result.data)
-        teacherName(item._id, result.data[0], token, schoolID) 
-        ReviewStat(item._id, result.data[0], token, schoolID) 
+        teacherName(item._id, result.data[0],token,schoolID) 
         get_review(body, token, schoolID).then((res) => {
           if (res) {
             setReloadTable(false)
@@ -107,7 +88,6 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
     });
   }
 
-
   function teacherName(clubID, nowChooseYear, token, schoolID) {
     const body = {
       clubID: clubID,
@@ -115,7 +95,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
     }
     let teacher_name = ""
     setTeacher(teacher_name)
-    get_club_teachers(body, token, schoolID).then(result => {
+    get_club_teachers(body,token,schoolID).then(result => {
       // console.log("teacher name =",result.data)
       if (result) {
         teacher_name = result.data[0].firstname + " " + result.data[0].lastname
@@ -125,7 +105,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
       }
       setTeacher(teacher_name)
     })
-
+    
   }
 
   function clickDropdown(clubID, year , years , ev) {
@@ -139,7 +119,6 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
     };
     setReloadTable(true)
     teacherName(clubID, year, token, schoolID) 
-    ReviewStat(clubID, year, token, schoolID) 
     get_review(body, token, schoolID).then((res) => {
       if (res) {
         setReloadTable(false)
@@ -151,18 +130,72 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
     }
     )}
 
+  function DeleteReview(ev, reviewID, token) {
+    ev.preventDefault()
+    const body = {
+      "reviewID": reviewID
+    }
+
+    Swal.fire({
+      title: 'คุณต้องการลบรีวิวหรือไม่',
+      showConfirmButton: true,
+      confirmButtonColor: "#0047a3",
+      confirmButtonText: 'ใช่',
+
+      showCancelButton: true,
+      cancelButtonText: "cancel",
+      cancelButtonColor: "#d93333",
+
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return delete_review(body, token, schoolID)
+      },
+      allowOutsideClick: false
+
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log(result)
+        const result_update = result.value === "true" ? true : false
+        if (result_update) {
+          Swal.fire({
+            icon: 'success',
+            title: 'ลบรีวิวสำเร็จ',
+            showConfirmButton: true,
+            confirmButtonColor: "#0047a3"
+          }).then(() => {
+            // router.reload()
+          })
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'ลบรีวิวไม่สำเร็จ กรุณาลองใหม่',
+            showConfirmButton: true,
+            confirmButtonColor: "#00a30b"
+          }).then(() => {
+            // router.reload()
+          })
+        }
+
+      }
+    })
+  }
+  
   function patternReview(data){
     const info = ["react" , "vue" , "angular" ,"html" , "css"]
     const avatar = ["/avt1.svg","/avt2.svg","/avt3.svg","/avt4.svg","/avt5.svg"]
     const review = data.map((e,i) => {
       return (
         <div className="p-1" key={i}>
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex">
               <img src={`${avatar[i]}`} width={50} className="rounded-circle"/>
               <span className="align-self-center ms-2 me-2">Anonymous</span>
+              <span className="align-self-center ">{e.satisfiedLevel == 'พอใจ' ? isGood : notGood}</span>
             </div>
-            <span className="align-self-center">{e.satisfiedLevel == 'พอใจ' ? isGood : notGood}</span>
+            <div>
+              <button className="btn btn-warning " onClick={ev => DeleteReview(ev,e._id, token)} data-bs-dismiss="modal">ลบรีวิว</button>
+            </div>
           </div>
           
           <textarea className="form-control mt-1" rows={2} cols={3}value={e.textReview} disabled/>
@@ -314,7 +347,6 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
                   <div className="d-flex justify-content-start flex-column">
                     <p className="text-start" ref={clubName}></p>
                     <p className="text-start">ผู้สอน: {teacher}</p>
-                    <p className="text-start">สถิติ: {stat}</p>
                   </div>
                   <div>{clubYears}</div>
                 </div>

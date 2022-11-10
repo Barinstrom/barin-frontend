@@ -7,6 +7,7 @@ import ErrorPage from "next/error";
 import { useRouter } from 'next/router';
 import { paginationClub, get_teachers_inclub, getTeacherName } from '../../utils/auth';
 import { update_club } from '../../utils/school_admin/edit_data';
+import ReviewDelete from '../student/reviewmodal_candelete';
 import Cookies from 'universal-cookie';
 import Swal from "sweetalert2";
 
@@ -390,8 +391,9 @@ export default function EditClub({ school_data,schoolID }) {
                             <th style={{width:"100px"}}>รหัสวิชา</th>
                             <th style={{width:"250px"}}>ชื่อชุมนุม</th>
                             <th style={{width:"150px"}}>ปีการศึกษา</th>
-                            <th className='text-center text-sm-end' style={{width:"250px"}}>รายชื่อนักเรียน</th>
-                            <th className='text-center text-sm-end' style={{width:"100px"}}>แก้ไขข้อมูล</th>
+                            <th className='text-center ' style={{width:"100px"}}>รายชื่อนักเรียน</th>
+                            <th className='text-center ' style={{ width: "80px" }}>แก้ไขข้อมูล</th>
+                            <th className='text-center ' style={{ width: "80px" }}>จัดการรีวิว</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -401,20 +403,23 @@ export default function EditClub({ school_data,schoolID }) {
                                     <td>{item.groupID}</td>
                                     <td>{item.clubName}</td>
                                     <td>{item.schoolYear}</td>
-                                    <td className='text-center text-sm-end'>
-                                        <button className='btn liststudent_btn btn-sm me-0 me-sm-3'
+                                    <td className='text-center '>
+                                        <button className='btn liststudent_btn btn-sm '
                                             onClick={(ev)=> goStudentList(item,ev)}
                                         >รายชื่อ
                                         </button>
                                     </td>
-                                    <td className='text-center text-sm-end'>
-                                        <button className='btn detailinfo_btn btn-sm me-0 me-sm-2' 
+                                    <td className='text-center '>
+                                        <button className='btn detailinfo_btn btn-sm ' 
                                             onClick={(ev) => detailInfo(item,ev)}
                                             data-bs-toggle="modal"
                                             data-bs-target="#editClubModal"
                                             data-bs-clubid={item._id}
                                         >แก้ไข
                                         </button>
+                                    </td>
+                                    <td className="text-center">
+                                        <ReviewDelete item={item} schoolID={schoolID} nowSchoolYear={school_data.nowSchoolYear} />
                                     </td>
                                 </tr>
                             )
