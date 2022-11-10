@@ -7,7 +7,8 @@ import {
   get_own_review,
   update_own_review,
   get_club_teachers,
-  get_review_year
+  get_review_year,
+  get_stat
 } from "../../utils/student/student";
 import Swal from 'sweetalert2';
 
