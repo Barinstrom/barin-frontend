@@ -474,8 +474,8 @@ export default function Aprroved() {
 								</div>
 							</div>
 							<div className='modal-footer'>
-								<button className='btn btn-success' onClick={(ev) => update_school(ev)}>แก้ไขข้อมูล</button>
-								<button className='btn btn-danger' data-bs-dismiss="modal">ยกเลิก</button>
+								<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => update_school(ev)}>แก้ไขข้อมูล</button>
+								<button className='btn btn-danger' style={{backgroundColor:"#881b1b",color:"#fff"}} data-bs-dismiss="modal">ยกเลิก</button>
 							</div>
 						</div>
 					</div>

@@ -212,7 +212,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 				}
 			`}</style>
 			<div className="text-center display-6">
-				<span className='me-2'>เพิ่มข้อมูลครู</span>
+				<span className='me-2'>เพิ่มข้อมูลคุณครู</span>
 				<h4 className="fa-solid fa-circle-info"
 					data-bs-toggle="modal"
 					data-bs-target="#helpmodal"
@@ -256,7 +256,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 
 			{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
 			<div className="modal fade" id="insertModalTeacher">
-				<div className="modal-dialog">
+				<div className="modal-dialog modal-dialog-scrollable">
 					<div className="modal-content">
 						<div className="modal-header">
 							<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลคุณครู</h3>
@@ -281,7 +281,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 									<input type="tel" className="form-control" name="tel"/>
 								</div>
 								<div className="col-12 mt-4 text-center">
-									<button type="submit" className="btn btn-success w-100">ตกลง</button>
+									<button type="submit" className="btn w-100" style={{backgroundColor:"#11620e",color:"#fff"}}>ตกลง</button>
 								</div>
 							</form>
 						</div>
@@ -290,7 +290,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 			</div>
 
 			<div className="modal fade" id="helpmodal">
-				<div className="modal-dialog modal-lg">
+				<div className="modal-dialog">
 					<div className='modal-content'>
 						<div className='modal-header'>
 							<h3 className="modal-title" >คู่มือการใช้งาน</h3>

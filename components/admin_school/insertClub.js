@@ -329,7 +329,7 @@ export default function InsertClub({ school_data, schoolID }) {
 					}
 				`}</style>
 				<div className="text-center display-6">
-					<span className='me-2'>เพิ่มข้อมูลคลับ</span>
+					<span className='me-2'>เพิ่มข้อมูลชุมนุม</span>
 					<h4 className="fa-solid fa-circle-info"
 						data-bs-toggle="modal"
 						data-bs-target="#helpmodal"
@@ -372,7 +372,7 @@ export default function InsertClub({ school_data, schoolID }) {
 				
 				{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
 				<div className="modal fade" id="insertModalClub">
-					<div className="modal-dialog">
+					<div className="modal-dialog modal-dialog-scrollable">
 						<div className="modal-content">
 							<div className="modal-header">
 								<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลชุมนุม</h3>
@@ -440,7 +440,7 @@ export default function InsertClub({ school_data, schoolID }) {
 										/>
 									</div>
 									<div className="col-12 mt-4 text-center">
-										<input type="submit" className="btn btn-success w-100" value="ตกลง"/>
+										<input type="submit" className="btn w-100" style={{backgroundColor:"#11620e",color:"#fff"}} value="ตกลง"/>
 									</div>
 								</form>
 							</div>

@@ -259,7 +259,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 
 			{/* modal กดแสดงตอนเพิ่มข้อมูล 1 คน */}
 			<div className="modal fade" id="insertModalStudent">
-				<div className="modal-dialog">
+				<div className="modal-dialog modal-dialog-scrollable">
 					<div className="modal-content">
 						<div className="modal-header">
 							<h3 className="text-center">แบบฟอร์มเพิ่มข้อมูลนักเรียน</h3>
@@ -292,7 +292,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 									<input type="number" className="form-control" min={school_data.nowSchoolYear} name="enteredYear"/>
 								</div>
 								<div className="col-12 mt-4 text-center">
-									<button type="submit" className="btn btn-success w-100">ตกลง</button>
+									<button type="submit" className="btn w-100" style={{backgroundColor:"#11620e",color:"#fff"}}>ตกลง</button>
 								</div>
 							</form>
 						</div>

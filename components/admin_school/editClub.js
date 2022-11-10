@@ -459,7 +459,8 @@ export default function EditClub({ school_data,schoolID }) {
                         <h4 className="fa-solid fa-circle-info"
                             data-bs-toggle="modal"
                             data-bs-target="#helpmodal"
-                            type="button" ></h4>
+                            type="button">
+                        </h4>
                     </div>
                     <div className='row'>
                         <div className='col-12'>
@@ -480,7 +481,7 @@ export default function EditClub({ school_data,schoolID }) {
                 </div>
     
                 <div className="modal fade" id="editClubModal">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog modal-dialog-scrollable">
                         <div className='modal-content'>
                             <div className='modal-header'>
                                 <h3 className="modal-title">แบบฟอร์มแก้ไขข้อมูลชุมนุม</h3>
