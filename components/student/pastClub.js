@@ -24,6 +24,8 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 
 	const [displayError, setDisplayError] = useState(false)
 	const [showData, setShowData] = useState([])
+	const [clubImg, setClubImg] = useState("")
+
 
 	useEffect(() => {
 		get_student_pastclub(token, schoolID).then(res => {
@@ -105,6 +107,11 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 
 	function detailInfo(item, ev) {
 		console.log(item)
+		if (item.urlPicture) {
+			setClubImg(item.urlPicture)
+		} else {
+			setClubImg("https://dummyimage.com/300x300")
+		}
 		clubName.current.setAttribute("data-clubid", ev.target.getAttribute("data-bs-clubid"))
 		clubName.current.innerText = item.clubName
 		clubInfo.current.innerText = item.clubInfo
@@ -217,6 +224,10 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 											<p>ชื่อนามสกุลผู้สอน : &nbsp;
 												<span ref={teacherName}></span>
 											</p>
+										</div>
+										<div className="col-12">
+											<p>รูปภาพประกอบ</p>
+											<img src={clubImg} className="form-control" ></img>
 										</div>
 									</div>
 								</div>
