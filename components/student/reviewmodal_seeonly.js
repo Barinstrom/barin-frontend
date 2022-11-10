@@ -66,14 +66,28 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
       schoolYear: nowChooseYear
     }
     let tmp_stat = ''
+    setStat(tmp_stat)
     get_stat(body, token, schoolID).then(result => {
-      console.log(result)
+      console.log("get_stat",result)
       if (result) {
-        tmp_stat = 'พอใจ( ' + ' คน) : ' + '%' + 'ไม่พอใจ( ' + ' คน) : ' + '%'
+        if (result.data.length === 0) {
+          tmp_stat = 'ไม่พบสถิติ'
+        }
+        else {
+          let tmp_stat1='', tmp_stat2=''
+          if (result.data[0]) {
+            tmp_stat1 = result.data[0]._id + ": " + result.data[0].percent + '%'
+          }
+          if (result.data[1]) {
+            tmp_stat2 = result.data[1]._id + ": " + result.data[1].percent + '%'
+          }
+          tmp_stat = tmp_stat1 + "  " + tmp_stat2
+        }
       }
       else {
         tmp_stat = 'ไม่พบสถิติ'
       }
+      setStat(tmp_stat)
     })
   }
 
@@ -173,9 +187,9 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
   }
 
   function dropdownYear(clubID,arr_years) {
-    console.log("dropdowmYear =", clubID, arr_years,nowChooseYear)
+    // console.log("dropdowmYear =", clubID, arr_years,nowChooseYear)
     const tmp = (
-      <div className="d-flex  justify-content-center align-items-center">
+      <div className="d-flex flex-column flex-sm-row justify-content-center align-items-center">
         <div>ปีการศึกษา</div>
         <span>
           <div className="dropdown">
@@ -208,7 +222,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
   }
 
   function generate(result){
-    console.log(result)
+    // console.log(result)
     const paginate_tmp = []
     if (result.totalPages <= 6){
       for (let i=1;i<=result.totalPages;i++){

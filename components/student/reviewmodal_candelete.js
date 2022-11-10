@@ -20,6 +20,8 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
   const [reloadTable, setReloadTable] = useState(false)
   const [notShowAlert, setNotShowAlert] = useState(0)
   const [teacher, setTeacher] = useState()
+  const [stat, setStat] = useState('')
+
 
   // get_own_review,
   // update_own_review,
@@ -59,6 +61,37 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
     </i>
   )
 
+  function ReviewStat(clubID, nowChooseYear, token, schoolID) {
+    const body = {
+      clubID: clubID,
+      schoolYear: nowChooseYear
+    }
+    let tmp_stat = ''
+    setStat(tmp_stat)
+    get_stat(body, token, schoolID).then(result => {
+      console.log("get_stat", result)
+      if (result) {
+        if (result.data.length === 0) {
+          tmp_stat = 'ไม่พบสถิติ'
+        }
+        else {
+          let tmp_stat1 = '', tmp_stat2 = ''
+          if (result.data[0]) {
+            tmp_stat1 = result.data[0]._id + ": " + result.data[0].percent + '%'
+          }
+          if (result.data[1]) {
+            tmp_stat2 = result.data[1]._id + ": " + result.data[1].percent + '%'
+          }
+          tmp_stat = tmp_stat1 + "  " + tmp_stat2
+        }
+      }
+      else {
+        tmp_stat = 'ไม่พบสถิติ'
+      }
+      setStat(tmp_stat)
+    })
+  }
+
   function clickModal(item, schoolID, nowSchoolYear, ev) {
     ev.preventDefault()
     
@@ -74,7 +107,8 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
         
         nowChooseYear = result.data[0]  // res.data.length - 1 will use
         dropdownYear(item._id,result.data)
-        teacherName(item._id, result.data[0],token,schoolID) 
+        teacherName(item._id, result.data[0], token, schoolID) 
+        ReviewStat(item._id, result.data[0], token, schoolID) 
         get_review(body, token, schoolID).then((res) => {
           if (res) {
             setReloadTable(false)
@@ -119,6 +153,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
     };
     setReloadTable(true)
     teacherName(clubID, year, token, schoolID) 
+    ReviewStat(clubID, year, token, schoolID) 
     get_review(body, token, schoolID).then((res) => {
       if (res) {
         setReloadTable(false)
@@ -208,7 +243,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
   function dropdownYear(clubID,arr_years) {
     console.log("dropdowmYear =", clubID, arr_years,nowChooseYear)
     const tmp = (
-      <div className="d-flex  justify-content-center align-items-center">
+      <div className="d-flex flex-column flex-sm-row  justify-content-center align-items-center">
         <div>ปีการศึกษา</div>
         <span>
           <div className="dropdown">
@@ -347,6 +382,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
                   <div className="d-flex justify-content-start flex-column">
                     <p className="text-start" ref={clubName}></p>
                     <p className="text-start">ผู้สอน: {teacher}</p>
+                    <p className="text-start">สถิติ: {stat}</p>
                   </div>
                   <div>{clubYears}</div>
                 </div>

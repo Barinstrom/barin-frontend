@@ -5,7 +5,7 @@ const stagingUrl = process.env.NEXT_PUBLIC_API
 
 
 // แสดง ownclub
-export async function get_student_ownclub(data,token, schoolID) {
+export async function get_student_ownclub(data, token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/student/ownclub";
 
   console.log(data)
@@ -93,7 +93,7 @@ export async function drop_club(data, token, schoolID) {
     return true
   } catch (err) {
     console.log(err)
-    return [err,false]
+    return [err, false]
   }
 };
 
@@ -241,7 +241,7 @@ export async function update_own_review(data, token, schoolID) {
 // delete-review
 export async function delete_review(data, token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/delete-review";
-  console.log("delete_review",data, token, schoolID)
+  console.log("delete_review", data, token, schoolID)
   try {
     const result = await axios({
       url: apiUrl,
@@ -262,9 +262,9 @@ export async function delete_review(data, token, schoolID) {
 };
 
 // club-teachers
-export async function get_club_teachers(body,token, schoolID) {
+export async function get_club_teachers(body, token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/club/teachers";
-  
+
   const params = new URLSearchParams()
   if (body.clubID) {
     params.append("clubID", body.clubID)
@@ -274,7 +274,7 @@ export async function get_club_teachers(body,token, schoolID) {
   }
   const params_success = apiUrl + `?${params}`
   // console.log(params_success)
-  
+
   try {
     const result = await axios({
       url: params_success,
@@ -304,7 +304,7 @@ export async function get_stat(body, token, schoolID) {
     params.append("schoolYear", body.schoolYear)
   }
   const params_success = apiUrl + `?${params}`
-  // console.log(params_success)
+  console.log(params_success)
 
   try {
     const result = await axios({
