@@ -65,7 +65,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         setReloadTable(true)
         Promise.all([paginationClub(body, token, schoolID), get_student_ownclub(sc_Year,token, schoolID)])
             .then(result => {
-                console.log(result)
+                // console.log(result)
                 setReloadTable(false)
                 if (!result[0]){
                     setDisplayError(true)
@@ -81,7 +81,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         },[])
 
     function detailInfo(item,ev){
-        console.log(item)
+        // console.log(item)
         if (item.urlPicture) {
             setClubImg(item.urlPicture)
         } else {
@@ -142,7 +142,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
 
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log(result)
+                // console.log(result)
                 const result_update = result.value === "true" ? true : false
                 if (result_update) {
                     Swal.fire({
@@ -343,7 +343,7 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
                 </thead>
                 <tbody>
                         {result.map((item, index) => {
-                        console.log(item)
+                        // console.log(item)
                         return (
                             <tr key={index}>
                                 <td>{item.groupID}</td>

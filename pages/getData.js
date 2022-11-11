@@ -23,13 +23,13 @@ export default function Home2() {
 		async function waitGet_userdata(token,schoolID){
 			const dataTemp = await get_userdata(token,schoolID);
 			setData(dataTemp)
-			console.log("user",dataTemp)
+			// console.log("user",dataTemp)
 		}
 
 		async function waitGet_schooldata(token,schoolID){
 			const dataTemp = await get_school(token,schoolID);
 			setSchool(dataTemp)
-			console.log("school",dataTemp)
+			// console.log("school",dataTemp)
 		}
 		
 		/* เรียกฟังชันก์ พร้อมส่งค่า token ไป */

@@ -111,7 +111,7 @@ export default function NotApproved() {
         if (!result){
             setDisplayError(true)
         }else{
-			console.log(result)
+			// console.log(result)
             const paginate_tmp = generate(result)
             setDisplayError(false)
             showData(result.docs)
@@ -289,7 +289,7 @@ export default function NotApproved() {
     }
 
     function approveSchool(item) {
-        console.log(item)
+        // console.log(item)
         Swal.fire({
             title: 'คุณต้องการยืนยันว่า Approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
@@ -387,7 +387,7 @@ function getDetails(item) {
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				console.log(result)
+				// console.log(result)
 				const result_update = result.value === "true" ? true : false
 				if (result_update) {
 					Swal.fire({

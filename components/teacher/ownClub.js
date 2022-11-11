@@ -41,7 +41,7 @@ export default function OwnClub({ schoolID, data_school }) {
 				setLoading(false)
 				setDisplayError(true)
 			} else {
-				console.log(result.data)
+				// console.log(result.data)
 				const clubs = result.data
 				setData(clubs)
 				setDisplayError(false)
@@ -61,7 +61,7 @@ export default function OwnClub({ schoolID, data_school }) {
 	}
 
 	function clickModal(club){
-		console.log(club)
+		// console.log(club)
 		clubName.current.setAttribute("club-id",club._id)
 		clubName.current.value = club.clubName
 		clubInfo.current.value = club.clubInfo
@@ -84,7 +84,7 @@ export default function OwnClub({ schoolID, data_school }) {
 	}
 
 	function clickModal2(club) {
-		console.log(club)
+		// console.log(club)
 		clubName2.current.setAttribute("club-id", club._id)
 		clubName2.current.value = club.clubName
 		clubInfo2.current.value = club.clubInfo
@@ -117,7 +117,7 @@ export default function OwnClub({ schoolID, data_school }) {
 				schedule: [String(day.current.value) + " " + String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
 				urlPicture: clubImg
 			}
-			console.log(body_update)
+			// console.log(body_update)
 			Swal.fire({
 				title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลชุมนุมใช่หรือไม่",
 				showConfirmButton: true,

@@ -15,7 +15,7 @@ export async function get_data(token) {
 				"Authorization": `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return [result,true]
 	} catch (err) {
@@ -36,11 +36,11 @@ export async function get_userdata(token, schoolID) {
 				"Authorization": `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 	
@@ -56,12 +56,12 @@ export async function get_school(token,schoolID) {
 				"Authorization": `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		// console.log(result)
 		return result
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 	
@@ -81,7 +81,7 @@ export async function get_teachers_inclub(data,token, schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	console.log(params_success)
+	// console.log(params_success)
 	try {
 		const result = await axios({
 			url: params_success,
@@ -90,11 +90,11 @@ export async function get_teachers_inclub(data,token, schoolID) {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 			method: "get",
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };
@@ -120,12 +120,12 @@ export async function get_students_inclub(data, token, schoolID) {
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		// console.log(result)
 		return result
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };
@@ -143,7 +143,7 @@ export async function paginationStudent(data,token,schoolID) {
 	}
 
 	const params_success = apiUrl + `?${params}`
-	console.log(params_success)
+	// console.log(params_success)
 	try {
 		const result = await axios({
 			method:"get",
@@ -157,7 +157,7 @@ export async function paginationStudent(data,token,schoolID) {
 		return result
 	}
 	catch(err){
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 }
@@ -189,7 +189,7 @@ export async function paginationTeacher(data,token,schoolID) {
 		return result
 	}
 	catch(err){
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };
@@ -221,7 +221,7 @@ export async function paginationClub(data,token,schoolID) {
 		return result
 	}
 	catch(err){
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };
@@ -246,12 +246,12 @@ export async function getTeacherName(data, token, schoolID) {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };

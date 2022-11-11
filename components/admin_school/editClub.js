@@ -88,7 +88,7 @@ export default function EditClub({ school_data,schoolID }) {
     }
 
     function detailInfo(item, ev) {
-        console.log(item)
+        // console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
         clubName.current.value = item.clubName
         clubInfo.current.value = item.clubInfo

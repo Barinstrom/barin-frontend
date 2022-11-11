@@ -113,7 +113,7 @@ export default function Register() {
 
 			}).then((result) => {
 				if (result.isConfirmed) {
-					console.log(result)
+					// console.log(result)
 					if (!result.value[1]) {
 						Swal.fire({
 							icon: 'error',

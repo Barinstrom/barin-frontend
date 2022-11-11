@@ -125,7 +125,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
     let tmp_stat = ''
     setStat(tmp_stat)
     get_stat(body, token, schoolID).then(result => {
-      console.log("get_stat", result)
+      // console.log("get_stat", result)
       if (result) {
         if (result.data.length === 0) {
           tmp_stat = 'ไม่พบสถิติ'
@@ -251,7 +251,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
 
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log(result)
+        // console.log(result)
         const result_update = result.value === "true" ? true : false
         if (result_update) {
           Swal.fire({
@@ -301,7 +301,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
   }
   function clickModal(item, schoolID, nowSchoolYear, ev) {
     ev.preventDefault()
-    console.log(item)
+    // console.log(item)
 
     setReloadTable(true)
     clubName.current.innerText = "รีวิว " + item.clubName
@@ -320,7 +320,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
         teacherName(item._id, result.data[0], token, schoolID) 
         ReviewStat(item._id, result.data[0], token, schoolID) 
         get_own_review(item._id, token, schoolID).then((result) => { 
-            console.log(result.data)
+            // console.log(result.data)
             
             if (!result){
               changeIcon(ev, true)
@@ -432,7 +432,7 @@ export default function ReviewEdit({ item, schoolID, nowSchoolYear }) {
   }
 
   function generate(result) {
-    console.log(result)
+    // console.log(result)
     const paginate_tmp = []
     if (result.totalPages <= 6) {
       for (let i = 1; i <= result.totalPages; i++) {

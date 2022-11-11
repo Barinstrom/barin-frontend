@@ -173,7 +173,7 @@ export default function EditStudent({ school_data,schoolID }) {
                 }
             })            
         }catch(err){
-            console.log(err)
+            // console.log(err)
         }
     }
 

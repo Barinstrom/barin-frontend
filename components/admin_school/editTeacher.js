@@ -166,7 +166,7 @@ export default function EditTeacher({ school_data,schoolID }) {
                 }
             })
         }catch(err){
-            console.log(err)
+            // console.log(err)
         }
     }
 

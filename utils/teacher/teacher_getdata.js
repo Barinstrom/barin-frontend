@@ -18,7 +18,7 @@ export async function get_teacher_ownclubs(token, schoolID) {
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };
@@ -41,13 +41,13 @@ export async function get_all_stdlist(data,token, schoolID) {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      timeout: 10000
+      timeout: 15000
     })
     //console.log(result)
     return [true,result]
   }
   catch (err) {
-    console.log(err)
+    // console.log(err)
     return [false,err]
   }
 };

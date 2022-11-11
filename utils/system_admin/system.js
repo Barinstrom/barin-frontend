@@ -17,7 +17,7 @@ export async function get_school_data(schoolID,token) {
 		return [result,true]
 	}
 	catch(err){
-		console.log(err)
+		// console.log(err)
 		return [err,false]
 	}
 };
@@ -47,7 +47,7 @@ export async function get_pending(data,token) {
 		})
 		return result
 	} catch(err) {
-		console.log(err);
+		// console.log(err);
 		return false;
 	}
 };
@@ -77,7 +77,7 @@ export async function get_approved(data,token) {
 		})
 		return response
 	} catch(err) {
-		console.log(err.message);
+		// console.log(err.message);
 		return false;
 	}
 };
@@ -109,7 +109,7 @@ export async function get_not_approved(data,token) {
 		return response.data
 		
 	} catch(err) {
-		console.log(err.message);
+		// console.log(err.message);
 		return false;
 	}
 };
@@ -118,7 +118,7 @@ export async function get_not_approved(data,token) {
 // edit info school
 export async function sys_edit_school(token,data) {
 	const apiUrl = stagingUrl + "/update-school";
-	console.log(data)
+	// console.log(data)
 	try {
 		const response = await axios({
 			method:"patch",
@@ -127,10 +127,10 @@ export async function sys_edit_school(token,data) {
 			timeout:10000,
 			data:JSON.stringify(data)
 		})
-		console.log(response)
+		// console.log(response)
 		return 'true'
 	} catch(err) {
-		console.log(err);
+		// console.log(err);
 		return 'false';
 	}
 };

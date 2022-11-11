@@ -16,11 +16,11 @@ export async function set_schedule(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return 'true'
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 }
@@ -38,11 +38,11 @@ export async function update_club(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return "true"
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 };
@@ -60,12 +60,12 @@ export async function update_student(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     
     return "true"
   }catch (err) {
-    console.log(err)
+    // console.log(err)
     return "false"
   }
 };
@@ -83,12 +83,12 @@ export async function update_teacher(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
-    console.log(result)
+    // console.log(result)
     return "true"
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return "false"
   }
 }
@@ -108,10 +108,10 @@ export async function admin_edit_school(token,data){
       timeout:10000,
       data:JSON.stringify(data)
     })
-    console.log(response)
+    // console.log(response)
     return 'true'
   }catch(err) {
-    console.log(err);
+    // console.log(err);
     return 'false';
   }
 };

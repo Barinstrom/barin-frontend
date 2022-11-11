@@ -8,13 +8,13 @@ const stagingUrl = process.env.NEXT_PUBLIC_API
 export async function get_student_ownclub(data, token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/student/ownclub";
 
-  console.log(data)
+  // console.log(data)
   const params = new URLSearchParams()
   if (data.nowSchoolYear) {
     params.append("schoolYear", data.nowSchoolYear)
   }
   const params_success = apiUrl + `?${params}`
-  console.log(params_success)
+  // console.log(params_success)
 
   try {
     const result = await axios({
@@ -24,11 +24,11 @@ export async function get_student_ownclub(data, token, schoolID) {
         "Content-Type": "application/json;charset=UTF-8",
       },
       method: "get",
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };
@@ -44,11 +44,11 @@ export async function get_student_pastclub(token, schoolID) {
         "Content-Type": "application/json;charset=UTF-8",
       },
       method: "get",
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };
@@ -66,11 +66,11 @@ export async function register_club(data, token, schoolID) {
       },
       method: "post",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return 'true'
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 };
@@ -88,11 +88,11 @@ export async function drop_club(data, token, schoolID) {
       },
       method: "post",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return [true, true]
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return [err, false]
   }
 };
@@ -117,12 +117,12 @@ export async function get_review_year(groupID, token, schoolID) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      timeout: 10000,
+      timeout: 15000,
     });
     // console.log(result)
     return result;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return false;
   }
 }
@@ -154,12 +154,12 @@ export async function get_review(body, token, schoolID) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      timeout: 10000,
+      timeout: 15000,
     });
     // console.log(result)
     return result;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return false;
   }
 }
@@ -177,13 +177,13 @@ export async function post_review(data, token, schoolID) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=UTF-8",
       },
-      timeout: 3000,
+      timeout: 15000,
     });
     // console.log(result)
     // return result;
     return 'true'
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return 'false';
   }
 }
@@ -206,12 +206,12 @@ export async function get_own_review(clubID, token, schoolID) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      timeout: 10000,
+      timeout: 15000,
     });
-    console.log(result)
+    // console.log(result)
     return result;
   } catch (err) {
-    console.log(err.message);
+    // console.log(err.message);
     return false;
   }
 }
@@ -228,12 +228,12 @@ export async function update_own_review(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     // return result
     return 'true'
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 };
@@ -241,7 +241,7 @@ export async function update_own_review(data, token, schoolID) {
 // delete-review
 export async function delete_review(data, token, schoolID) {
   const apiUrl = stagingUrl + "/" + String(schoolID) + "/delete-review";
-  console.log("delete_review", data, token, schoolID)
+  // console.log("delete_review", data, token, schoolID)
   try {
     const result = await axios({
       url: apiUrl,
@@ -251,12 +251,12 @@ export async function delete_review(data, token, schoolID) {
       },
       method: "delete",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     // return result
     return 'true'
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 };
@@ -283,11 +283,11 @@ export async function get_club_teachers(body, token, schoolID) {
         "Content-Type": "application/json;charset=UTF-8",
       },
       method: "get",
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };
@@ -304,7 +304,7 @@ export async function get_stat(body, token, schoolID) {
     params.append("schoolYear", body.schoolYear)
   }
   const params_success = apiUrl + `?${params}`
-  console.log(params_success)
+  // console.log(params_success)
 
   try {
     const result = await axios({
@@ -314,11 +314,11 @@ export async function get_stat(body, token, schoolID) {
         "Content-Type": "application/json;charset=UTF-8",
       },
       method: "get",
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };

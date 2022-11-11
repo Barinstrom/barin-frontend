@@ -68,7 +68,7 @@ export default function Review({ item, schoolID, nowSchoolYear }) {
     let tmp_stat = ''
     setStat(tmp_stat)
     get_stat(body, token, schoolID).then(result => {
-      console.log("get_stat",result)
+      // console.log("get_stat",result)
       if (result) {
         if (result.data.length === 0) {
           tmp_stat = 'ไม่พบสถิติ'

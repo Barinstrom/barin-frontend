@@ -70,7 +70,7 @@ export default function Admin({ schoolID }) {
 		if (schoolID) {
 			get_data(token).then(result => {
 				if (result[1]) {
-					console.log(result[0])
+					// console.log(result[0])
 					const data_tmp = result[0].data._doc
 					const role = result[0].data.role
 					const user_email = result[0].data.email
@@ -608,7 +608,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
 	const schoolID_param = context.params.schoolID
 	const schoolPathAll = await get_all_schoolID();
-	console.log("context",context)
+	// console.log("context",context)
 	
 	const school_path_data = schoolPathAll.data.find(e => e.schoolID === schoolID_param)
 	if (school_path_data) {

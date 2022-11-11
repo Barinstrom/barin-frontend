@@ -108,7 +108,7 @@ export default function Aprroved() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			console.log(result.data)
+			// console.log(result.data)
 			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
 			showData(result.data.docs)
@@ -353,7 +353,7 @@ export default function Aprroved() {
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				console.log(result)
+				// console.log(result)
 				const result_update = result.value === "true" ? true : false
 				if (result_update) {
 					Swal.fire({

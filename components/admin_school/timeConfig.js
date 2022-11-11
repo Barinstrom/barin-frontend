@@ -93,7 +93,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 		ev.preventDefault();
 
 		const schedule = JSON.parse(ev.target.value);
-		console.log(schedule)
+		// console.log(schedule)
 
 		if (schedule.schoolYear == school_data.nowSchoolYear) {
 			alert_now.current.classList.remove("d-none")
@@ -243,7 +243,7 @@ export default function TimeConfig({ school_data, schoolID }) {
 			endOfSchoolYear: endOfSchoolYear2.current.value ,
 		}
 		
-		console.log("sent_data =", sent_data)
+		// console.log("sent_data =", sent_data)
 		// api call
 		const cookies = new Cookies();
 		const token = cookies.get("token");

@@ -70,7 +70,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
     let tmp_stat = ''
     setStat(tmp_stat)
     get_stat(body, token, schoolID).then(result => {
-      console.log("get_stat", result)
+      // console.log("get_stat", result)
       if (result) {
         if (result.data.length === 0) {
           tmp_stat = 'ไม่พบสถิติ'
@@ -190,7 +190,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
 
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log(result)
+        // console.log(result)
         const result_update = result.value === "true" ? true : false
         if (result_update) {
           Swal.fire({
@@ -242,7 +242,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
   }
 
   function dropdownYear(clubID,arr_years) {
-    console.log("dropdowmYear =", clubID, arr_years,nowChooseYear)
+    // console.log("dropdowmYear =", clubID, arr_years,nowChooseYear)
     const tmp = (
       <div className="d-flex flex-column flex-sm-row  justify-content-center align-items-center">
         <div>ปีการศึกษา</div>
@@ -277,7 +277,7 @@ export default function ReviewDelete({ item, schoolID, nowSchoolYear }) {
   }
 
   function generate(result){
-    console.log(result)
+    // console.log(result)
     const paginate_tmp = []
     if (result.totalPages <= 6){
       for (let i=1;i<=result.totalPages;i++){

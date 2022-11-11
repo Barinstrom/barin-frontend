@@ -15,11 +15,11 @@ export async function update_club(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return 'true'
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return 'false'
   }
 };
@@ -38,11 +38,11 @@ export async function update_study_status(data, token, schoolID) {
       },
       method: "patch",
       data: JSON.stringify(data),
-      timeout: 10000
+      timeout: 15000
     })
     return result
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return false
   }
 };

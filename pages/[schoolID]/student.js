@@ -39,7 +39,7 @@ export default function Student({ schoolID }) {
 		if (schoolID) {
 			get_data(token).then(result => {
 				if (result[1]) {
-					console.log(result)
+					// console.log(result)
 					const data_tmp = result[0].data._doc
 					const role = result[0].data.role
 					const email = result[0].data.email
@@ -47,7 +47,7 @@ export default function Student({ schoolID }) {
 						router.push("/" + String(schoolID))
 					} else if (data_tmp) {
 						data_tmp.schedule.forEach((data) => {
-							console.log("data = ",data)
+							// console.log("data = ",data)
 							if (data.schoolYear === data_tmp.nowSchoolYear) {
 								// console.log(data.schoolYear)
 								const registerDate = new Date(data.registerDate)
@@ -99,7 +99,7 @@ export default function Student({ schoolID }) {
 	useEffect(() => {
 		if (chooseBtnStart){
 			const component_now = localStorage.getItem('component');
-			console.log(component_now)
+			// console.log(component_now)
 			if (component_now) {
 				changeComponent(component_now)
 				optionBtn.current[component_now].classList.add("nowclick");
@@ -231,7 +231,7 @@ export default function Student({ schoolID }) {
 	}else if (countBtn === 1){
 		component = <Searchclub schoolID={schoolID} scheduled={schedule} inschedule={inschedule} nowSchoolYear={nowSchoolYear} />
 	}else{
-		console.log(schedule)
+		// console.log(schedule)
 		component = <Pastclub schoolID={schoolID} schedule={schedule} nowSchoolYear={nowSchoolYear} />
 	}
 	

@@ -72,7 +72,7 @@ export default function StdList({ schoolID, school_data }){
         // console.log(school_data)
         setReloadTable(true)
         get_teacher_ownclubs(token,schoolID).then(result => {
-			console.log(result.data)
+			// console.log(result.data)
             const clubs = result.data
             if (!result){
                 setDisplayError(true)
@@ -260,7 +260,7 @@ export default function StdList({ schoolID, school_data }){
     }
 
     function genetateDropdown(clubs) {
-        console.log(clubs)
+        // console.log(clubs)
         const tmp = clubs.map((club, index) => {
             return <div key={index} style={{ cursor: "pointer" }} className="dropdown-item" onClick={(ev) => changeDropDown(club._id, club.clubName,club.schoolYear)}>
                 {club.clubName} ปี {club.schoolYear}
@@ -303,7 +303,7 @@ export default function StdList({ schoolID, school_data }){
         
         get_all_stdlist(data, token, schoolID).then((res) => {
             if (res[0]) {
-                console.log(res[1])
+                // console.log(res[1])
                 if (res[1].data.length === 0){
                     setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
                     setAllDataErr(false)
@@ -330,7 +330,7 @@ export default function StdList({ schoolID, school_data }){
     //* ส่วนของการแปลง string เป็น object
     const stringtoObject = (text) => {
         try {
-            console.log(text)
+            // console.log(text)
             const result = []
             text = text.trim()
             const tmp = text.split("\n")
@@ -352,7 +352,7 @@ export default function StdList({ schoolID, school_data }){
             return result
         }
         catch(err){
-            console.log(err)
+            // console.log(err)
         }
     }
 
@@ -395,7 +395,7 @@ export default function StdList({ schoolID, school_data }){
                     doc : doc
                 }
                 const result = await update_study_status(body, token, schoolID);
-                console.log(result)
+                // console.log(result)
                 if (result) {
                     Swal.fire({
                         icon: 'success',

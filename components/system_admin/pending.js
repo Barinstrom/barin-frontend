@@ -37,7 +37,7 @@ export default function Pending() {
 			if (!result) {
 				setDisplayError(true)
 			} else {
-				console.log(result.data)
+				// console.log(result.data)
 				const paginate_tmp = generate(result.data)
 				setDisplayError(false)
 				showData(result.data.docs)
@@ -110,7 +110,7 @@ export default function Pending() {
 		if (!result) {
 			setDisplayError(true)
 		} else {
-			console.log("result.data = ", result.data)
+			// console.log("result.data = ", result.data)
 			const paginate_tmp = generate(result.data)
 			setDisplayError(false)
 			showData(result.data.docs)
@@ -312,7 +312,7 @@ export default function Pending() {
     }
     
     function approveSchool(item) {
-        console.log(item)
+        // console.log(item)
         Swal.fire({
             title: 'คุณต้องการยืนยันว่า Approve โรงเรียนนี้ใช่หรือไม่',
             showConfirmButton: true,
@@ -335,7 +335,7 @@ export default function Pending() {
 		
 		}).then((result) => {
 			if (result.isConfirmed) {
-				console.log(result)
+				// console.log(result)
 				const result_update = result.value === "true" ? true : false
 				if (result_update) {
 					Swal.fire({
@@ -458,7 +458,7 @@ export default function Pending() {
 
 		}).then((result) => {
 			if (result.isConfirmed) {
-				console.log(result)
+				// console.log(result)
 				const result_update = result.value === "true" ? true : false
 				if (result_update) {
 					Swal.fire({

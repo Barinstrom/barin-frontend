@@ -99,7 +99,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 				}).then((res) => {
 					if (res.isConfirmed) {
 						const result = res.value
-						console.log(result)
+						// console.log(result)
 						if (!result[0]) {
 							if (result[1].response.data  && result[1].response.data.error) {
 								Swal.fire({

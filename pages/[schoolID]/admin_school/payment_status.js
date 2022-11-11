@@ -20,7 +20,7 @@ export default function Payment_Status() {
     ev.preventDefault();
     setDisplayFirst("loading")
     get_data(token).then(result => {
-      console.log("return = ",result)
+      // console.log("return = ",result)
       if (result[1]){
         window.location.replace( "/"+ result[0].data._doc.schoolID + "/admin_school")
       } else {
@@ -32,7 +32,7 @@ export default function Payment_Status() {
   useEffect(() => {
     get_status(token)
 			.then(result => {
-				console.log(result)
+				// console.log(result)
         if (result) {
         //   get_data(token)
         //     .then(checkstatus => {

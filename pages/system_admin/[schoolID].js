@@ -35,7 +35,7 @@ export default function Admin({ schoolID }) {
 	useEffect(() => {
 		if (chooseBtnStart){
 			const component_now = localStorage.getItem('component_sys');
-			console.log(component_now)
+			// console.log(component_now)
 			if (component_now) {
 				changeComponent(component_now)
 				optionBtn.current[component_now].classList.add("nowclick");
@@ -65,7 +65,7 @@ export default function Admin({ schoolID }) {
 
 		Promise.all([get_school_data(schoolID,token)])
 			.then(result => {
-				console.log(result)
+				// console.log(result)
 				
 
 				if (result[0][1]){

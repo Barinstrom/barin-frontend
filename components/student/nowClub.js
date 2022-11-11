@@ -85,7 +85,7 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 		}
 		setdisplayOwnclub(reload)
 		get_student_ownclub(body,token, schoolID).then(result => {
-			console.log(result)
+			// console.log(result)
 			let clubs;
 			let clubs_notin
 			if (!result) {
@@ -129,7 +129,7 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 				)
 			}
 			else {
-				console.log(result)
+				// console.log(result)
 				clubs = result.data.clubs.map((e, i) => {
 					return (
 						<>

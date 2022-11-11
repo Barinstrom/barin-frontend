@@ -61,7 +61,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 							</thead>
 							<tbody>
 								{res.data.clubs.map((item, index) => {
-									console.log(item)
+									// console.log(item)
 									return (
 										<tr key={index}>
 											<td>{item.groupID}</td>
@@ -106,7 +106,7 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 	}
 
 	function detailInfo(item, ev) {
-		console.log(item)
+		// console.log(item)
 		if (item.urlPicture) {
 			setClubImg(item.urlPicture)
 		} else {

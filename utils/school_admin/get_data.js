@@ -14,11 +14,11 @@ export async function get_name_clubs(token, schoolID) {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json;charset=UTF-8",
         },
-        timeout: 10000
+        timeout: 15000
       })
       return result
     } catch (err) {
-      console.log(err.message)
+      // console.log(err.message)
       return false
     }
   };

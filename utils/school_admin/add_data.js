@@ -7,7 +7,7 @@ const stagingUrl = process.env.NEXT_PUBLIC_API
 // เพิ่มข้อมูลนักเรียน 1 คน
 export async function add_student(data,token,schoolID) {
 	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-student";
-	console.log(data,token,schoolID)
+	// console.log(data,token,schoolID)
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -17,11 +17,11 @@ export async function add_student(data,token,schoolID) {
 			},
 			method: "POST",
 			data: JSON.stringify(data),
-			timeout: 10000
+			timeout: 15000
 		})
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false,err]
 	}
 };
@@ -40,11 +40,11 @@ export async function add_students(data,token,schoolID) {
 			},
 			method: "POST",
 			data: JSON.stringify(data),
-			timeout: 10000
+			timeout: 15000
 		})
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false,err]
 	}
 };
@@ -53,7 +53,7 @@ export async function add_students(data,token,schoolID) {
 // เพิ่ม 1 คลับ
 export async function add_club(data,token,schoolID) {
 	const apiUrl = stagingUrl + "/" + String(schoolID) + "/add-club";
-	console.log()
+	// console.log()
 	try {
 		const result = await axios({
 			url: apiUrl,
@@ -63,11 +63,11 @@ export async function add_club(data,token,schoolID) {
 			},
 			method: "post",
 			data:JSON.stringify(data),
-			timeout: 10000
+			timeout: 15000
 		})
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false , err]
 	}
 };
@@ -86,12 +86,12 @@ export async function add_clubs(data,token,schoolID) {
 			},
 			method: "post",
 			data:JSON.stringify(data),
-			timeout: 100000
+			timeout: 30000
 		})
-		console.log(result)
+		// console.log(result)
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false,err]
 	}
 };
@@ -109,11 +109,11 @@ export async function add_teacher(data,token,schoolID) {
 			},
 			method: "post",
 			data:JSON.stringify(data),
-			timeout: 10000
+			timeout: 15000
 		})
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false,err]
 	}
 };
@@ -130,11 +130,11 @@ export async function add_teachers(data,token,schoolID) {
 			},
 			method: "post",
 			data:JSON.stringify(data),
-			timeout: 10000
+			timeout: 15000
 		})
 		return [true]
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [false,err]
 	}
 };

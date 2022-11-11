@@ -14,11 +14,11 @@ export async function get_status(token) {
 				"Authorization": `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	} catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 }
@@ -34,7 +34,7 @@ export async function stripe(token) {
 				"Authorization": `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	} catch (err) {

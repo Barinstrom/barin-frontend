@@ -100,7 +100,7 @@ export default function InsertClub({ school_data, schoolID }) {
 	/* ส่วนของการแปลง string เป็น object */
     const stringtoObject = (text) => {
 			const result = []
-			console.log(text)
+			// console.log(text)
 			text = text.trim()
 			const tmp = text.split("\n")
 			const heads = tmp[0].split(",")
@@ -144,7 +144,7 @@ export default function InsertClub({ school_data, schoolID }) {
 		reader.onloadend = async () => {
 			const text = reader.result;
 			const body = stringtoObject(text)
-			console.log(body)
+			// console.log(body)
       if (body === "data is undefined"){
                 Swal.fire({
 					icon: 'warning',
@@ -175,7 +175,7 @@ export default function InsertClub({ school_data, schoolID }) {
 				}).then((res) => {
 					if (res.isConfirmed) {
 						const result = res.value
-						console.log(result)
+						// console.log(result)
 						if (!result[0]) {
 							if (result[1].response.data && result[1].response.data.error) {
 								Swal.fire({

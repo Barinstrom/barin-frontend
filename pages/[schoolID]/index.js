@@ -69,7 +69,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
       } else {
         //console.log(result)
         const check_data = await get_data(result.data.token);
-        console.log(check_data)
+        // console.log(check_data)
         if (!check_data[1]) {
           Swal.fire({
             icon: "error",
@@ -98,7 +98,7 @@ export default function Login({ schoolID, urlLogo, schoolName }) {
               showConfirmButton: true,
               confirmButtonColor: "#0076d1",
             }).then(() => {
-              console.log(result)
+              // console.log(result)
               if (result.data.schoolID === "all"){
                 router.push("/login");
               }else{

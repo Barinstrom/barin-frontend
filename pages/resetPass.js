@@ -48,7 +48,7 @@ export default function ForgotPass() {
     const result = await reset_password(body);
 
     spin.current.classList.add("d-none");
-    console.log(result)
+    // console.log(result)
     
     if (!result[1]) {
       Swal.fire({

@@ -15,12 +15,12 @@ export async function register(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return [result, true]
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [err, false]
 	}
 };
@@ -35,12 +35,12 @@ export async function checkLogin(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8"
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return [result, true]
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [err, false]
 	}
 }
@@ -57,12 +57,12 @@ export async function forget_password(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8"
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return "true"
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return 'false'
 	}
 };
@@ -79,12 +79,12 @@ export async function reset_password(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return [result, true]
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [err, false]
 	}
 };
@@ -101,12 +101,12 @@ export async function get_all_schoolID() {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
 		return result
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return false
 	}
 };
@@ -124,13 +124,13 @@ export async function is_activate(data) {
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			timeout: 10000
+			timeout: 15000
 		})
-		console.log(result)
+		// console.log(result)
 		return [result, true]
 	}
 	catch (err) {
-		console.log(err)
+		// console.log(err)
 		return [err, false]
 	}
 };
