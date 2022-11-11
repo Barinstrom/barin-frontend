@@ -476,7 +476,7 @@ export default function EditClub({ school_data,schoolID }) {
                 </div>
     
                 <div className="modal fade" id="editClubModal">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog modal-dialog-scrollable">
                         <div className='modal-content'>
                             <div className='modal-header'>
                                 <h3 className="modal-title">แบบฟอร์มแก้ไขข้อมูลชุมนุม</h3>

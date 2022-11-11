@@ -221,7 +221,7 @@ export default function SchoolData({ school_data, schoolID, email }) {
 				
 				<form className="d-flex flex-column flex-md-row justiy-centent-center align-items-center">
 					<div className="me-md-4">
-						<img width={500}
+						<img width={450}
 							className="img-fluid rounded rounded-4"
 							src={picture}
 							alt="Card image cap"

@@ -320,7 +320,7 @@ if (loading){
 }else if (displayError){
   return (
     <main className='container p-3'>
-        <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
+      <div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
     </main>
   )
 }else{
@@ -341,7 +341,7 @@ if (loading){
 						border-radius:4px;
 					}
         `}</style>
-      <div className='text-center mb-3 mt-3 fs-5'>
+      <div className='text-center display-6 mb-3 mt-3'>
         <span className=''>รายชื่อนักเรียนชุมนุม {clubName}</span>
         
       </div>

@@ -69,7 +69,6 @@ export default function TimeConfig({ school_data, schoolID }) {
 
 
 	useEffect(() => {
-		//console.log(school_data)
 		if (school_data.nowSchoolYear) {
 			setNowYear(have_nowYear)
 		}
@@ -162,7 +161,8 @@ export default function TimeConfig({ school_data, schoolID }) {
 		const regisD = new Date(String(registerDate.current.value) + " " + String(registerTime.current.value))
 		const engregisD = new Date(String(endOfRegisterDate.current.value) + " " + String(endOfRegisterTime.current.value))
 		const engschD = new Date(endOfSchoolYear.current.value)
-		console.log(regisD, engregisD, engschD)
+		//console.log(regisD, engregisD, engschD)
+		//console.log(regisD)
 
 		if (regisD > engregisD || engregisD > engschD || regisD > engschD) {
 			Swal.fire({
@@ -228,8 +228,6 @@ export default function TimeConfig({ school_data, schoolID }) {
 						router.reload()
 					})
 				}
-			} else {
-				
 			}
 		})
 	}
@@ -334,9 +332,9 @@ export default function TimeConfig({ school_data, schoolID }) {
 				<input type="time" className="form-control mt-3" disabled  ref={endOfRegisterTime} ></input>
 			</div>
 			<div className="d-flex justify-content-end">
-				<button className="btn btn-danger d-none me-2" ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
-				<button className="btn btn-warning d-none me-2" ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
-				<button className="btn btn-success d-none" ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
+				<button className="btn d-none me-2" style={{backgroundColor:"#881b1b",color:"#fff"}} ref={btnCancel} onClick={(ev) => taskCancel(ev)}>ยกเลิก</button>	
+				<button className="btn d-none me-2" style={{backgroundColor:"#9c4d0d" , color:"#fff"}}  ref={btnEdit} onClick={(ev) => taskEdit(ev)}>แก้ไข</button>	
+				<button className="btn d-none" style={{backgroundColor:"#11620e",color:"#fff"}} ref={btnConfirm} onClick={(ev) => taskConfirm(ev)}>ตกลง</button>	
 			</div>
 	</>
 	)
@@ -367,11 +365,11 @@ export default function TimeConfig({ school_data, schoolID }) {
 		</div>
 		<div className="col-12 mt-4">
 			<label className="form-label">เวลาปิดลงทะเบียนชุมนุม</label>
-			<input type="date" className="form-control"   ref={endOfRegisterDate2} ></input>
+			<input type="date" className="form-control"  ref={endOfRegisterDate2} ></input>
 			<input type="time" className="form-control mt-3"   ref={endOfRegisterTime2} ></input>
 		</div>
 		<div className="d-flex justify-content-end">
-			<button className="btn btn-success" onClick={(ev) => taskConfirm2(ev)}>ตกลง</button>	
+			<button className="btn mt-2" style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => taskConfirm2(ev)}>ตกลง</button>	
 		</div>
 	</div>
 	)
@@ -379,9 +377,8 @@ export default function TimeConfig({ school_data, schoolID }) {
 	const TimeConfig_page = (
 		<>
 		<div>
-			<h2 className="text-center mt-2">
+				<h2 className="text-center display-6 mt-2">
 					<span className=''>ตั้งเวลาลงทะเบียน</span>
-					
 			</h2>
 			<form className="row g-4 p-2" ref={form}>
 				{nowYear} 
