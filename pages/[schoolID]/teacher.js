@@ -255,6 +255,10 @@ export default function Teacher({ schoolID }) {
 					background-color: transparent;
 				}
 
+				.help_text {
+					display: none;
+				}
+
 				@media screen and (max-width: 1300px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
@@ -285,6 +289,13 @@ export default function Teacher({ schoolID }) {
 					.h2_alert {
 						font-size: 20px;
 					}
+
+					.help_text_lg {
+						display: none;
+					}
+					.help_text {
+						display: inline;
+					}
 				}
 
 				.nav_left{
@@ -311,12 +322,27 @@ export default function Teacher({ schoolID }) {
 						>
 							<i className="fa-solid fa-bars"></i>
 						</button>
-						<span className="ms-3">Dashboard</span>
+						<span className="ms-2">Dashboard</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>
 							<span ref={time}></span>
 						</div>
+						<a className="help_text_lg" target="_blank"
+							href="https://drive.google.com/file/d/1iCCW_mcWgGOXVD792akuBVskecyV-4Dh/view?usp=share_link"
+							rel="noreferrer" style={{ textDecoration: 'none', color: 'black' }}>
+							<div className=" d-flex justify-content-center align-items-center ms-3 me-2 p-1 border border-dark border-2 rounded-pill">
+								<div className="me-1">คู่มือ</div>
+								<div className=" fa-solid fa-circle-info"></div>
+							</div>
+						</a>
+						<a className="help_text" target="_blank"
+							href="https://drive.google.com/file/d/1iCCW_mcWgGOXVD792akuBVskecyV-4Dh/view?usp=share_link"
+							rel="noreferrer" style={{ textDecoration: 'none', color: 'black' }}>
+							<div className="help_text d-flex justify-content-center align-items-center ms-3 me-2">
+								<div className=" fa-solid fa-circle-info"></div>
+							</div>
+						</a>
 					<div className={`me-3 d-flex flex-row h-100`}>
 						<div className={`${styles.logo}`}>
 							<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>

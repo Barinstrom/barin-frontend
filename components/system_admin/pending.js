@@ -532,11 +532,8 @@ export default function Pending() {
 			<>
 				<div>
 					<div className="text-center fs-1 mb-3">
-						<span className='me-2'>Pending</span> 
-						<h4 className="fa-solid fa-circle-info"
-							data-bs-toggle="modal"
-							data-bs-target="#helpmodal"
-							type="button" ></h4>
+						<span className=''>Pending</span> 
+						
 					</div>
 					<div className='row mb-4'>
 						<div className='col-12'>
@@ -623,18 +620,7 @@ export default function Pending() {
 					</div>
 				</div>
 
-				<div className="modal fade" id="helpmodal">
-					<div className="modal-dialog modal-lg">
-						<div className='modal-content'>
-							<div className='modal-header'>
-								<h3 className="modal-title" >คู่มือการใช้งาน</h3>
-							</div>
-							<div className='modal-body'>
-								รอใส่ user manual
-							</div>
-						</div>
-					</div>
-				</div>
+				
 			</>
 		)
 	}

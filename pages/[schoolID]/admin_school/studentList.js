@@ -40,11 +40,11 @@ export default function StudentList({schoolID}) {
   const [allDataErr, setAllDataErr] = useState(true)
   const [notShowAlert, setNotShowAlert] = useState(0)
 
-  const [csvReport, setCsvReport] = useState({
+  let csvReport = {
     data: tmpdata,
     headers: headers,
     filename: 'tmpdata.csv'
-})
+}
   
   const cookies = new Cookies();
 	const token = cookies.get("token");
@@ -296,21 +296,21 @@ function getAllStdList() {
       if (res[0]) {
           //console.log(res[1])
           if (res[1].data.length === 0){
-              setAllDataErr(false)
-              setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
+            setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
+            setAllDataErr(false)
           }else{
-              setCsvReport ({
+              csvReport = {
                   data: res[1].data,
                   headers: headers,
-                  filename: window.localStorage.getItem("clubidStdentListOwnTeacher") + '.csv'
-              })
-              setAllDataErr(false)
-              setCsvData(<CSVLink {...csvReport}>Export to CSV</CSVLink>)
+                filename: 'รายชื่อนักเรียน_' + clubName + '.csv'
+              }
+            setCsvData(<CSVLink {...csvReport}>Export to CSV</CSVLink>)
+            setAllDataErr(false)
           }
       }
       else {
-          setAllDataErr(false)
-          setCsvData(<div className="fs-5">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>)
+        setCsvData(<div className="fs-5">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>)
+        setAllDataErr(false)
       }
   })
 }
@@ -342,11 +342,8 @@ if (loading){
 					}
         `}</style>
       <div className='text-center mb-3 mt-3 fs-5'>
-        <span className='me-2'>รายชื่อนักเรียนชุมนุม {clubName}</span>
-        <h4 className="fa-solid fa-circle-info"
-          data-bs-toggle="modal"
-          data-bs-target="#helpmodal"
-          type="button" ></h4>
+        <span className=''>รายชื่อนักเรียนชุมนุม {clubName}</span>
+        
       </div>
       <div className="d-flex flex-column flex-sm-row p-1 align-items-start align-items-sm-center">
         <div className='btn-group dropdown d-sm-block order-3 order-sm-1 mt-2 mt-sm-0'>
@@ -410,18 +407,7 @@ if (loading){
         </div>
       </div>
 
-      <div className="modal fade" id="helpmodal">
-        <div className="modal-dialog modal-lg">
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h3 className="modal-title" >คู่มือการใช้งาน</h3>
-            </div>
-            <div className='modal-body'>
-              รอใส่ user manual
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </main>
   )
 }

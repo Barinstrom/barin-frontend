@@ -37,11 +37,11 @@ export default function StdList({ schoolID, school_data }){
     const [allDataErr, setAllDataErr] = useState(true)
     const [notShowAlert, setNotShowAlert] = useState(0)
 
-    const [csvReport, setCsvReport] = useState({
+    let csvReport = {
         data: tmpdata,
         headers: headers,
         filename: 'tmpdata.csv'
-    })
+    }
     const [csvData,setCsvData] = useState()
 
     const cookie = new Cookies()
@@ -305,21 +305,24 @@ export default function StdList({ schoolID, school_data }){
             if (res[0]) {
                 console.log(res[1])
                 if (res[1].data.length === 0){
-                    setAllDataErr(false)
                     setCsvData(<div className="fs-5">ไม่มีข้อมูลนักเรียน</div>)
-                }else{
-                    setCsvReport ({
+                    setAllDataErr(false)
+                } else {
+                    // console.log(res[1].data)
+                    csvReport = {
                         data: res[1].data,
                         headers: headers,
-                        filename: window.localStorage.getItem("clubidStdentListOwnTeacher") + '.csv'
-                    })
-                    setAllDataErr(false)
+                        filename: 'รายชื่อนักเรียน_' + nowDisplayname + '.csv'
+                    }
+                    
                     setCsvData(<CSVLink {...csvReport}>Export to CSV</CSVLink>)
+                    setAllDataErr(false)
                 }
             }
             else {
-                setAllDataErr(false)
+                
                 setCsvData(<div className="fs-5">ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>)
+                setAllDataErr(false)
             }
         })
     }
@@ -451,11 +454,8 @@ export default function StdList({ schoolID, school_data }){
                 `}</style>
                 
                 <div className="text-center display-6 mb-3">
-                    <span className='me-2'>รายชื่อนักเรียน</span>
-                    <h4 className="fa-solid fa-circle-info"
-                        data-bs-toggle="modal"
-                        data-bs-target="#helpmodal"
-                        type="button" ></h4>
+                    <span className=''>รายชื่อนักเรียน</span>
+                    
                 </div>
                 <div className="mb-4">
                     <div className="d-flex flex-column align-items-center flex-sm-row">
@@ -488,7 +488,7 @@ export default function StdList({ schoolID, school_data }){
                     {reloadTable ? reload :
                         notShowAlert ? data : alert}
                 </div>
-                {reloadTable ? reload :
+                {reloadTable ? null :
                     notShowAlert ? paginate : null}
 
                 <div className="modal fade" id="modal_csv">
@@ -550,18 +550,7 @@ export default function StdList({ schoolID, school_data }){
                     </div>
                 </div>
 
-                <div className="modal fade" id="helpmodal">
-                    <div className="modal-dialog modal-lg">
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
-                            </div>
-                            <div className='modal-body'>
-                                รอใส่ user manual
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </main>
         )
     }

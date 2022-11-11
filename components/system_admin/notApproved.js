@@ -442,22 +442,18 @@ function getDetails(item) {
             <>
                 <div>
 							<div className="text-center fs-1 mb-3">
-								<span className='me-2'>Not Approve</span>
-								<h4 className="fa-solid fa-circle-info"
-									data-bs-toggle="modal"
-									data-bs-target="#helpmodal"
-									type="button" ></h4>
-										</div>
-                    <div className='row mb-4'>
-                        <div className='col-12'>
-                            <form className='mb-5'>
-                                <div className='input-group'>
-                                    <span className="input-group-text">ค้นหา</span>
-                                    <input type="text" placeholder="ค้นหาด้วย schoolID" className='form-control' ref={search}></input>
-									<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
-									<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
-                                </div>
-                            </form>
+								<span className=''>Not Approve</span>
+							</div>
+							<div className='row mb-4'>
+									<div className='col-12'>
+											<form className='mb-5'>
+													<div className='input-group'>
+															<span className="input-group-text">ค้นหา</span>
+															<input type="text" placeholder="ค้นหาด้วย schoolID" className='form-control' ref={search}></input>
+						<button className='btn' style={{backgroundColor:"#11620e",color:"#fff"}} onClick={(ev) => clickAccept(ev)}>ยืนยัน</button>
+						<button className='btn' style={{backgroundColor:"#881b1b",color:"#fff"}} onClick={(ev) => clickReset(ev)}>รีเซต</button>
+													</div>
+											</form>
 									{reloadTable ? reload :
 										notShowAlert ? data : alert}
 								</div>
@@ -541,18 +537,7 @@ function getDetails(item) {
 					</div>
 						</div>
 						
-						<div className="modal fade" id="helpmodal">
-							<div className="modal-dialog modal-lg">
-								<div className='modal-content'>
-									<div className='modal-header'>
-										<h3 className="modal-title" >คู่มือการใช้งาน</h3>
-									</div>
-									<div className='modal-body'>
-										รอใส่ user manual
-									</div>
-								</div>
-							</div>
-						</div>
+						
             </>
         )
     }

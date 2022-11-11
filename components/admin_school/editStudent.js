@@ -373,11 +373,8 @@ export default function EditStudent({ school_data,schoolID }) {
             <>
                 <div>
                     <div className="text-center display-6 mb-3">
-                        <span className='me-2'>แก้ไขข้อมูลของนักเรียน</span>
-                        <h4 className="fa-solid fa-circle-info"
-                            data-bs-toggle="modal"
-                            data-bs-target="#helpmodal"
-                            type="button" ></h4>
+                        <span className=''>แก้ไขข้อมูลของนักเรียน</span>
+                        
                     </div>
                     <div className='row'>
                         <div className='col-12'>
@@ -441,18 +438,7 @@ export default function EditStudent({ school_data,schoolID }) {
                         </div>
                     </div>
                 </div>
-                <div className="modal fade" id="helpmodal">
-                    <div className="modal-dialog modal-lg">
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h3 className="modal-title" >คู่มือการใช้งาน</h3>
-                            </div>
-                            <div className='modal-body'>
-                                รอใส่ user manual
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </>
         )
     }

@@ -227,25 +227,11 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 	return (
 		<div>
 			<div className="text-center display-6">
-				<span className='me-2'>ชุมนุมปัจจุบัน</span>
-				<h4 className="fa-solid fa-circle-info"
-					data-bs-toggle="modal"
-					data-bs-target="#helpmodal"
-					type="button" ></h4>
+				<span className=''>ชุมนุมปัจจุบัน</span>
+				
 			</div>
 			{displayOwnclub}
-			<div className="modal fade" id="helpmodal">
-				<div className="modal-dialog modal-lg">
-					<div className='modal-content'>
-						<div className='modal-header'>
-							<h3 className="modal-title" >คู่มือการใช้งาน</h3>
-						</div>
-						<div className='modal-body'>
-							รอใส่ user manual
-						</div>
-					</div>
-				</div>
-			</div>
+			
 		</div>
 	)
 }

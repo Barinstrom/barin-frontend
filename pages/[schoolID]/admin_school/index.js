@@ -395,6 +395,10 @@ export default function Admin({ schoolID }) {
 					background-color: transparent;
 				}
 
+				.help_text {
+					display: none;
+				}
+
 				@media screen and (max-width: 1300px) {
 					.nav_header {
 						transform: translate(-100%, 80px);
@@ -425,6 +429,13 @@ export default function Admin({ schoolID }) {
 					.h2_alert {
 						font-size: 20px;
 					}
+
+					.help_text_lg {
+						display: none;
+					}
+					.help_text {
+						display: inline;
+					}
 				}
 
 				.nav_left{
@@ -450,14 +461,29 @@ export default function Admin({ schoolID }) {
 						>
 							<i className="fa-solid fa-bars"></i>
 						</button>
-						<span className="ms-3">Dashboard</span>
+						<span className="ms-2">Dashboard</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert}`}>
 							<span ref={time}></span>
 						</div>
-						<div className={`me-3 d-flex flex-row h-100`}>
-							<div className={`${styles.logo}`}>
+						<a className="help_text_lg" target="_blank"
+							href="https://drive.google.com/file/d/1mYI2F_mW49zEZz-5XTDudu3q4jpQxOpn/view?usp=share_link"
+							rel="noreferrer" style={{ textDecoration: 'none', color: 'black' }}>
+							<div className=" d-flex justify-content-center align-items-center ms-3 me-2 p-1 border border-dark border-2 rounded-pill">
+								<div className="me-1">คู่มือ</div>
+								<div className=" fa-solid fa-circle-info"></div>
+							</div>
+						</a>
+						<a className="help_text" target="_blank"
+							href="https://drive.google.com/file/d/1mYI2F_mW49zEZz-5XTDudu3q4jpQxOpn/view?usp=share_link"
+							rel="noreferrer" style={{ textDecoration: 'none', color: 'black' }}>
+							<div className="help_text d-flex justify-content-center align-items-center ms-3 me-2">
+								<div className=" fa-solid fa-circle-info"></div>
+							</div>
+						</a>
+						<div className={`me-3 d-flex flex-row h-100 `}>
+							<div className={`${styles.logo} `}>
 								<div className={`${styles.img_background}`} onClick={(ev) => displayDropdown(ev)}></div>
 								<ul className={`${styles.menu_dropdown} d-none`} ref={dropdown}>
 									<li style={{ cursor: "pointer" }} onClick={logOut}><span className="dropdown-item">logout</span></li>

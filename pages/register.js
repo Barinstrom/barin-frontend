@@ -1,5 +1,5 @@
 import React from "react";
-import { useState,useRef,useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { register } from "../utils/unauth";
 import Swal from "sweetalert2";
@@ -11,6 +11,8 @@ export default function Register() {
 	const tagForm = useRef([]);
 	const click_check = useRef();
 	const site_key = process.env.NEXT_PUBLIC_SITE_KEY
+
+
 
 
 	function checkFile(file) {
@@ -27,7 +29,7 @@ export default function Register() {
 		click_check.current.classList.remove("d-none");
 	}
 
-	
+
 	async function submitForm(ev) {
 		ev.preventDefault();
 
@@ -38,6 +40,7 @@ export default function Register() {
 		const confirmPassword = tagForm.current[4].value;
 		const tel = tagForm.current[5].value;
 		const characterEnglish = /^[A-Za-z0-9]*$/;
+
 
 		if (!characterEnglish.test(schoolID)) {
 			Swal.fire({
@@ -78,7 +81,7 @@ export default function Register() {
 				role: "admin",
 			};
 
-			
+
 			Swal.fire({
 				title: 'คุณตรวจสอบข้อมูลเรียบร้อย และต้องการสมัครสมาชิก',
 				html: '<div style="display:flex; justify-content:center; overflow-y:hidden"><div id="recaptcha" ></div> </div > ',
@@ -95,7 +98,7 @@ export default function Register() {
 				showCancelButton: true,
 				cancelButtonText: "cancel",
 				cancelButtonColor: "#d93333",
-						
+
 				showLoaderOnConfirm: true,
 				preConfirm: () => {
 					if (grecaptcha.getResponse().length === 0) {
@@ -104,19 +107,19 @@ export default function Register() {
 					else {
 						return register(will_data);
 					}
-					
+
 				},
 				allowOutsideClick: false
-		
+
 			}).then((result) => {
 				if (result.isConfirmed) {
 					console.log(result)
 					if (!result.value[1]) {
 						Swal.fire({
 							icon: 'error',
-							title: result.value[0].response.data,  
-							showConfirmButton:true,
-							confirmButtonColor:"#ce0303"
+							title: result.value[0].response.data,
+							showConfirmButton: true,
+							confirmButtonColor: "#ce0303"
 						})
 						return;
 					}
@@ -124,19 +127,19 @@ export default function Register() {
 						Swal.fire({
 							icon: 'success',
 							title: 'สมัครสมาชิกสำเร็จ' + '\n' + 'โปรดตรวจสอบอีเมล' + '\n' + 'เพื่อยืนยันอีเมล',
-							showConfirmButton:true,
-							confirmButtonColor:"#009431"
+							showConfirmButton: true,
+							confirmButtonColor: "#009431"
 						}).then(() => {
 							router.push("/");
 						})
 					}
 				}
 			})
-			
-			
+
+
 		}
 	}
-	
+
 	return (
 		<div className="position-relative">
 			<style jsx>{`
@@ -183,19 +186,32 @@ export default function Register() {
 						</ul>
 						<div className="tab-content">
 							<div id="tab1" className="tab-pane fade show active">
-								ในการสมัครสมาชิกโปรดกรอกข้อมูลให้ครบถ้วน
+								<p className="text-center mt-1 mb-1"><h5><strong>ข้อตกลงในการกรอกข้อมูล</strong></h5></p>
+								<strong>1. ช่อง “ชื่อโรงเรียน” </strong>: เป็นช่องที่ไว้ใส่ชื่อโรงเรียนที่ทำการสมัคร<br />
+								<strong>2. ช่อง “อีเมล” </strong>: เป็นช่องที่ไว้ใส่อีเมลของโรงเรียนที่ทำการสมัคร โดยอีเมลนั้นจะถือว่าเป็นอีเมลของ admin school ซึ่งมีความสำคัญมากที่สุดในการเข้าใช้เว็บไซต์ลงทะเบียนชุมนุมนี้ แต่อีเมลนี้ไม่สามารถใช้ซ้ำกับอีเมลของครูหรือนักเรียนได้ <strong>email นี้ไม่สามารถเปลี่ยนแปลงได้ในภายหลัง</strong><br />
+								<strong>3. ช่อง “School ID” </strong>: สำหรับใส่ ID ของโรงเรียนที่มาสมัคร โดยผู้สมัครสามารถคิดได้เองตามใจชอบ แต่จะต้องไม่ซ้ำกับโรงเรียนอื่น และ ID นี้จะถูกใช้เป็น path สำหรับเข้าใช้งานเว้บไซต์ของโรงเรียนนั้นๆด้วย <strong>ID นี้ไม่สามารถเปลี่ยนแปลงได้ในภายหลัง</strong><br />
+								<strong>4. ช่อง “password” </strong>: ใส่รหัสผ่านที่จะใช้ login ส่วนของ admin school<br />
+								<strong>5. ช่อง “confirmPassword” </strong>: ใส่รหัสผ่านอีกครั้ง<br />
+								<strong>6. ช่อง “เบอร์โทรศัพท์ที่สามารถติดต่อได้” </strong>: ใส่เบอร์โทรศัพท์ที่สะดวก เพื่อให้ system admin สามารถติดต่อไปหากต้องการข้อมูลบางอย่างเพิ่มเติมได้<br />
+								<strong>7. ช่อง “เอกสารยืนยันโรงเรียน” </strong>: เป็นช่องสำหรับใส่รูปภาพเอกสารที่ยืนยันว่าผู้สมัครเป็นโรงเรียนจริงๆ หลักฐานนี้จะถูกใช้ในการพิจารณาการอนุมัติใช้งานเว็บ โดย system admin ซึ่งหลักฐานนี้สามารถมีได้หลายแบบ เช่น เอกสารก่อตั้งโรงเรียน หรืออาจจะเป็นหนังสือรับรองการขอสมัครเว็บไซต์ที่มีลายเซ็นของผู้อำนวยการ เป็นต้น<br />
 							</div>
 							<div id="tab2" className="tab-pane fade">
-								เมื่อกรอกข้อมูลเสร็จแล้ว โปรดตรวจสอบความถูกต้องก่อนยืนยัน
+								<p className="text-center mt-1 mb-1"><h5><strong>ข้อตกลงในการชำระเงิน</strong></h5></p>
+								การชำระเงินจะถูกเรียกเก็บใหม่ทุกๆปี โดยจะเรียกเก็บใหม่อีกครั้ง ในวันที่ท่านทำการสมัครครบ 1 ปี<br />
 							</div>
 							<div id="tab3" className="tab-pane fade">
-								เมื่อกรอกข้อมูลเสร็จแล้ว โปรดตรวจสอบความถูกต้องก่อนยืนยัน
+								<p className="text-center mt-1 mb-1"><h5><strong>ข้อตกลงในการใช้งาน</strong></h5></p>
+								<strong>1. </strong>ผู้สมัครจะใช้งานระบบได้ก็ต่อเมื่อ <strong>ทำการยืนยันอีเมล</strong> และ <strong>เข้าไปชำระเงินในเว็บไซต์</strong> เรียบร้อยแล้วเท่านั้น<br />
+								<strong>2. </strong>การตัดสินใจอนุมัติ/ไม่อนุมัติ การเข้าใช้งานเว็บไซต์ เป็นดุลพินิจของ system admin. หาก system admin ไม่อนุมัติ จะมีเมลไปบอกผู้สมัครเสมอว่าเพราะเหตุใด และให้ผู้สมัครแก้ไขตาม mail นั้น<br />
+								<strong>3. </strong>หากพบว่าผู้สมัครทำการละเมิดการใช้งานของผู้สมัครท่านอื่น system admin มีสิทธิที่จะปิดระบบการใช้งานของผู้สมัคร โดยที่ไม่จำเป็นต้องแจ้งล่วงหน้า<br />
+								<strong>4. </strong>ผู้สมัครควรปฏิบัติตามคู่มือการใช้งานเว็บไซต์อย่างเคร่งครัด เพื่อลดความผิดพลาดที่จะเกิดขึ้น (คู่มืออยู่บริเวณมุมบนขวาของเว็บไซต์ หลังจากที่ผู้สมัครเข้าสุ่ระบบแล้ว)<br />
+
 							</div>
 						</div>
 					</div>
 					<div className="col-lg-6 mt-4 mt-lg-0 p-3">
 						<h2 className="text-center">สมัครสมาชิก</h2>
-						
+
 						<form
 							className="row g-2"
 							onSubmit={(ev) => submitForm(ev)}
@@ -213,7 +229,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[0] = el)}
 								/>
 							</div>
-							
+
 							<div className="col-12">
 								<label className="form-label">
 									อีเมล (สำหรับ login และยืนยัน)
@@ -226,7 +242,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[1] = el)}
 								/>
 							</div>
-							
+
 							<div className="col-12">
 								<label className="form-label">
 									School ID (สำหรับกำหนด path ของเว็ปโรงเรียน)
@@ -239,7 +255,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[2] = el)}
 								/>
 							</div>
-							
+
 							<div className="col-12">
 								<label className="form-label">password</label>
 								<input
@@ -250,7 +266,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[3] = el)}
 								/>
 							</div>
-							
+
 							<div className="col-12">
 								<label className="form-label">
 									confirmPassword
@@ -263,7 +279,7 @@ export default function Register() {
 									ref={(el) => (tagForm.current[4] = el)}
 								/>
 							</div>
-							
+
 							<div className="col-12">
 								<label className="form-label">
 									เบอร์โทรศัพท์ที่สามารถติดต่อได้
@@ -289,7 +305,7 @@ export default function Register() {
 									onChange={(ev) => encodeImageFileAsURL(ev)}
 								/>
 							</div>
-							
+
 							<div className="col-12 d-none" ref={click_check}>
 								<label className="form-label">
 									กรุณากดเพื่อเช็คเอกสารยืนยันโรงเรียน :
