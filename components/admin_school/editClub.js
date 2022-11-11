@@ -15,6 +15,8 @@ export default function EditClub({ school_data,schoolID }) {
     const router = useRouter()
     const [reloadTable,setReloadTable] = useState(false)
     
+    const [clubImg, setClubImg] = useState("")
+
     const [data,setData] = useState(null)
     const [paginate,setPaginate] = useState(null)
     const [displayError, setDisplayError] = useState(false)
@@ -75,6 +77,16 @@ export default function EditClub({ school_data,schoolID }) {
         })
     },[])
 
+    function encodeImageFileAsURL(ev) {
+        let file = ev.target.files[0];
+        let reader = new FileReader();
+
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+            setClubImg(reader.result);
+        };
+    }
+
     function detailInfo(item, ev) {
         console.log(item)
         clubName.current.setAttribute("data-clubid",ev.target.getAttribute("data-bs-clubid"))
@@ -85,6 +97,12 @@ export default function EditClub({ school_data,schoolID }) {
         schoolYear.current.value = item.schoolYear
         groupID.current.value = item.groupID
         teacherEmail.current.value = item.teacherEmail
+
+        if (item.urlPicture) {
+            setClubImg(item.urlPicture)
+        } else {
+            setClubImg("https://dummyimage.com/300x300")
+        }
         
         let [day_tmp, schedule] = item.schedule[0].split(" ") // [ "17.02.00-18.02.00"]
         const english_day = {
@@ -150,6 +168,7 @@ export default function EditClub({ school_data,schoolID }) {
             schoolYear: schoolYear.current.value ,
             groupID: groupID.current.value,
             teacherEmail: teacherEmail.current.value,
+            urlPicture: clubImg,
             schedule: [th_day[String(day.current.value)] + " " + String(scheduleStart.current.value)  + "-" + String(scheduleEnd.current.value) ],
         }
         
@@ -534,6 +553,12 @@ export default function EditClub({ school_data,schoolID }) {
                                     </div>
                                     <div className="col-12">
                                         <label className="form-label">ชื่อนามสกุลผู้สอน : &nbsp;<span ref={teacherName}></span></label>
+                                    </div>
+
+                                    <div className="col-12 mt-2">
+                                        <label className="form-label">Picture:</label>
+                                        <img src={clubImg} className="form-control" />
+                                        <input className="form-control mt-2" type="file" onChange={(ev) => encodeImageFileAsURL(ev)} />
                                     </div>
                                 </form>
                             </div>

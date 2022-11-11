@@ -6,7 +6,7 @@ import { get_student_ownclub, drop_club } from "../../utils/student/student";
 import Swal from "sweetalert2";
 
 export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
-	const [ displayOwnclub, setdisplayOwnclub ] = useState(null)
+	const [ displayOwnclub, setdisplayOwnclub ] = useState()
 	
 	const cookie = new Cookies()
 	const token = cookie.get("token")
@@ -33,14 +33,16 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 			},
 			allowOutsideClick: false,
 		}).then(res => {
-			const [result,status] = res.value
+			// console.log(res)
+			const [result, status] = res.value
+			// console.log(res.value)
 			if (res.isConfirmed){
 				if (!status){
 					let content = ""
-					if (result.response.data.error === "not in register time"){
+					if (result.response.data && result.response.data.error === "not in register time"){
 						content = "ไม่อยู่ในช่วงเวลาถอนชุมนุม"
 					}else{
-						content = "ถอนชุมนุมไม่สำเร็จ"
+						content = "ถอนชุมนุมไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
 					}
 					Swal.fire({
 						icon: 'error',
@@ -66,13 +68,22 @@ export default function Nowclub({ schoolID, inschedule, nowSchoolYear }) {
 		})
 	}
 
+	const reload = (
+		<main style={{ height: "400px" }}>
+			<div className="d-flex justify-content-center h-100 align-items-center">
+				<div className="fs-4">loading ...</div>
+				<div className="spinner-border ms-3"></div>
+			</div>
+		</main>
+	)
+
 	useEffect(() => {
 		const  cookie = new Cookies()
 		const token = cookie.get("token")
 		const body = {
 			nowSchoolYear : nowSchoolYear
 		}
-		
+		setdisplayOwnclub(reload)
 		get_student_ownclub(body,token, schoolID).then(result => {
 			console.log(result)
 			let clubs;

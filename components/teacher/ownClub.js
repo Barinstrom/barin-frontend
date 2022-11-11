@@ -114,9 +114,10 @@ export default function OwnClub({ schoolID, data_school }) {
 				category:category.current.value ,
 				limit: clubLimit.current.value,
 				groupID: groupID.current.value,
-				schedule: [String(day.current.value) + " " +String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
+				schedule: [String(day.current.value) + " " + String(scheduleStart.current.value) + "-" + String(scheduleEnd.current.value)],
+				urlPicture: clubImg
 			}
-			
+			console.log(body_update)
 			Swal.fire({
 				title: "คุณต้องการแก้ไข" + '\n' + "ข้อมูลชุมนุมใช่หรือไม่",
 				showConfirmButton: true,

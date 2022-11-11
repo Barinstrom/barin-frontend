@@ -124,27 +124,70 @@ export default function EditClub({ schoolID, scheduled, inschedule, nowSchoolYea
         const body = {
             "clubID":clubName.current.getAttribute("data-clubid")
         }
-        const result = await register_club(body,token,schoolID)
+        Swal.fire({
+            title: 'คุณต้องการสมัครชุมนุมนี้ใช่หรือไม่',
+            showConfirmButton: true,
+            confirmButtonColor: "#0047a3",
+            confirmButtonText: 'ยืนยัน',
+
+            showCancelButton: true,
+            cancelButtonText: "cancel",
+            cancelButtonColor: "#d93333",
+
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                return register_club(body, token, schoolID)
+            },
+            allowOutsideClick: false
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log(result)
+                const result_update = result.value === "true" ? true : false
+                if (result_update) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สมัครสำเร็จ',
+                        showConfirmButton: true,
+                        confirmButtonColor: "#0047a3"
+                    }).then(() => {
+                        router.reload()
+                    })
+                }
+                else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'สมัครไม่สำเร็จ',
+                        showConfirmButton: true,
+                        confirmButtonColor: "#00a30b"
+                    }).then(() => {
+                        router.reload()
+                    })
+                }
+
+            }
+        })
+        // const result = await register_club(body,token,schoolID)
         
-        if (!result){
-            Swal.fire({
-                icon: 'error',
-                title: 'สมัครไม่สำเร็จ',
-                showConfirmButton:true,
-                confirmButtonColor:"#d1000a"
-            }).then(() => {
-                router.reload()
-            })
-        }else{
-            Swal.fire({
-                icon: 'success',
-                title: 'สมัครสำเร็จ',
-                showConfirmButton:true,
-                confirmButtonColor:"#009431"
-            }).then(() => {
-                router.reload()
-            })
-        }
+        // if (!result){
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'สมัครไม่สำเร็จ',
+        //         showConfirmButton:true,
+        //         confirmButtonColor:"#d1000a"
+        //     }).then(() => {
+        //         router.reload()
+        //     })
+        // }else{
+        //     Swal.fire({
+        //         icon: 'success',
+        //         title: 'สมัครสำเร็จ',
+        //         showConfirmButton:true,
+        //         confirmButtonColor:"#009431"
+        //     }).then(() => {
+        //         router.reload()
+        //     })
+        // }
     }
 
     async function clickReset(ev){

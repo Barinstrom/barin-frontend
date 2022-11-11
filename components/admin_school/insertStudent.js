@@ -104,7 +104,7 @@ export default function InsertTeacher({ school_data,schoolID }) {
 						const result = res.value
 						console.log(result)
 						if (!result[0]) {
-							if (result[1].response.data.error) {
+							if (result[1].response.data  && result[1].response.data.error) {
 								Swal.fire({
 									icon: 'error',
 									title: result[1].response.data.error,
@@ -155,33 +155,55 @@ export default function InsertTeacher({ school_data,schoolID }) {
 			return
 		}
 		const body = {...formSuccess,"isActive":"Active"}
-		const result = await add_student(body,token,schoolID);
+		// const result = await add_student(body,token,schoolID);
 		
-		if (!result[0]) {
-			if (result[1].response.data.error) {
-				Swal.fire({
-					icon: 'error',
-					title: result[1].response.data.error,
-					showConfirmButton: true,
-					confirmButtonColor: "#ce0303"
-				})
-			} else {
-				Swal.fire({
-					icon: 'error',
-					title: 'เพิ่มข้อมูลไม่สำเร็จ',
-					showConfirmButton: true,
-					confirmButtonColor: "#ce0303"
-				})
-			}
+		Swal.fire({
+			title: 'คุณต้องการเพิ่มนักเรียนใช่หรือไม่',
+			showConfirmButton: true,
+			confirmButtonColor: "#0047a3",
+			confirmButtonText: 'ยืนยัน',
 
-		} else {
-			Swal.fire({
-				icon: 'success',
-				title: 'เพิ่มข้อมูลเสร็จสิ้น',
-				showConfirmButton: true,
-				confirmButtonColor: "#009431"
-			})
-		}
+			showCancelButton: true,
+			cancelButtonText: "cancel",
+			cancelButtonColor: "#d93333",
+
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				return add_student(body, token, schoolID);
+			},
+			allowOutsideClick: false
+
+		}).then((res) => {
+			if (res.isConfirmed) {
+				const result = res.value
+				if (!result[0]) {
+					if (result[1].response.data && result[1].response.data.error) {
+						Swal.fire({
+							icon: 'error',
+							title: result[1].response.data.error,
+							showConfirmButton: true,
+							confirmButtonColor: "#ce0303"
+						})
+					} else {
+						Swal.fire({
+							icon: 'error',
+							title: 'เพิ่มข้อมูลไม่สำเร็จ',
+							showConfirmButton: true,
+							confirmButtonColor: "#ce0303"
+						})
+					}
+
+				} else {
+					Swal.fire({
+						icon: 'success',
+						title: 'เพิ่มข้อมูลเสร็จสิ้น',
+						showConfirmButton: true,
+						confirmButtonColor: "#009431"
+					})
+				}
+			}
+		})
+		
 	}
 
 	function clearInfo(){

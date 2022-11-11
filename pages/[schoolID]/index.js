@@ -236,6 +236,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const schoolID_param = context.params.schoolID;
   const schoolPathAll = await get_all_schoolID();
+  // console.log(schoolPathAll);
   const school_path_data = schoolPathAll.data.find(
     (e) => e.schoolID === schoolID_param
   );
