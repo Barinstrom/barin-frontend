@@ -8,11 +8,11 @@ import { useState } from 'react';
 
 export default function CheckStatus() {
     const router = useRouter()
-    const [status,setStatus] = useState("loading")
+    const [status, setStatus] = useState("loading")
 
     useEffect(() => {
-        const body = {token: router.query.token}
-        
+        const body = { token: router.query.token }
+        console.log(router.query)
         is_activate(body).then((res) => {
             console.log(res)
             if (res[1]) {
@@ -22,15 +22,15 @@ export default function CheckStatus() {
                 setStatus("error")
             }
         })
-    },[])
+    }, [])
 
-    function comeback(){
+    function comeback() {
         router.push("/")
     }
 
     const success_page = (
-    <>
-        <style jsx>{`
+        <>
+            <style jsx>{`
             main{
                 min-height: 100vh;
                 display:flex;
@@ -96,20 +96,20 @@ export default function CheckStatus() {
             }
         
         `}</style>
-        <main>
-            <div className="block">
-                <div className="circle">
-                    <i>✓</i>
+            <main>
+                <div className="block">
+                    <div className="circle">
+                        <i>✓</i>
+                    </div>
+                    <h1 className="status">Success</h1>
+                    <p>คุณยืนยันอีเมลเสร็จสิ้น</p>
+                    <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
                 </div>
-                <h1 className="status">Success</h1>
-                <p>คุณยืนยันอีเมลเสร็จสิ้น</p>
-                <button className='comeback_login' onClick={comeback}>กลับหน้าหลัก</button>
-            </div>
-        </main>
-        
-    </>
+            </main>
+
+        </>
     )
-    
+
     const fail_page = (
         <>
             <style jsx>{`
@@ -177,7 +177,7 @@ export default function CheckStatus() {
                     }
                 }
             `}</style>
-            
+
             <main>
                 <div className="block">
                     <div className="circle">
@@ -191,20 +191,20 @@ export default function CheckStatus() {
 
         </>
     )
-    
+
     if (status === "loading") {
         return <Reload />
     }
     else if (status === "error") {
-        return <Error statusCode={404}/>
+        return <Error statusCode={404} />
     }
     else if (!status) {
         return fail_page
     }
-    else{
+    else {
         return success_page
     }
-    
+
 }
 
 export async function getServerSideProps() {
