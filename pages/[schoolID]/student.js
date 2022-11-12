@@ -34,6 +34,7 @@ export default function Student({ schoolID }) {
 	// check schedule
 	const [inschedule, setInschedule] = useState(true)
 	const [nowSchoolYear, setNowSchoolYear] = useState(0)
+	const [userEmail, setUserEmail] = useState('')
 	
 	useEffect(() => {
 		if (schoolID) {
@@ -63,6 +64,7 @@ export default function Student({ schoolID }) {
 							router.push("/" + String(data_tmp.schoolID))
 						}
 						else {
+							setUserEmail(result[0].data.email)
 							setNowSchoolYear(data_tmp.nowSchoolYear)
 							setDisplayFirst(true)
 							setSaveEmail(email)
@@ -330,7 +332,8 @@ export default function Student({ schoolID }) {
 						>
 							<i className="fa-solid fa-bars"></i>
 						</button>
-						<span className="ms-2">Dashboard</span>
+							<span className="ms-2">Dashboard</span>
+							<span className="help_text_lg ms-2">{" - "}{userEmail}</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>

@@ -36,6 +36,8 @@ export default function Teacher({ schoolID }) {
 	)
 	const [checkReadyComponent, setCheckReadyComponent] = useState(false)
 	const [saveEmail, setSaveEmail] = useState("")
+	const [userEmail, setUserEmail] = useState('')
+
 
 	useEffect(() => {
 		if (chooseBtnStart.checkStatus){
@@ -111,6 +113,7 @@ export default function Teacher({ schoolID }) {
 								// setDisplayFirst(false)
 							}
 							else {
+								setUserEmail(result[0].data.email)
 								setDisplayFirst(true)
 								setData_school(data_tmp)
 								setReadyTime(true)
@@ -323,6 +326,7 @@ export default function Teacher({ schoolID }) {
 							<i className="fa-solid fa-bars"></i>
 						</button>
 						<span className="ms-2">Dashboard</span>
+						<span className="help_text_lg ms-2">{" - "}{userEmail}</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>

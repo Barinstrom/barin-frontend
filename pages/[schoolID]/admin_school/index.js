@@ -35,6 +35,8 @@ export default function Admin({ schoolID }) {
 	const [ispaid, setIspaid] = useState("")
 	const [isapprove, setIsapprove] = useState("")
 	const [saveEmail, setSaveEmail] = useState("")
+	const [userEmail, setUserEmail] = useState('')
+
 	// const [component, setComponent] = useState(<Reload />)
 
 	const cookies = new Cookies();
@@ -82,7 +84,8 @@ export default function Admin({ schoolID }) {
 						if (data_tmp.schoolID != schoolID) {
 							router.push("/login")
 							// setDisplayFirst(false)
-						}else {
+						} else {
+							setUserEmail(result[0].data.email)
 							setIspaid(data_tmp.paymentStatus)
 							setIsapprove(data_tmp.status)
 							setDisplayFirst(true)
@@ -328,6 +331,7 @@ export default function Admin({ schoolID }) {
 							<i className="fa-solid fa-bars"></i>
 						</button>
 						<span className="ms-3">Dashboard</span>
+						<span className="help_text_lg ms-2">{" - "}{userEmail}</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert} me-2`}>
