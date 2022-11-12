@@ -13,6 +13,7 @@ export default function StdList({ schoolID, school_data }){
     const classYear = useRef()
     const enteredYear = useRef()
     const tel = useRef()
+    const status_u = useRef()
     
     const headers = [
         { label: "firstname", key: "firstname" },
@@ -36,6 +37,7 @@ export default function StdList({ schoolID, school_data }){
     const [nowClubYear, setNowClubYear] = useState(null)
     const [allDataErr, setAllDataErr] = useState(true)
     const [notShowAlert, setNotShowAlert] = useState(0)
+    let clubIDNow = ''
 
     let csvReport = {
         data: tmpdata,
@@ -118,10 +120,12 @@ export default function StdList({ schoolID, school_data }){
                 
                 setReloadTable(true)
                 get_students_inclub(body, token, schoolID).then(result => {
+                    // console.log(result)
                     setReloadTable(false)
                     if (!result){
                         setDisplayError(true)
-                    }else{
+                    } else {
+                        clubIDNow = body.clubID
                         const paginate_tmp = generate(result.data)
                         setNotShowAlert(result.data.totalDocs)
                         showData(result.data.docs)
@@ -133,6 +137,13 @@ export default function StdList({ schoolID, school_data }){
 	}, [])
 
     function detailTest(item) {
+        // console.log(item, clubIDNow)
+        item.clubs.map((e, i) => {
+            // console.log(e)
+            if (e.clubID === clubIDNow) {
+                status_u.current.innerText = "สถานะ: " + e.status
+            }
+        })
         firstname.current.innerText = "ชื่อ: " + item.firstname
         lastname.current.innerText = "นามสกุล: " + item.lastname
         classYear.current.innerText = "ชั้นปีที่: " + item.classYear
@@ -286,7 +297,8 @@ export default function StdList({ schoolID, school_data }){
             setReloadTable(false)
             if (!result){
                 setDisplayError(true)
-            }else{
+            } else {
+                
                 const paginate_tmp = generate(result.data)
                 setNotShowAlert(result.data.totalDocs)
                 showData(result.data.docs)
@@ -544,6 +556,7 @@ export default function StdList({ schoolID, school_data }){
                                     <p ref={classYear}></p>
                                     <p ref={enteredYear}></p>
                                     <p ref={tel}></p>
+                                    <p ref={status_u}></p>
                                 </div>
                             </div>
                         </div>
