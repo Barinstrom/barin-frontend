@@ -73,6 +73,7 @@ export default function Admin({ schoolID }) {
 			get_data(token).then(result => {
 				if (result[1]) {
 					// console.log(result[0])
+					// console.log(result[0].data.email)
 					const data_tmp = result[0].data._doc
 					const role = result[0].data.role
 					const user_email = result[0].data.email
@@ -466,6 +467,7 @@ export default function Admin({ schoolID }) {
 							<i className="fa-solid fa-bars"></i>
 						</button>
 						<span className="ms-2">Dashboard</span>
+						<span className="help_text_lg ms-2">{" - "}{userEmail}</span>
 					</div>
 					<div className={`${styles.header_item}`}>
 						<div className={`${styles.time_alert}`}>
