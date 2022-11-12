@@ -37,6 +37,8 @@ export default function StdList({ schoolID, school_data }){
     const [nowClubYear, setNowClubYear] = useState(null)
     const [allDataErr, setAllDataErr] = useState(true)
     const [notShowAlert, setNotShowAlert] = useState(0)
+    const [ShowAlert, setShowAlert] = useState(0)
+
     let clubIDNow = ''
 
     let csvReport = {
@@ -64,6 +66,12 @@ export default function StdList({ schoolID, school_data }){
         </div>
     )
 
+    const alert2 = (
+        <div className="alert alert-dark" role="alert">
+            ยังไม่มีชุมนุมที่ดูแล
+        </div>
+    )
+
     const still_loding = (
         <div className="py-2">
             <div className="d-inline-block">กำลังดาวโหลด โปรดรอสักครู่</div>
@@ -82,7 +90,12 @@ export default function StdList({ schoolID, school_data }){
                 window.localStorage.removeItem("clubidFromClick")
                 window.localStorage.removeItem("displayComponent")
                 window.localStorage.removeItem("clubYearFromClick")
-            }else{
+            } else {
+                // console.log(result.data)
+                if (result.data == 0) {
+                    setShowAlert(1)
+                    return
+                }
                 genetateDropdown(clubs)
                 const formButtonOwnClubName = window.localStorage.getItem("clubNameFromClick")
                 const formButtonOwnClubID = window.localStorage.getItem("clubidFromClick")
@@ -433,7 +446,13 @@ export default function StdList({ schoolID, school_data }){
                 <h4 className="text-center mt-4">เกิดข้อผิดพลาดไม่สามารถแสดงผลได้</h4>
             </main>
         )
-    }else{
+    }
+    else if (ShowAlert) {
+        return (
+            alert2
+        )
+    }
+    else {
         return (
             <main>
                 <style jsx>{`

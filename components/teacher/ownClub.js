@@ -30,9 +30,16 @@ export default function OwnClub({ schoolID, data_school }) {
 	const [loading,setLoading] = useState(true)
 	const [displayError, setDisplayError] = useState(false)
 
+	const [ShowAlert, setShowAlert] = useState(0)
 	
 	const cookies = new Cookies()
 	const token = cookies.get("token")
+
+	const alert = (
+		<div className="alert alert-dark" role="alert">
+			ไม่พบชุมนุมที่ดูแล
+		</div>
+	)
 
 	useEffect(() => {
 		setLoading(true)
@@ -42,6 +49,9 @@ export default function OwnClub({ schoolID, data_school }) {
 				setDisplayError(true)
 			} else {
 				// console.log(result.data)
+				if (result.data == 0) {
+					setShowAlert(1)
+				}
 				const clubs = result.data
 				setData(clubs)
 				setDisplayError(false)
@@ -189,7 +199,12 @@ export default function OwnClub({ schoolID, data_school }) {
 		return (
 			<div className='text-center'>ระบบเกิดข้อผิดพลาดไม่สามารถแสดงข้อมูลได้</div>
 		)
-	}else{
+	} else if (ShowAlert) {
+		return (
+			alert
+		)
+	}
+	else {
 		return (
 			<main>
 				<div className="text-center display-6 mb-3">OwnClub</div>
