@@ -115,7 +115,8 @@ export async function get_all_schoolID() {
 // activate check
 export async function is_activate(data) {
 	const apiUrl = stagingUrl + "/activate";
-
+	console.log(data)
+	console.log(apiUrl)
 	try {
 		const result = await axios({
 			url: apiUrl,

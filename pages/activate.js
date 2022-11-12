@@ -14,6 +14,7 @@ export default function CheckStatus() {
         const body = {token: router.query.token}
         
         is_activate(body).then((res) => {
+            console.log(res)
             if (res[1]) {
                 setStatus(res[0].data.status)
             }
