@@ -54,17 +54,19 @@ export default function Pastclub({ schoolID, schedule, nowSchoolYear }) {
 							<thead>
 								<tr>
 									<th style={{ width: "100px" }}>รหัสวิชา</th>
+									<th style={{ width: "200px" }}>สถานะ</th>
 									<th style={{ width: "500px" }}>ชื่อชุมนุม</th>
-									<th style={{ width: "120px" }} className="text-center"><span>ลงทะเบียน</span></th>
+									<th style={{ width: "120px" }} className="text-center"><span>ข้อมูลชุมนุม</span></th>
 									<th style={{ width: "80px" }} className="text-center"><span>รีวิว</span></th>
 								</tr>
 							</thead>
 							<tbody>
 								{res.data.clubs.map((item, index) => {
-									// console.log(item)
+									console.log(item)
 									return (
 										<tr key={index}>
 											<td>{item.groupID}</td>
+											<td>{item.status}</td>
 											<td>{item.clubName}</td>
 											<td className="text-center">
 												<button className='btn detailinfo_btn btn-sm'
