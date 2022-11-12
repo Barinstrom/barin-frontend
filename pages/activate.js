@@ -12,7 +12,7 @@ export default function CheckStatus() {
 
     useEffect(() => {
         const body = { token: router.query.token }
-        console.log(router.query)
+        // console.log(router.query)
         is_activate(body).then((res) => {
             console.log(res)
             if (res[1]) {
