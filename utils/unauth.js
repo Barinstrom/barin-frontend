@@ -40,7 +40,7 @@ export async function checkLogin(data) {
 		return [result, true]
 	}
 	catch (err) {
-		// console.log(err)
+		console.log(err)
 		return [err, false]
 	}
 }
